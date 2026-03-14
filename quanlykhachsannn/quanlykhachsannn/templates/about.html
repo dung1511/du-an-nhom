@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Our Hotel</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" 
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+  {% include 'navbar.html' %}
+
+  <!-- About Section -->
+  <section class="about-section">
+    <div class="about-header">
+      <h1>About Our Hotel</h1>
+      <p style="font-size: 1.1 rem; color: #444;"></p>
+        Founded in 2025, Goan Paradise Retreat has quickly become a beacon of hospitality in Goa, blending the region’s rich cultural heritage with contemporary luxury.
+      </p>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <span><a href="{% url 'home' %}">Home</a></span> &gt; 
+      <span class="current">About Us</span>
+    </div>
+  </section>
+
+  <!-- Hotel Description Paragraph -->
+  <section class="hotel-description" style="font-family: 'Arial', sans-serif; line-height: 1.6; padding: 2rem; background-color: #f9f9f9;">
+    <div class="container" style="max-width: 800px; margin: 0 auto;">
+      <p style="font-size: 1.2rem; color: #333;">
+        `` Nestled in the heart of the city, our hotel blends modern elegance with a touch of heritage. From its exquisite architecture to the warm hospitality of our staff, every moment here is designed to make you feel at home.
+        With over 200 luxurious rooms and suites, a variety of fine-dining restaurants, and state-of-the-art facilities, we promise an unforgettable stay. Whether you are a business traveler seeking a productive workspace or a family on vacation looking for relaxation,
+        our hotel caters to all. Enjoy world-class spa treatments, a fully equipped fitness center, an infinity pool, and breathtaking city or beachfront views. Our dedicated concierge team is always ready to assist, ensuring that your experience is nothing short of exceptional.``
+      </p>
+    </div>
+  </section>
+
+  <!-- Testimonial Section -->
+  <section class="testimonial-section">
+    <div class="container">
+      <div class="testimonial">
+        <div class="testimonial-image">
+          <img src="{% static 'images\myself.jpg' %}" alt="Hotel Owner">
+        </div>
+        <div class="testimonial-content">
+          <blockquote>
+            <p>"Everyone would like to be treated like at home in the hotel, and at home - like in a hotel. Hospitality is a quality that is made up of primeval simplicity and antique grandeur."</p>
+          </blockquote>
+          <p class="testimonial-author">- Shubham Birari, Chief Administrator </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Team -->
+<!-- Our Team -->
+<section style="text-align: center; padding: 3rem 2rem; background-color: #f0f8ff;">
+  <h2 style="font-size: 2rem; color: #333;">Meet Our Team</h2>
+  <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; max-width: 1200px; margin: 0 auto;">
+
+      <!-- Team Member 1 -->
+      <div style="background: #ffffff; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); width: 220px;">
+          <img src="{% static 'images\myself.jpg' %}" alt="shubham" style="width: 100%; max-width: 150px; border-radius: 50%; margin-bottom: 15px;">
+          <h3 style="color: #333; font-size: 18px; margin-bottom: 5px;">Shubham </h3>
+          <p style="color: #777; font-size: 14px;">Chief Administrator</p>
+      </div>
+
+      <div style="background: #ffffff; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); width: 220px;">
+        <img src="{% static 'images\profile_placeholder.jpg' %}" alt="Sofia Oldman" style="width: 100%; max-width: 150px; border-radius: 50%; margin-bottom: 15px;">
+        <h3 style="color: #333; font-size: 18px; margin-bottom: 5px;">Nobody </h3>
+        <p style="color: #777; font-size: 14px;">Team member</p>
+    </div>
+
+      
+      
+
+  </div>
+</section>
+
+
+  <!-- What We Offer -->
+  <section class="services-section">
+    <h2>What We Offer</h2>
+    <div class="grid-container">
+      <div class="grid-item">
+        <img src="{% static 'images/f-1.png' %}" alt="Airport Transfer">
+        <h3>Airport Transfer</h3>
+      </div>
+      <div class="grid-item">
+        <img src="{% static 'images/f-2.png' %}" alt="All Inclusive">
+        <h3>All Inclusive</h3>
+      </div>
+      <div class="grid-item">
+        <img src="{% static 'images/f-3.png' %}" alt="Air Conditioned">
+        <h3>Air Conditioned</h3>
+      </div>
+      <div class="grid-item">
+        <img src="{% static 'images/f-4.png' %}" alt="Under Protection">
+        <h3>Under Protection</h3>
+      </div>
+    </div>
+  </section>
+
+  <!-- Customer Testimonials -->
+  <section class="testimonials-section">
+    <h2>What Our Guests Say</h2>
+    <div class="container">
+      <div class="testimonial">
+        <div class="profile">
+          <img src="{% static 'images/faces-1-140x140.jpg' %}" alt="Oscar Newman">
+          <h3>Vicky Mahajan</h3>
+          <p>From India</p>
+        </div>
+        <div class="testimonial-content">
+          <p>"A fantastic stay! The hospitality was outstanding, and the amenities were top-notch."</p>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="profile">
+          <img src="{% static 'images/faces-2-140x140.jpg' %}" alt="Emma Trueman">
+          <h3>Emma Trueman</h3>
+          <p>From Germany</p>
+        </div>
+        <div class="testimonial-content">
+          <p>"The rooms were spacious and luxurious. I will definitely come back again!"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% include 'footer.html' %}
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* Ensure Full-Screen View */
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif; /* Modern default font */
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* Slow Zoom Effect */
+        @keyframes slowZoom {
+            0% { background-size: 100%; }
+            50% { background-size: 110%; }
+            100% { background-size: 100%; }
+        }
+
+        /* Full-Screen Background */
+        .background-container {
+            position: relative;
+            height: 100vh;
+            background: url('{% static "images/about-3.jpg" %}') no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: slowZoom 10s infinite ease-in-out;
+        }
+
+        /* Dark overlay for better readability */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Slightly darker overlay */
+        }
+
+        /* Profile Card Styling */
+        .profile-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px; /* Increased padding for spaciousness */
+            border-radius: 15px; /* Softer corners */
+            text-align: center;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4); /* Deeper shadow */
+            max-width: 450px; /* Slightly wider */
+            width: 100%;
+            z-index: 2;
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+        }
+
+        /* Profile Picture */
+        .profile-card img {
+            border-radius: 50%;
+            width: 160px; /* Slightly larger */
+            height: 160px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 4px solid #007bff; /* Modern blue border */
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); /* Glow effect */
+        }
+
+        /* Navbar */
+        .navbar {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            background: rgb(255, 255, 255); /* Semi-transparent */
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 3;
+            transition: background 0.3s ease;
+        }
+
+       
+
+        .navbar a {
+            color: #000000;
+            font-size: 18px;
+            text-decoration: none;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            transition: color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            color: #007bff; /* Blue hover effect */
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3); /* Gradient */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px; /* Rounded */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px); /* Lift effect */
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5); /* Glow */
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #ff4d4d, #cc0000); /* Gradient */
+            color: white;
+            padding: 6px 12px; /* Smaller padding */
+            font-size: 14px; /* Smaller font size */
+            border-radius: 25px;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #ff6666, #e60000);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.5);
+        }
+
+        .btn-signup {
+            background: linear-gradient(135deg, #28a745, #218838); /* Green gradient */
+            color: white;
+            padding: 6px 12px; /* Smaller padding */
+            font-size: 14px; /* Smaller font size */
+            border-radius: 25px;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+
+        .btn-signup:hover {
+            background: linear-gradient(135deg, #34d058, #28a745);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.5);
+        }
+
+        /* Alert Styling */
+        .alert {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+        }
+
+        /* Text Styling */
+        .full-name {
+            font-size: 28px; /* Larger */
+            font-weight: 700;
+            font-family: 'Playfair Display', serif; /* Elegant font */
+            margin-bottom: 15px;
+            color: #1a1a1a; /* Darker for contrast */
+            letter-spacing: 1px; /* Spacing for sophistication */
+        }
+
+        .text-muted {
+            color: #555; /* Slightly darker gray */
+            margin-bottom: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300; /* Lighter weight */
+            font-size: 16px;
+        }
+
+        .username {
+            font-size: 18px;
+            font-weight: 600;
+            color: #007bff; /* Blue accent */
+            margin-bottom: 15px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .phone {
+            font-size: 16px;
+            font-weight: 400;
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, rgba(0, 123, 255, 0), #007bff, rgba(0, 123, 255, 0)); /* Gradient */
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-container">
+        <div class="overlay"></div>
+
+        <nav class="navbar">
+            <a href="{% url 'home' %}"> Paradise</a>
+            <div class="navbar-right">
+                <a href="{% url 'accounts:sign_up' %}" class="btn-signup" style="font-size: 12px; color: white;">Create Account</a>
+                <a href="{% url 'accounts:logout_user' %}" class="btn-logout" style="font-size: 12px; color: white;">Logout</a>
+            </div>
+        </nav>
+
+        <div class="profile-card">
+            {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture">
+            {% else %}
+                <img src="{% static 'images/placeholder.jpg' %}" alt="No Profile Picture">
+            {% endif %}
+            <p class="username">{{ profile.user.username }}</p>
+            <hr>
+            <h3 class="full-name">{{ profile.user.first_name }} {{ profile.user.last_name|default:'' }}</h3>
+            <p class="text-muted"><strong>Email:</strong> {{ profile.user.email }}</p>
+            <p class="phone"><strong>Phone:</strong> {{ profile.phone_number|default:"Not set" }}</p>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
