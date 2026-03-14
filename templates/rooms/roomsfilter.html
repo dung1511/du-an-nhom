@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Rooms</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <section class="rooms-section">
+        <h1>Available Rooms <br><br> <small style="color: rgb(80, 80, 80);">{{ check_in }} ←→ {{ check_out }} | {{ adults }} Guest{{ adults|pluralize }}</small></h1>
+        <div class="breadcrumb">
+            <span><a href="{% url 'home' %}">Home</a></span> > <span class="current">Available Rooms</span>
+        </div>
+    </section>
+
+    <div class="container">
+        {% for room in rooms %}
+        <div class="room-card">
+            <a href="{% url 'rooms:room_detail' room.id %}">
+                {% if room.image %}
+                    <img src="{{ room.image.url }}" alt="{{ room.name }}">
+                {% else %}
+                    <img src="{% static 'images/placeholder.jpg' %}" alt="No image available">
+                {% endif %}
+            </a>
+            <div class="room-details">
+                <div class="info">
+                    <span>Guests: {{ room.capacity }}</span>
+                    <span>Size: {{ room.get_size_display }}</span>
+                </div>
+                <h3><a href="{% url 'rooms:room_detail' room.id %}">{{ room.name }}</a></h3>
+                <p>{{ room.description|slice:":100"  }}</p>
+                <div class="price">
+                    <span>₹{{ room.price }} per night</span>
+                   
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No rooms available for the selected dates and number of guests.</p>
+        {% endfor %}
+    </div>
+
+    {% include 'footer.html' %}
+</body>
+</html>

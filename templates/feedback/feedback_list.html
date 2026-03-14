@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Feedback</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fc;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background: #eef5fc;
+            padding: 30px 0;
+        }
+        .header h2 {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .header p {
+            color: #666;
+            max-width: 700px;
+            margin: auto;
+        }
+        .feedback-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            padding: 40px 20px;
+        }
+        .feedback-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .feedback-card img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ddd;
+        }
+        .feedback-card h3 {
+            margin: 10px 0 5px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .feedback-card p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 14px;
+        }
+        .stars {
+            color: gold;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .feedback-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #333;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    {% include 'navbar.html' %}
+
+    <div class="header">
+        <h2>All Feedback</h2>
+        <p>We value your thoughts! Share your experience at Goan Paradise Retreat to help us serve you better.</p>
+
+        <div class="breadcrumb">
+            <span><a href="{% url 'home' %}">Home</a></span> &gt; 
+            <span class="current">Feedback</span>
+          </div>
+    </div>
+
+    <div class="feedback-container">
+        {% for feedback in feedbacks %}
+        <div class="feedback-card">
+            {% if feedback.user and feedback.user.profile.profile_picture %}
+                <img src="{{ feedback.user.profile.profile_picture.url }}" alt="{{ feedback.user.username }}'s Profile">
+            {% else %}
+                <img src="{% static 'images/profile_placeholder.jpg' %}" alt="Anonymous Profile">
+            {% endif %}
+            <h3>
+                {% if feedback.user %}
+                    {{ feedback.user.get_full_name }}
+                {% else %}
+                    {{ feedback.name }}
+                {% endif %}
+            </h3>
+            <p>
+                {% if feedback.user %}
+                    <span style="color: #131313;">{{ feedback.user.email }}</span>
+                {% else %}
+                    {{ feedback.email }}
+                {% endif %}
+            </p>
+            <p>From {{ feedback.country|default:'Not specified' }}</p>
+            
+            <div class="stars" style="color: #ffcc00;">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= feedback.rating %}
+                        ★
+                    {% else %}
+                        ☆
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="feedback-box">
+                <p>{{ feedback.comment }}</p>
+            </div>
+            <br>
+            <p><strong>Feedback for {{ feedback.room.name }}</strong></p>
+            <p><small>{{ feedback.created_at }}</small></p>
+        </div>
+        {% empty %}
+        <p>No feedback submitted yet.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Footer -->
+    {% include 'footer.html' %}
+</body>
+</html>
+
+
