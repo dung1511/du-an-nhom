@@ -1,0 +1,112 @@
+{% load static %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<nav style="position: fixed; top: 0px; left: 10px; display: flex; justify-content: space-between; align-items: center; padding: 0px 30px; background-color: white; z-index: 99; width: 100%; height: 80px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 30px 30px 30px 30px;">
+    <a href="{% url 'home' %}" style="text-decoration: none; font-size: 24px; font-weight: bold; color: #1a1a2e;">Paradise </a>
+    
+    <!-- Hamburger Icon -->
+    <button style="display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: #333;" class="hamburger" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Menu Items -->
+    <div class="menu" style="display: flex; gap: 35px;">
+        <a href="{% url 'home' %}" style="text-decoration: none; color: #333; font-size: 16px; font-weight: 600; transition: color 0.3s ease;">Home</a>
+        <a href="{% url 'rooms:room_list' %}" style="text-decoration: none; color: #333; font-size: 16px; font-weight: 600; transition: color 0.3s ease;">Rooms</a>
+        <a href="{% url 'blog:blog_list' %}" style="text-decoration: none; color: #333; font-size: 16px; font-weight: 600; transition: color 0.3s ease;">Blog</a>
+        <a href="{% url 'feedback:feedback_list' %}" style="text-decoration: none; color: #333; font-size: 16px; font-weight: 600; transition: color 0.3s ease;">Feedback</a>
+        <a href="{% url 'about' %}" style="text-decoration: none; color: #333; font-size: 16px; font-weight: 600; transition: color 0.3s ease;">About</a>
+        <a href="{% url 'contact:contact_us' %}" style="text-decoration: none; color: #333; font-size: 16px; font-weight: 600; transition: color 0.3s ease;">Contact</a>
+    </div>
+
+    <!-- Booking and Profile Section -->
+    <div style="display: flex; align-items: center; gap: 15px; margin-right: 50px;">
+        <a href="{% url 'rooms:my_bookings' %}">
+            <i class="fas fa-shopping-bag" style="font-size: 20px; color: #333; position: relative;">
+                <span style="position: absolute; top: -8px; right: -10px; background-color: #28A745; color: white; font-size: 12px; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; justify-content: center; align-items: center;">{{ booking_count }}</span>
+            </i>
+        </a>
+        <br>
+        {% if user.is_authenticated %}
+            <a href="{% url 'accounts:profile' %}">
+                <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'images/profile_placeholder.jpg' %}{% endif %}" alt="Profile Picture" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; transition: transform 0.2s ease;">
+            </a>
+        {% else %}
+            <a href="{% url 'accounts:login_page' %}">
+                <img src="{% static 'images/profile_placeholder.jpg' %}" alt="Login" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; transition: transform 0.2s ease;">
+            </a>
+        {% endif %}
+    </div>
+</nav>
+
+<style>
+    /* Hover Effects */
+    nav a:hover {
+        color: #007BFF;
+    }
+    nav button:hover {
+        background-color: #004FCC;
+    }
+    nav img:hover {
+        transform: scale(1.1);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hamburger {
+            display: block !important;
+        }
+        .menu {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .menu.active {
+            display: flex;
+        }
+        .menu a {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        nav {
+            padding: 10px !important;
+        }
+        nav button {
+            padding: 8px 15px !important;
+            font-size: 14px !important;
+        }
+        nav i {
+            font-size: 18px !important;
+        }
+        nav img {
+            width: 35px !important;
+            height: 35px !important;
+        }
+    }
+
+    /* Prevent content overlap */
+    body {
+        padding-top: 80px !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const hamburger = document.querySelector('.hamburger');
+        const menu = document.querySelector('.menu');
+
+        hamburger.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+    });
+</script>
+

@@ -1,0 +1,60 @@
+.footer {
+    background-color: #021d37;
+    padding: 20px 0;
+}
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0 20px;
+}
+.footer-brand {
+    flex: 1;
+}
+.footer-brand h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.footer-brand p {
+    font-size: 14px;
+    color: #0c0d0e;
+}
+.social-icons {
+    display: flex;
+    gap: 10px;
+}
+.social-icons a {
+    color: #333;
+    font-size: 20px;
+}
+.footer-menu, .footer-meet {
+    flex: 1;
+}
+.footer-menu ul, .footer-meet ul {
+    list-style: none;
+    padding: 0;
+}
+.footer-menu ul li, .footer-meet ul li {
+    margin-bottom: 10px;
+}
+.footer-menu ul li a, .footer-meet ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+}
+.footer-menu ul li a:hover, .footer-meet ul li a:hover {
+    color: #007BFF;
+}
+.footer-instagram {
+    flex: 1;
+}
+.footer-instagram .instagram-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.footer-instagram .instagram-gallery img {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+}
