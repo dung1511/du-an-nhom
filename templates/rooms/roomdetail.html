@@ -328,7 +328,7 @@
                                         </section>
                                         <!-- description ENDD -->
 
-                                        <!-- Amenity features Start  -->
+                                        {% comment %} <!-- Amenity features Start  -->
                                         <section
                                             class="elementor-section elementor-inner-section elementor-element elementor-element-32d018e elementor-section-full_width elementor-section-height-default elementor-section-height-default"
                                             data-id="32d018e" data-element_type="section">
@@ -501,10 +501,10 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </section>
+                                        </section> {% endcomment %}
                                         <!-- Amenity features end -->
 
-                                        <!-- Around the Hotel START -->
+                                        {% comment %} <!-- Around the Hotel START -->
                                         <section
                                             class="elementor-section elementor-inner-section elementor-element elementor-element-f922a78 elementor-section-full_width elementor-section-height-default elementor-section-height-default"
                                             data-id="f922a78" data-element_type="section">
@@ -595,7 +595,7 @@
                                                                             </div> <!-- service card end -->
                                                                         </div>
                                                                     </div>
-                                                                </section>
+                                                                </section> {% endcomment %}
                                                                 <!-- services end -->
                                                             </div>
                                                         </div>
@@ -609,7 +609,7 @@
 
 
 
-                                        <!-- Room Feedback START -->
+                                        {% comment %} <!-- Room Feedback START -->
                                         <section class="rooms-section">
                                             <h2>Submit Your Feedback</h2>
                                             <p class="feedback-quote">"Your feedback helps us improve!"</p>
@@ -776,7 +776,7 @@
                                             </div>
                                         </section>
                                         <!-- Room Feedback END -->
-
+ {% endcomment %}
 
 
 
@@ -928,7 +928,8 @@
                                                                                     name="check_in"
                                                                                     class="mphb-datepick"
                                                                                     autocomplete="off"
-                                                                                    inputmode="none" />
+                                                                                    inputmode="none"
+                                                                                    min="{% now "Y-m-d" %}" />
                                                                             </p>
                                                                             <p class="mphb_sc_search-check-out-date">
                                                                                 <label for="check_out">Check-out <abbr
@@ -948,8 +949,10 @@
                                                                                 <select id="adults" name="adults"
                                                                                     required>
                                                                                     {% for i in "123456" %}
-                                                                                    <option value="{{ i }}">{{ i }}
-                                                                                        guest{{ i|pluralize }}</option>
+                                                                                        {% if forloop.counter <= room.capacity %}
+                                                                                            <option value="{{ forloop.counter }}">{{ forloop.counter }}
+                                                                                                guest{{ forloop.counter|pluralize }}</option>
+                                                                                        {% endif %}
                                                                                     {% endfor %}
                                                                                 </select>
                                                                             </p>
