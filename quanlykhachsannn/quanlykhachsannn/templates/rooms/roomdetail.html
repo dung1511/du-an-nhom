@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ room.name }} - Booking</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+    <link media="all" href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_86433fa97a80a986cad08803f18701d2.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'room_style.css' %}">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="mphb_room_type-template single single-mphb_room_type theme-kinsley">
+
+    {% include 'navbar.html' %}
+
+    <div class="knsl-app">
+        <div id="container">
+            <div id="content" role="main">
+                <div class="post-17 mphb_room_type">
+                    <div class="elementor elementor-17">
+                        
+                        <section class="elementor-section elementor-top-section elementor-section-full_width">
+                            <div class="elementor-container elementor-column-gap-no">
+                                <div class="elementor-column elementor-col-100">
+                                    <div class="elementor-widget-wrap elementor-element-populated">
+                                        <section class="knsl-banner-simple knsl-transition-bottom">
+                                            <div class="container">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <div class="knsl-center knsl-title-frame">
+                                                            <h1 class="knsl-title--h knsl-mb-20 knsl-h1-inner">
+                                                                <span>{{ room.name }}</span>
+                                                            </h1>
+                                                            <ul class="knsl-breadcrumbs">
+                                                                <li><a href="{% url 'home' %}">Home</a></li>
+                                                                <li><a href="{% url 'rooms:room_list' %}">Rooms</a></li>
+                                                                <li class="tst-active"><a>{{ room.name }}</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="elementor-section elementor-top-section elementor-section-boxed">
+                            <div class="elementor-container elementor-column-gap-default">
+                                <div class="elementor-column elementor-col-100">
+                                    <div class="elementor-widget-wrap elementor-element-populated">
+                                        
+                                        <div class="knsl-room-detail-slider-frame knsl-mb-60">
+                                            <div class="swiper-container knsl-rd-slider-2 knsl-mb-10">
+                                                <div class="swiper-wrapper">
+                                                    {% for image in room.images.all %}
+                                                    <div class="swiper-slide">
+                                                        <a href="{{ image.image.url }}" class="knsl-room-detail-photo-lg">
+                                                            <img src="{{ image.image.url }}" alt="{{ room.name }}">
+                                                        </a>
+                                                    </div>
+                                                    {% empty %}
+                                                    <div class="swiper-slide">
+                                                        <img src="{% if room.image %}{{ room.image.url }}{% else %}/static/images/placeholder.jpg{% endif %}" alt="Placeholder">
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <section class="knsl-mb-60">
+                                            <h3 class="knsl-mb-40"><span>Welcome to {{ room.name }}!</span></h3>
+                                            <p>{{ room.description }}</p>
+                                            {% if room.services.all %}
+                                            <div class="room-amenities" style="margin-top: 30px; display: flex; gap: 20px; flex-wrap: wrap;">
+                                                {% for service in room.services.all %}
+                                                <div class="amenity-item" style="text-align: center;">
+                                                    <i class="{{ service.icon }}" style="color: #be9874; font-size: 24px; display: block;"></i>
+                                                    <span style="font-size: 14px; color: #666;">{{ service.name }}</span>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %} 
+                                        </section>
+
+                                        <section class="elementor-section elementor-inner-section">
+                                            <div class="knsl-sticky" data-margin-top="100">
+                                                <div class="mphb_sc_search-wrapper knsl-book-form">
+                                                    <h3>Book Room</h3>
+                                                    <form method="POST" id="bookingForm" class="mphb_sc_search-form" action="{% url 'rooms:room_booking' %}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="room_id" value="{{ room.id }}">
+                                                        
+                                                        <p class="mphb_sc_search-check-in-date">
+                                                            <label for="check_in">Check-in *</label>
+                                                            <input id="check_in" name="check_in" required type="date" class="mphb-datepick" />
+                                                        </p>
+                                                        
+                                                        <p class="mphb_sc_search-check-out-date">
+                                                            <label for="check_out">Check-out *</label>
+                                                            <input id="check_out" name="check_out" required type="date" class="mphb-datepick" />
+                                                        </p>
+                                                        
+                                                        <p class="mphb_sc_search-submit-button-wrapper">
+                                                            <button type="submit" class="knsl-btn-custom">Book Now</button>
+                                                        </p>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </section>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include 'footer.html' %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkInInput = document.getElementById('check_in');
+            const checkOutInput = document.getElementById('check_out');
+            const bookingForm = document.getElementById('bookingForm');
+
+            const today = new Date().toISOString().split('T')[0];
+            checkInInput.setAttribute('min', today);
+            checkOutInput.setAttribute('min', today);
+
+            checkInInput.addEventListener('change', function() {
+                if (this.value) {
+                    checkOutInput.setAttribute('min', this.value);
+                }
+            });
+
+            bookingForm.addEventListener('submit', function(e) {
+                const checkInDate = new Date(checkInInput.value);
+                const checkOutDate = new Date(checkOutInput.value);
+                const now = new Date();
+                now.setHours(0,0,0,0);
+
+                let errorText = "";
+
+                if (checkInDate < now) {
+                    errorText = "Bạn không thể đặt phòng ở quá khứ!";
+                } else if (checkOutDate <= checkInDate) {
+                    errorText = "Ngày trả phòng phải sau ngày nhận phòng!";
+                }
+
+                if (errorText) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Chú ý',
+                        text: errorText,
+                        confirmButtonColor: '#be9874',
+                        background: '#1a1a1a',
+                        color: '#fff'
+                    });
+                }
+            });
+
+            {% if messages %}
+                {% for message in messages %}
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Thông báo',
+                    text: "{{ message }}",
+                    confirmButtonColor: '#be9874',
+                    background: '#1a1a1a',
+                    color: '#fff'
+                });
+                {% endfor %}
+            {% endif %}
+        });
+    </script>
+</body>
+</html>

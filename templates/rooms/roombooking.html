@@ -15,11 +15,219 @@
         rel="stylesheet">
     <title>Booking Check-in</title>
     {% load static %}
+<<<<<<< HEAD
+=======
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+>>>>>>> f22798a4e339a890b18717753c45a9181ca0757b
     <meta name="robots" content="max-image-preview:large">
     <style>
         img:is([sizes="auto" i], [sizes^="auto," i]) {
             contain-intrinsic-size: 3000px 1500px
         }
+<<<<<<< HEAD
+=======
+
+        /* Booking Confirmation Page Styling */
+        body {
+            background: linear-gradient(135deg, #f3f9ff 0%, #ffffff 60%);
+            color: #1f1f1f;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .booking-page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 2.5rem 1rem 4rem;
+        }
+
+        .booking-card {
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .booking-card-header {
+            padding: 2rem 2.5rem;
+            background: linear-gradient(90deg, #0d6efd 0%, #3b82f6 100%);
+            color: white;
+        }
+
+        .booking-card-header h1 {
+            margin: 0;
+            font-size: 2.25rem;
+            letter-spacing: -0.01em;
+        }
+
+        .booking-card-header .knsl-breadcrumbs {
+            margin-top: 0.75rem;
+            gap: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .booking-card-header .knsl-breadcrumbs li {
+            list-style: none;
+        }
+
+        .booking-card-header .knsl-breadcrumbs li a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+        }
+
+        .booking-card-header .knsl-breadcrumbs li.tst-active a {
+            color: rgba(255, 255, 255, 0.96);
+            font-weight: 600;
+        }
+
+        .booking-content,
+        .mphb_sc_checkout-wrapper {
+            display: grid;
+            gap: 2.25rem;
+            padding: 2.5rem;
+        }
+
+        .mphb-booking-details,
+        .mphb-customer-details {
+            background: rgba(246, 250, 255, 0.9);
+            border-radius: 14px;
+            padding: 1.75rem;
+            border: 1px solid rgba(13, 110, 253, 0.15);
+        }
+
+        .mphb-customer-details input,
+        .mphb-customer-details select,
+        .mphb-customer-details textarea {
+            width: 100%;
+            padding: 0.75rem 0.9rem;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            background: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+        }
+
+        .mphb-booking-details-title,
+        .mphb-customer-details-title,
+        .mphb-gateway-chooser-title {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            letter-spacing: -0.01em;
+            color: #0d6efd;
+        }
+
+        .mphb-price-breakdown {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+        }
+
+        .mphb-price-breakdown td,
+        .mphb-price-breakdown th {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid rgba(13, 110, 253, 0.12);
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .mphb-price-breakdown th {
+            background: rgba(13, 110, 253, 0.05);
+            color: #0b2f56;
+        }
+
+        .mphb-price-breakdown .mphb-price {
+            font-weight: 600;
+            color: #0d6efd;
+        }
+
+        .mphb-price-breakdown-total td,
+        .mphb-price-breakdown-total th {
+            font-weight: 700;
+        }
+
+        .mphb-total-price {
+            text-align: right;
+            margin: 1.75rem 0 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .mphb_sc_checkout-submit-wrapper input[type="submit"] {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            font-size: 1.05rem;
+            border-radius: 999px;
+            border: none;
+            background: #0d6efd;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .mphb_sc_checkout-submit-wrapper input[type="submit"]:hover {
+            background: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .mphb-login-form-wrap {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .mphb-login-form-wrap a {
+            color: #0d6efd;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .mphb-login-form-wrap a:hover {
+            text-decoration: underline;
+        }
+
+        .mphb-required-fields-tip {
+            font-size: 0.9rem;
+            color: rgba(0, 0, 0, 0.6);
+            margin-bottom: 1rem;
+        }
+
+        .error {
+            color: #c92a2a;
+            background: rgba(255, 230, 230, 0.9);
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+
+        .success {
+            color: #0f5132;
+            background: rgba(220, 255, 228, 0.9);
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+
+        @media (min-width: 900px) {
+            .booking-content,
+            .mphb_sc_checkout-wrapper {
+                grid-template-columns: 1fr 0.85fr;
+                align-items: start;
+            }
+
+            .mphb-customer-details {
+                position: sticky;
+                top: 110px;
+            }
+        }
+>>>>>>> f22798a4e339a890b18717753c45a9181ca0757b
     </style>
     <link rel="dns-prefetch" href="//bslthemes.com">
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -162,6 +370,16 @@
         content="https://kinsley.bslthemes.com/wp-content/uploads/2021/11/cropped-logo-270x270.png">
     <link href="https://kinsley.bslthemes.com/booking-confirmation/#" rel="prefetch">
     <link href="https://kinsley.bslthemes.com/accommodation/deluxe-room/" rel="prefetch">
+<<<<<<< HEAD
+=======
+    <style>
+        /* Enforce booking page background & typography overrides */
+        body {
+            background: linear-gradient(135deg, #f3f9ff 0%, #ffffff 60%) !important;
+            color: #1f1f1f !important;
+        }
+    </style>
+>>>>>>> f22798a4e339a890b18717753c45a9181ca0757b
 </head>
 
 <body
@@ -169,7 +387,13 @@
     data-elementor-device-mode="desktop">
     {% include 'navbar.html' %}
     <div class="knsl-app">
+<<<<<<< HEAD
         <div id="post-9" class="post-9 page type-page status-publish hentry">
+=======
+        <div class="booking-page">
+            <div class="booking-card">
+                <div id="post-9" class="post-9 page type-page status-publish hentry">
+>>>>>>> f22798a4e339a890b18717753c45a9181ca0757b
             <div data-elementor-type="wp-page" data-elementor-id="9" class="elementor elementor-9">
                 <!-- Banner -->
                 <section
@@ -183,7 +407,11 @@
                                     data-id="59e1e5d" data-element_type="widget"
                                     data-widget_type="kinsley-intro.default">
                                     <div class="elementor-widget-container">
+<<<<<<< HEAD
                                         <section class="knsl-banner-simple knsl-transition-bottom">
+=======
+                                        <section class="knsl-banner-simple knsl-transition-bottom booking-card-header">
+>>>>>>> f22798a4e339a890b18717753c45a9181ca0757b
                                             <noscript><img decoding="async"
                                                     src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg"
                                                     class="knsl-deco-left" alt="palm" /></noscript>
@@ -438,6 +666,11 @@
                 </section>
             </div>
         </div>
+<<<<<<< HEAD
+=======
+            </div>
+        </div>
+>>>>>>> f22798a4e339a890b18717753c45a9181ca0757b
     </div>
     {% include 'footer.html' %}
 </body>

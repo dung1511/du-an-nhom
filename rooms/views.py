@@ -5,7 +5,11 @@ from .forms import BookingForm
 from feedback.forms import FeedbackForm
 from blog.models import Blog
 from feedback.models import Feedback
+<<<<<<< HEAD
 from datetime import date, datetime
+=======
+from datetime import date, datetime, timedelta
+>>>>>>> f22798a4e339a890b18717753c45a9181ca0757b
 from decimal import Decimal
 from django.contrib import messages
 from django.db import transaction
@@ -239,6 +243,7 @@ def room_booking(request):
                 check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
                 check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
                 adults = int(adults)
+<<<<<<< HEAD
                 num_nights = (check_out_date - check_in_date).days
                 if num_nights <= 0:
                     raise ValueError
@@ -246,6 +251,25 @@ def room_booking(request):
                 messages.error(request, 'Invalid booking data.')
                 return redirect('rooms:room_list')
 
+=======
+            except (ValueError, TypeError, Room.DoesNotExist):
+                messages.error(request, 'Invalid booking data.')
+                return redirect('rooms:room_list')
+
+            today = date.today()
+            if check_in_date < today:
+                messages.error(request, 'Check-in date cannot be in the past.')
+                return redirect('rooms:room_detail', room_id=room.id)
+            if check_out_date <= check_in_date:
+                messages.error(request, 'Check-out date must be after check-in date.')
+                return redirect('rooms:room_detail', room_id=room.id)
+            if adults <= 0 or adults > room.capacity:
+                messages.error(request, f'Number of guests must be between 1 and {room.capacity}.')
+                return redirect('rooms:room_detail', room_id=room.id)
+
+            num_nights = (check_out_date - check_in_date).days
+
+>>>>>>> f22798a4e339a890b18717753c45a9181ca0757b
             subtotal = room.price * num_nights
             gst = subtotal * Decimal('0.18')
             total = subtotal + gst
@@ -291,4 +315,98 @@ def home(request):
     return render(request, 'index.html', context)
 
 def about_page(request):
+<<<<<<< HEAD
     return render(request, 'about.html')
+=======
+    return render(request, 'about.html')
+
+
+@login_required
+def book_room(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+
+    # default booking values (today/tomorrow, 1 guest)
+    today = date.today()
+    default_check_in = today
+    default_check_out = today + timedelta(days=1)
+    default_adults = 1
+
+    # Always have these set for context, even on GET
+    check_in = default_check_in.strftime('%Y-%m-%d')
+    check_out = default_check_out.strftime('%Y-%m-%d')
+    adults = default_adults
+
+    if request.method == "POST":
+        check_in = request.POST.get('check_in') or check_in
+        check_out = request.POST.get('check_out') or check_out
+        adults = request.POST.get('adults') or adults
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            try:
+                check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
+                check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
+                adults = int(adults)
+            except (ValueError, TypeError):
+                messages.error(request, 'Invalid booking dates or guest count.')
+                return redirect('rooms:room_detail', room_id=room_id)
+
+            num_nights = (check_out_date - check_in_date).days
+            if num_nights <= 0:
+                messages.error(request, 'Check-out date must be after check-in date.')
+                return redirect('rooms:room_detail', room_id=room_id)
+
+            subtotal = room.price * num_nights
+            gst = subtotal * Decimal('0.18')
+            total = subtotal + gst
+
+            if not room.is_available(check_in_date, check_out_date):
+                messages.error(request, 'The room is no longer available.')
+                return redirect('rooms:room_detail', room_id=room_id)
+
+            reservation = form.save(commit=False)
+            reservation.room = room
+            reservation.user = request.user
+            reservation.check_in_date = check_in_date
+            reservation.check_out_date = check_out_date
+            reservation.adults = adults
+            reservation.subtotal = subtotal
+            reservation.gst = gst
+            reservation.total = total
+            reservation.save()
+
+            messages.success(request, 'Booking successful! Welcome!')
+            return redirect('rooms:booking_confirmation', reservation_id=reservation.id)
+
+    else:
+        form = BookingForm()
+
+    # Build context for booking page (used for rendering the form and totals)
+    try:
+        check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
+        check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
+        adults = int(adults)
+    except (ValueError, TypeError):
+        check_in_date = default_check_in
+        check_out_date = default_check_out
+        adults = default_adults
+
+    num_nights = max(1, (check_out_date - check_in_date).days)
+    subtotal = room.price * num_nights
+    gst = subtotal * Decimal('0.18')
+    total = subtotal + gst
+
+    context = {
+        'form': form,
+        'room': room,
+        'check_in': check_in_date.strftime('%Y-%m-%d'),
+        'check_out': check_out_date.strftime('%Y-%m-%d'),
+        'adults': adults,
+        'num_nights': num_nights,
+        'subtotal': subtotal,
+        'gst': gst,
+        'total': total,
+        'coupon_code': '',
+    }
+
+    return render(request, 'rooms/roombooking.html', context)
+>>>>>>> f22798a4e339a890b18717753c45a9181ca0757b
