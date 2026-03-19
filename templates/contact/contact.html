@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact </title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <!-- Navbar -->
+    {% include 'navbar.html' %}
+
+    <!-- Main Content -->
+    <section class="rooms-section">
+        <h1>Get in Touch</h1>
+        <p style="font-size: 1.2 rem; color: #444;">
+            Have questions or need assistance planning your stay? Our team is here to help! Reach out to us through the form below or give us a call. We’re always delighted to connect with future guests and ensure your experience is seamless and memorable.
+        </p>
+        <div class="breadcrumb">
+            <span><a href="{% url 'home' %}">Home</a></span> > <span class="current">Contact</span>
+        </div>
+    </section>
+    <br>
+
+    <!-- Contact Info -->
+    <section class="contact-info">
+        <div class="info-box">
+            <div class="icon">
+                <img src="{% static 'images/f-9.png' %}" alt="Location Icon">
+            </div>
+            <h3>Welcome</h3>
+            <p>Hotel Paradise Retreat, Palolem Beach, Canacona, South Goa 403702, India.</p>
+        </div>
+        <div class="info-box">
+            <div class="icon">
+                <img src="{% static 'images/f-10.png' %}" alt="Phone Icon">
+            </div>
+            <h3>Call</h3>
+            <p>+91666444222</p>
+        </div>
+        <div class="info-box">
+            <div class="icon">
+                <img src="{% static 'images/f-11.png' %}" alt="Mail Icon">
+            </div>
+            <h3>Write</h3>
+            <p>hotelparadise@goa.com</p>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="rooms-section">
+        <h2> Hotel Paradise is Waiting for You!</h2>
+        <p>
+            Meet our dedicated team, passionate about delivering exceptional service and ensuring your stay is filled with Goan warmth and comfort.
+        </p>
+        <br>
+        <a href="{% url 'about' %}" class="btn">More About Us</a>
+    </section>
+
+    <div class="contact-form-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form class="contact-form" method="POST" action="{% url 'contact:contact_us' %}">
+            {% csrf_token %}
+            <div class="form-row">
+                {{ form.name }}
+                {{ form.email }}
+            </div>
+            <br>
+            {{ form.message }}
+            <br><br>
+            <button type="submit">Send</button>
+            <br>
+            <p class="disclaimer">*We promise not to disclose your personal information to third parties.</p>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    {% include 'footer.html' %}
+</body>
+</html>
