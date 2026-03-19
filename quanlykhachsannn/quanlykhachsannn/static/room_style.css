@@ -1,0 +1,128 @@
+/* Tông màu chủ đạo: Vàng đồng (#be9874) */
+
+/* 1. Tổng thể Form Đặt Phòng */
+.knsl-book-form {
+    background: #ffffff !important;
+    padding: 35px !important;
+    border-radius: 15px !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #f1f1f1 !important;
+    position: relative;
+}
+
+.knsl-book-form h3 {
+    font-family: 'Playfair Display', serif;
+    color: #1a1a1a;
+    font-size: 26px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+.knsl-book-form h3::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 2px;
+    background: #be9874;
+    margin: 10px auto 0;
+}
+
+/* 2. Tùy chỉnh các ô Input Date */
+.mphb-datepick {
+    width: 100%;
+    padding: 12px 15px !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    font-size: 15px !important;
+    color: #444 !important;
+    background-color: #fcfcfc !important;
+    transition: all 0.3s ease !important;
+    margin-top: 8px !important;
+}
+
+.mphb-datepick:focus {
+    border-color: #be9874 !important;
+    background-color: #fff !important;
+    box-shadow: 0 0 10px rgba(190, 152, 116, 0.15) !important;
+    outline: none !important;
+}
+
+/* 3. Nút đặt phòng "Book Now" */
+.knsl-btn-custom {
+    width: 100%;
+    background: #be9874 !important;
+    color: #fff !important;
+    padding: 16px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    cursor: pointer !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin-top: 15px;
+}
+
+.knsl-btn-custom:hover {
+    background: #1a1a1a !important;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 4. Label và văn bản */
+.knsl-book-form label {
+    font-weight: 600;
+    color: #333;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 5. Tinh chỉnh Slider ảnh */
+.knsl-room-detail-photo-lg img {
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* Style cho danh sách tiện ích phòng */
+.room-amenities-container {
+    margin-top: 40px;
+    padding: 20px;
+    background: #fdfdfd;
+    border-radius: 10px;
+    border: 1px dashed #be9874;
+}
+
+.amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.amenity-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+.amenity-item i {
+    font-size: 20px;
+    color: #be9874; /* Màu vàng đồng chủ đạo */
+    width: 25px;
+    text-align: center;
+}
+
+.amenity-item span {
+    font-size: 15px;
+    color: #444;
+    font-weight: 500;
+}
+
+.amenity-item:hover {
+    transform: translateX(5px);
+}

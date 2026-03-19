@@ -1,15 +1,27 @@
 from django.contrib import admin
-from .models import Room, RoomCategory, RoomImage, Reservation, Coupon
+from .models import Room, RoomCategory, RoomImage, Reservation, Coupon, Service
 
+# Quản lý ảnh phòng dạng Inline (hiển thị ngay trong trang chỉnh sửa Room)
 class RoomImageInline(admin.TabularInline):
     model = RoomImage
     extra = 1
     fields = ('image',)
 
+# 1. Quản lý Tiện ích (MỚI)
+@admin.register(Service)
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'icon')
+    search_fields = ('name',)
+
+# 2. Quản lý Phòng (Cập nhật filter và Inline)
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'capacity', 'size', 'price')
-    list_filter = ('category', 'name')
+    list_filter = ('category', 'size', 'services') # Thêm lọc theo tiện ích
+    search_fields = ('name', 'description')
+    inlines = [RoomImageInline] # Giúp bạn thêm nhiều ảnh ngay tại trang sửa phòng
+    # Hiển thị chọn Service dạng ngang cho dễ nhìn (tùy chọn)
+    filter_horizontal = ('services',) 
 
 @admin.register(RoomCategory)
 class RoomCategoryAdmin(admin.ModelAdmin):

@@ -30,11 +30,13 @@ def room_detail(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     similar_rooms = Room.objects.exclude(id=room_id)
     feedback_form = FeedbackForm(user=request.user)
+    adults_options = list(range(1, room.capacity + 1))
     
     context = {
         'room': room,
         'similar_rooms': similar_rooms,
         'feedback_form': feedback_form,
+        'adults_options': adults_options,
     }
     return render(request, 'rooms/roomdetail.html', context)
 
@@ -143,13 +145,16 @@ def room_booking(request):
                 room = Room.objects.get(id=room_id)
                 check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
                 check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
-                adults = int(adults)
+                adults = room.capacity
+                today = date.today()
+                if check_in_date < today or check_out_date <= today:
+                    raise ValueError
                 num_nights = (check_out_date - check_in_date).days
                 if num_nights <= 0:
                     raise ValueError
             except (ValueError, Room.DoesNotExist):
-                messages.error(request, 'Invalid booking data.')
-                return redirect('rooms:room_list')
+                messages.error(request, 'Ngày đặt phòng không hợp lệ. Vui lòng chọn lại ngày (từ hôm nay trở đi).')
+                return redirect('rooms:room_detail', room_id=room_id)
 
             subtotal = room.price * num_nights
             gst = subtotal * Decimal('0.18')
@@ -190,6 +195,9 @@ def room_booking(request):
                 }
                 return render(request, 'rooms/roombooking.html', context)
             elif 'book_now' in request.POST:
+                if adults > room.capacity:
+                    messages.error(request, f'Number of guests ({adults}) exceeds room capacity ({room.capacity}).')
+                    return redirect('rooms:room_detail', room_id=room.id)
                 if form.is_valid():
                     with transaction.atomic():
                         if not room.is_available(check_in_date, check_out_date):
@@ -238,13 +246,16 @@ def room_booking(request):
                 room = Room.objects.get(id=room_id)
                 check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
                 check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
-                adults = int(adults)
+                adults = room.capacity
+                today = date.today()
+                if check_in_date < today or check_out_date <= today:
+                    raise ValueError
                 num_nights = (check_out_date - check_in_date).days
                 if num_nights <= 0:
                     raise ValueError
             except (ValueError, Room.DoesNotExist):
-                messages.error(request, 'Invalid booking data.')
-                return redirect('rooms:room_list')
+                messages.error(request, 'Ngày đặt phòng không hợp lệ. Vui lòng chọn lại ngày (từ hôm nay trở đi).')
+                return redirect('rooms:room_detail', room_id=room_id)
 
             subtotal = room.price * num_nights
             gst = subtotal * Decimal('0.18')
@@ -292,3 +303,31 @@ def home(request):
 
 def about_page(request):
     return render(request, 'about.html')
+
+
+@login_required
+def book_room(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+
+    if request.method == "POST":
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            reservation = form.save(commit=False)
+            reservation.room = room
+            reservation.user = request.user
+            reservation.check_in_date = date.today()
+            reservation.check_out_date = date.today()
+            reservation.adults = 1
+            reservation.save()
+
+            return redirect('booking_confirmation', reservation_id=reservation.id)
+
+    else:
+        form = BookingForm()
+
+    context = {
+        'form': form,
+        'room': room
+    }
+
+    return render(request, 'rooms/roombooking.html', context)

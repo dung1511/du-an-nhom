@@ -33,7 +33,7 @@ def sign_up(request):
         user.save()
 
         messages.success(request, 'Account created successfully', extra_tags='success')
-        return redirect('accounts:sign_up')  # Redirect to login after signup
+        return redirect('accounts:login_page')  # Redirect to login after signup
 
     return render(request, 'accounts_templates/signup.html')
 
