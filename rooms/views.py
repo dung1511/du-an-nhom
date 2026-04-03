@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from urllib3 import request
 from .models import Room, RoomCategory, Reservation , Coupon
 from .forms import BookingForm
 from feedback.forms import FeedbackForm
@@ -65,52 +66,53 @@ def room_list_filtered(request):
         }
     return render(request, 'rooms/roomsfilter.html', context)
 
-
+@login_required
 def room_search(request):
     if request.method == 'GET':
         room_id = request.GET.get('room_id')
         check_in = request.GET.get('check_in')
         check_out = request.GET.get('check_out')
         adults = request.GET.get('adults')
+        children = request.GET.get('children', 0)
 
-        # Validate inputs
+        # Kiểm tra bắt buộc nhập
+        if not check_in or not check_out or not adults:
+            messages.error(request, 'Vui lòng chọn ngày nhận phòng, ngày trả phòng và số người lớn.')
+            return redirect('rooms:room_detail', room_id=room_id)
+
         try:
             check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
             check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
             adults = int(adults)
+            children = int(children)
+            total_guests = adults + children
+
             if adults <= 0:
-                raise ValueError("Number of adults must be positive.")
+                raise ValueError
+
         except (ValueError, TypeError):
-            messages.error(request, 'Invalid date or adults input.')
+            messages.error(request, 'Thông tin ngày hoặc số lượng khách không hợp lệ.')
             return redirect('rooms:room_detail', room_id=room_id)
 
         today = date.today()
         if check_in_date < today:
-            messages.error(request, 'Check-in date cannot be in the past.')
-            return redirect('rooms:room_detail', room_id=room_id)
-        if check_out_date <= check_in_date:
-            messages.error(request, 'Check-out date must be after check-in date.')
+            messages.error(request, 'Ngày check-in không được nhỏ hơn hôm nay.')
             return redirect('rooms:room_detail', room_id=room_id)
 
-        # Get the selected room
+        if check_out_date <= check_in_date:
+            messages.error(request, 'Ngày check-out phải sau ngày check-in.')
+            return redirect('rooms:room_detail', room_id=room_id)
+
         selected_room = get_object_or_404(Room, id=room_id)
 
-        # Check capacity and availability
-        if adults > selected_room.capacity:
+        if total_guests > selected_room.capacity:
             is_available = False
             capacity_exceeded = True
         else:
             capacity_exceeded = False
-            # Check for overlapping reservations
-            overlapping_reservations = Reservation.objects.filter(
-                room=selected_room,
-                check_in_date__lt=check_out_date,
-                check_out_date__gt=check_in_date
-            ).exists()
-            is_available = not overlapping_reservations
+            is_available = selected_room.is_available(check_in_date, check_out_date)
 
-        # Get all available rooms for the date range and adults
-        available_rooms = Room.objects.available_rooms(check_in_date, check_out_date, adults)
+        available_rooms = Room.objects.available_rooms(check_in_date, check_out_date, total_guests)
         other_available_rooms = available_rooms.exclude(id=selected_room.id)
 
         context = {
@@ -121,164 +123,138 @@ def room_search(request):
             'check_in': check_in,
             'check_out': check_out,
             'adults': adults,
+            'children': children,
+            'total_guests': total_guests,
         }
         return render(request, 'rooms/roomsearch.html', context)
-    else:
-        return redirect('rooms:room_list')
+
+    return redirect('rooms:room_list')
 
 @login_required
 def room_booking(request):
-    if request.method == 'POST':
-        if 'first_name' in request.POST:
-            # Processing the booking form submission
-            form = BookingForm(request.POST)
-            room_id = request.POST.get('room_id')
-            check_in = request.POST.get('check_in')
-            check_out = request.POST.get('check_out')
-            adults = request.POST.get('adults')
-            coupon_code = request.POST.get('coupon_code', '')
-            payment_method = request.POST.get('mphb_gateway_id')  
+    # Chỉ chấp nhận phương thức POST (khi khách nhấn từ trang Detail hoặc trang Booking)
+    if request.method != 'POST':
+        return redirect('rooms:room_list')
 
-            try:
-                room = Room.objects.get(id=room_id)
-                check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
-                check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
-                adults = int(adults)
-                num_nights = (check_out_date - check_in_date).days
-                if num_nights <= 0:
-                    raise ValueError
-            except (ValueError, Room.DoesNotExist):
-                messages.error(request, 'Invalid booking data.')
-                return redirect('rooms:room_list')
+    # 1. LẤY DỮ LIỆU TỪ POST
+    room_id = request.POST.get('room_id')
+    print(f"DEBUG: Check-in từ form: {request.POST.get('check_in')}")
+    check_in = request.POST.get('check_in')
+    check_out = request.POST.get('check_out')
+    adults = int(request.POST.get('adults', 1))
+    children = int(request.POST.get('children', 0))
+    coupon_code = request.POST.get('coupon_code', '').strip()
+    payment_method = request.POST.get('mphb_gateway_id', 'pay_on_arrival')
 
-            subtotal = room.price * num_nights
-            gst = subtotal * Decimal('0.18')
-            total = subtotal + gst
-            discount = Decimal('0.00')
+    # 2. KIỂM TRA DỮ LIỆU CƠ BẢN (TRY-EXCEPT)
+    try:
+        room = get_object_or_404(Room, id=room_id)
+        check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
+        check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
+        
+        if check_in_date < date.today():
+            messages.error(request, 'Check-in date cannot be in the past.')
+            return redirect('rooms:room_detail', room_id=room.id)
+            
+        if check_out_date <= check_in_date:
+            messages.error(request, 'Check-out date must be after check-in date.')
+            return redirect('rooms:room_detail', room_id=room.id)
 
-            # Handle coupon code
-            if coupon_code:
-                try:
-                    coupon = Coupon.objects.get(
-                        code=coupon_code,
-                        active=True,
-                        valid_from__lte=check_in_date,
-                        valid_to__gte=check_out_date
-                    )
-                    discount = (subtotal * coupon.discount_percentage) / Decimal('100')
-                    total -= discount
-                    if 'apply_coupon' in request.POST:
-                        messages.success(request, 'Coupon applied successfully!')
-                except Coupon.DoesNotExist:
-                    if 'apply_coupon' in request.POST:
-                        messages.error(request, 'Invalid or expired coupon code.')
+        num_nights = (check_out_date - check_in_date).days
+    except (ValueError, TypeError):
+        messages.error(request, 'Invalid date format.')
+        return redirect('rooms:room_list')
 
+    # 3. TÍNH TOÁN GIÁ CƠ BẢN
+    subtotal = room.price * num_nights
+    gst = subtotal * Decimal('0.18')
+    total = subtotal + gst
+    discount = Decimal('0.00')
+    coupon = None
+
+    # 4. XỬ LÝ MÃ GIẢM GIÁ (COUPON)
+    if coupon_code:
+        try:
+            coupon = Coupon.objects.get(
+                code=coupon_code,
+                active=True,
+                valid_from__lte=date.today(), # Kiểm tra ngày hiện tại có nằm trong hạn dùng ko
+                valid_to__gte=date.today()
+            )
+            discount = (subtotal * coupon.discount_percentage) / Decimal('100')
+            total -= discount
             if 'apply_coupon' in request.POST:
-                # Redisplay the form with updated totals
-                context = {
-                    'form': form,
-                    'room': room,
-                    'check_in': check_in,
-                    'check_out': check_out,
-                    'adults': adults,
-                    'num_nights': num_nights,
-                    'subtotal': subtotal,
-                    'gst': gst,
-                    'total': total,
-                    'discount': discount,
-                    'coupon_code': coupon_code,
-                }
-                return render(request, 'rooms/roombooking.html', context)
-            elif 'book_now' in request.POST:
-                if form.is_valid():
-                    with transaction.atomic():
-                        if not room.is_available(check_in_date, check_out_date):
-                            messages.error(request, 'The room is no longer available.')
-                            return redirect('rooms:room_list')
-                        reservation = form.save(commit=False)
-                        reservation.room = room
-                        reservation.check_in_date = check_in_date
-                        reservation.check_out_date = check_out_date
-                        reservation.adults = adults
-                        reservation.subtotal = subtotal
-                        reservation.gst = gst
-                        reservation.total = total
-                        reservation.discount_applied = discount
-                        reservation.coupon = coupon if coupon_code and discount > 0 else None
-                        reservation.payment_method = payment_method 
-                         # Save payment method
-                        if request.user.is_authenticated:
-                            reservation.user = request.user
-                        reservation.save()
-                    messages.success(request, 'Booking successful! Welcome!')
-                    return redirect('rooms:booking_confirmation', reservation_id=reservation.id)
-                else:
-                    context = {
-                        'form': form,
-                        'room': room,
-                        'check_in': check_in,
-                        'check_out': check_out,
-                        'adults': adults,
-                        'num_nights': num_nights,
-                        'subtotal': subtotal,
-                        'gst': gst,
-                        'total': total,
-                        'discount': discount,
-                        'coupon_code': coupon_code,
-                    }
-                    return render(request, 'rooms/roombooking.html', context)
-        else:
-            # Initiating booking from roomsearch.html
-            room_id = request.POST.get('room_id')
-            check_in = request.POST.get('check_in')
-            check_out = request.POST.get('check_out')
-            adults = request.POST.get('adults')
+                messages.success(request, f'Coupon "{coupon_code}" applied! You saved ₹{discount}')
+        except Coupon.DoesNotExist:
+            if 'apply_coupon' in request.POST:
+                messages.error(request, 'Invalid or expired coupon code.')
+                coupon_code = "" # Xóa code sai để tránh nhầm lẫn
 
-            try:
-                room = Room.objects.get(id=room_id)
-                check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
-                check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
-                adults = int(adults)
-            except (ValueError, TypeError, Room.DoesNotExist):
-                messages.error(request, 'Invalid booking data.')
+    # Tạo form với dữ liệu POST để giữ lại thông tin khách đã nhập
+    form = BookingForm(request.POST or None)
+
+    # 5. XỬ LÝ KHI BẤM "BOOK NOW"
+    if 'book_now' in request.POST:
+        if form.is_valid():
+            # Kiểm tra phòng trống lần cuối (Phòng tránh trường hợp có người khác vừa đặt xong)
+            if not room.is_available(check_in_date, check_out_date):
+                messages.error(request, 'Sorry, this room was just booked by someone else for these dates.')
                 return redirect('rooms:room_list')
 
-            today = date.today()
-            if check_in_date < today:
-                messages.error(request, 'Check-in date cannot be in the past.')
-                return redirect('rooms:room_detail', room_id=room.id)
-            if check_out_date <= check_in_date:
-                messages.error(request, 'Check-out date must be after check-in date.')
-                return redirect('rooms:room_detail', room_id=room.id)
-            if adults <= 0 or adults > room.capacity:
-                messages.error(request, f'Number of guests must be between 1 and {room.capacity}.')
-                return redirect('rooms:room_detail', room_id=room.id)
+            try:
+                with transaction.atomic():
+                    reservation = form.save(commit=False)
+                    reservation.room = room
+                    reservation.user = request.user if request.user.is_authenticated else None
+                    reservation.check_in_date = check_in_date
+                    reservation.check_out_date = check_out_date
+                    reservation.adults = adults
+                    reservation.children = children
+                    reservation.subtotal = subtotal
+                    reservation.gst = gst
+                    reservation.discount_applied = discount
+                    reservation.total = total
+                    reservation.coupon = coupon
+                    reservation.payment_method = payment_method
+                    reservation.save()
 
-            num_nights = (check_out_date - check_in_date).days
+                messages.success(request, 'Booking successful! We are looking forward to seeing you.')
+                return redirect('rooms:booking_confirmation', reservation_id=reservation.id)
+            except Exception as e:
+                messages.error(request, f'An error occurred: {str(e)}')
+        else:
+            # In lỗi ra console để lập trình viên dễ debug
+            print("Form Errors:", form.errors)
+            messages.error(request, 'Please correct the errors in the form below.')
 
-            subtotal = room.price * num_nights
-            gst = subtotal * Decimal('0.18')
-            total = subtotal + gst
-
-            form = BookingForm()
-            context = {
-                'form': form,
-                'room': room,
-                'check_in': check_in,
-                'check_out': check_out,
-                'adults': adults,
-                'num_nights': num_nights,
-                'subtotal': subtotal,
-                'gst': gst,
-                'total': total,
-                'coupon_code': '',
-            }
-            return render(request, 'rooms/roombooking.html', context)
-    return redirect('rooms:room_list')
+    # 6. TRẢ VỀ CONTEXT (Dùng chung cho cả Apply Coupon và khi Book Now bị lỗi form)
+    context = {
+        'form': form,
+        'room': room,
+        'check_in': check_in,
+        'check_out': check_out,
+        'adults': adults,
+        'children': children,
+        'num_nights': num_nights,
+        'subtotal': subtotal,
+        'gst': gst,
+        'discount': discount,
+        'total': total,
+        'coupon_code': coupon_code,
+    }
+    return render(request, 'rooms/roombooking.html', context)
 
 def booking_confirmation(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
-    context = {'reservation': reservation}
+    
+    # Dòng này cực kỳ quan trọng
+    num_nights = (reservation.check_out_date - reservation.check_in_date).days
+    if num_nights <= 0: num_nights = 1 
+    
+    context = {
+        'reservation': reservation,
+        'num_nights': num_nights  # Biến này phải khớp với tên trong HTML
+    }
     return render(request, 'rooms/bookingconfirmation.html', context)
 
 @login_required
@@ -392,3 +368,40 @@ def book_room(request, room_id):
     }
 
     return render(request, 'rooms/roombooking.html', context)
+
+def check_room_availability_api(request):
+    room_id = request.GET.get('id')
+    check_in = request.GET.get('in')
+    check_out = request.GET.get('out')
+    
+    # Logic kiểm tra trùng lịch
+    is_booked = Reservation.objects.filter(
+        room_id=room_id,
+        check_in_date__lt=check_out,
+        check_out_date__gt=check_in
+    ).exists()
+    
+    return JsonResponse({'is_available': not is_booked})
+
+# views.py
+def checkout_reservation(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    # Đánh dấu đã trả phòng
+    reservation.is_checked_out = True
+    reservation.save()
+    
+    messages.success(request, f"Phòng {reservation.room.name} đã được trả và hiện đang trống.")
+    return redirect('rooms:my_bookings') # Hoặc trang quản lý của bạn
+
+# views.py
+def checkout_reservation(request, reservation_id):
+    if request.method == 'POST':
+        reservation = get_object_or_404(Reservation, id=reservation_id)
+        reservation.is_checked_out = True # Đánh dấu đã trả phòng
+        reservation.save()
+        
+        messages.success(request, f"Đã trả phòng {reservation.room.name} thành công!")
+        return redirect('rooms:room_list') # Hoặc trang bạn muốn quay lại
+    
+    return redirect('rooms:room_list')

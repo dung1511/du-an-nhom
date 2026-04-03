@@ -136,6 +136,99 @@
             font-display: fallback;
             src: url('https://kinsley.bslthemes.com/wp-content/plugins/woocommerce/assets/fonts/cardo_normal_400.woff2') format('woff2')
         }
+    /* Tổng thể trang */
+    body {
+        background-color: #f4f7f6; /* Màu nền nhẹ cho sang trọng */
+        color: #333;
+        line-height: 1.6;
+    }
+
+    /* Tiêu đề phòng */
+    .knsl-room-detail h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 20px;
+        letter-spacing: -0.5px;
+    }
+
+    /* Badge trạng thái (Phòng trống/Đã đặt) */
+    .room-status-badge {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 50px; /* Bo tròn hoàn toàn cho hiện đại */
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .room-status-badge.available {
+        background: linear-gradient(135deg, #28a745, #218838) !important;
+    }
+
+    .room-status-badge.booked {
+        background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    }
+
+    /* Khung hiển thị giá */
+    .knsl-price-frame {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 5px solid #4e6cff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        margin: 20px 0;
+    }
+
+    .knsl-price-frame .knsl-price {
+        font-size: 24px;
+        color: #4e6cff;
+        font-weight: 800;
+    }
+
+    /* Nút đặt phòng chính */
+    .knsl-btn {
+        background: #4e6cff;
+        color: #fff !important;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        text-transform: uppercase;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .knsl-btn:hover {
+        background: #3554d1;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(78, 108, 255, 0.3);
+    }
+
+    /* Tiện ích (Amenities) */
+    .knsl-amenities-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .knsl-amenity-item {
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        border: 1px solid #eee;
+    }
+
+    .knsl-amenity-item i {
+        color: #4e6cff;
+        margin-right: 10px;
+    }
     </style>
     <link rel="icon" href="https://kinsley.bslthemes.com/wp-content/uploads/2021/11/cropped-logo-32x32.png"
         sizes="32x32" />
@@ -270,7 +363,7 @@
                                                                         </div>
                                                                     </div>
 
-                                                                    <div class="swiper-container knsl-rd-slider-1">
+                                                                    {% comment %} <div class="swiper-container knsl-rd-slider-1">
                                                                         <div class="swiper-wrapper">
                                                                             {% for image in room.images.all %}
                                                                             <div class="swiper-slide">
@@ -292,7 +385,7 @@
                                                                             </div>
                                                                             {% endfor %}
                                                                         </div>
-                                                                    </div>
+                                                                    </div> {% endcomment %}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -300,9 +393,6 @@
                                                 </div>
                                             </div>
                                         </section>
-                                        <!-- ROOM PICTURES END -->
-
-                                        <!-- description START -->
                                         <section
                                             class="elementor-section elementor-inner-section elementor-element elementor-element-cb09e69 elementor-section-full_width elementor-section-height-default elementor-section-height-default"
                                             data-id="cb09e69" data-element_type="section">
@@ -326,470 +416,9 @@
                                                 </div>
                                             </div>
                                         </section>
-                                        <!-- description ENDD -->
-
-                                        {% comment %} <!-- Amenity features Start  -->
-                                        <section
-                                            class="elementor-section elementor-inner-section elementor-element elementor-element-32d018e elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                                            data-id="32d018e" data-element_type="section">
-                                            <div class="elementor-container elementor-column-gap-no">
-                                                <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-ce8a028"
-                                                    data-id="ce8a028" data-element_type="column">
-                                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                                        <div class="elementor-element elementor-element-c07bd07 elementor-widget elementor-widget-kinsley-room-amenity"
-                                                            data-id="c07bd07" data-element_type="widget"
-                                                            data-widget_type="kinsley-room-amenity.default">
-                                                            <div class="elementor-widget-container">
-                                                                <!-- amenity features with icons starts -->
-                                                                <section class="knsl-mb-40">
-                                                                    <div class="row">
-                                                                        <div class="col-lg-12">
-                                                                            <h3
-                                                                                class="knsl-mb-40 knsl-scroll-animation">
-                                                                                <span> Amenity </span>
-                                                                            </h3>
-                                                                        </div>
-                                                                        <div class="col-6 col-md-3"> <!-- icon box -->
-                                                                            <div
-                                                                                class="knsl-icon-box knsl-icon-box-sm knsl-scroll-animation">
-                                                                                <a href="#">
-                                                                                    <!-- dynamic link for amenity icons to each -->
-                                                                                    <noscript><img decoding="async"
-                                                                                            src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-5.png"
-                                                                                            alt="4 private pools"
-                                                                                            class=" knsl-mb-10" /></noscript><img
-                                                                                        decoding="async"
-                                                                                        src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                        data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-5.png"
-                                                                                        alt="4 private pools"
-                                                                                        class="lazyload  knsl-mb-10" />
-                                                                                    <h5>4 private pools</h5>
-                                                                                </a>
-                                                                            </div> <!-- icon box end -->
-                                                                        </div>
-                                                                        <div class="col-6 col-md-3"> <!-- icon box -->
-                                                                            <div
-                                                                                class="knsl-icon-box knsl-icon-box-sm knsl-scroll-animation">
-                                                                                <a href="#">
-                                                                                    <!-- dynamic link for amenity icons to each -->
-                                                                                    <noscript><img decoding="async"
-                                                                                            src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-3.png"
-                                                                                            alt="Air-conditioned"
-                                                                                            class=" knsl-mb-10" /></noscript><img
-                                                                                        decoding="async"
-                                                                                        src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                        data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-3.png"
-                                                                                        alt="Air-conditioned"
-                                                                                        class="lazyload  knsl-mb-10" />
-                                                                                    <h5>Air-conditioned</h5>
-                                                                                </a>
-                                                                            </div> <!-- icon box end -->
-                                                                        </div>
-                                                                        <div class="col-6 col-md-3"> <!-- icon box -->
-                                                                            <div
-                                                                                class="knsl-icon-box knsl-icon-box-sm knsl-scroll-animation">
-                                                                                <a href="#">
-                                                                                    <!-- dynamic link for amenity icons to each -->
-                                                                                    <noscript><img decoding="async"
-                                                                                            src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-1.png"
-                                                                                            alt="Airport transfer"
-                                                                                            class=" knsl-mb-10" /></noscript><img
-                                                                                        decoding="async"
-                                                                                        src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                        data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-1.png"
-                                                                                        alt="Airport transfer"
-                                                                                        class="lazyload  knsl-mb-10" />
-                                                                                    <h5>Airport transfer</h5>
-                                                                                </a>
-                                                                            </div> <!-- icon box end -->
-                                                                        </div>
-                                                                        <div class="col-6 col-md-3"> <!-- icon box -->
-                                                                            <div
-                                                                                class="knsl-icon-box knsl-icon-box-sm knsl-scroll-animation">
-                                                                                <a href="#">
-                                                                                    <!-- dynamic link for amenity icons to each -->
-                                                                                    <noscript><img decoding="async"
-                                                                                            src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-2.png"
-                                                                                            alt="All inclusive"
-                                                                                            class=" knsl-mb-10" /></noscript><img
-                                                                                        decoding="async"
-                                                                                        src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                        data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-2.png"
-                                                                                        alt="All inclusive"
-                                                                                        class="lazyload  knsl-mb-10" />
-                                                                                    <h5>All inclusive</h5>
-                                                                                </a>
-                                                                            </div> <!-- icon box end -->
-                                                                        </div>
-                                                                        <div class="col-6 col-md-3"> <!-- icon box -->
-                                                                            <div
-                                                                                class="knsl-icon-box knsl-icon-box-sm knsl-scroll-animation">
-                                                                                <a href="#">
-                                                                                    <!-- dynamic link for amenity icons to each -->
-                                                                                    <noscript><img decoding="async"
-                                                                                            src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-6.png"
-                                                                                            alt="Free wi-fi"
-                                                                                            class=" knsl-mb-10" /></noscript><img
-                                                                                        decoding="async"
-                                                                                        src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                        data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-6.png"
-                                                                                        alt="Free wi-fi"
-                                                                                        class="lazyload  knsl-mb-10" />
-                                                                                    <h5>Free wi-fi</h5>
-                                                                                </a>
-                                                                            </div> <!-- icon box end -->
-                                                                        </div>
-                                                                        <div class="col-6 col-md-3"> <!-- icon box -->
-                                                                            <div
-                                                                                class="knsl-icon-box knsl-icon-box-sm knsl-scroll-animation">
-                                                                                <a href="#">
-                                                                                    <!-- dynamic link for amenity icons to each -->
-                                                                                    <noscript><img decoding="async"
-                                                                                            src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-8.png"
-                                                                                            alt="Laundry"
-                                                                                            class=" knsl-mb-10" /></noscript><img
-                                                                                        decoding="async"
-                                                                                        src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                        data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-8.png"
-                                                                                        alt="Laundry"
-                                                                                        class="lazyload  knsl-mb-10" />
-                                                                                    <h5>Laundry</h5>
-                                                                                </a>
-                                                                            </div> <!-- icon box end -->
-                                                                        </div>
-                                                                        <div class="col-6 col-md-3"> <!-- icon box -->
-                                                                            <div
-                                                                                class="knsl-icon-box knsl-icon-box-sm knsl-scroll-animation">
-                                                                                <a href="#">
-                                                                                    <!-- dynamic link for amenity icons to each -->
-                                                                                    <noscript><img decoding="async"
-                                                                                            src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-7.png"
-                                                                                            alt="Smart TV"
-                                                                                            class=" knsl-mb-10" /></noscript><img
-                                                                                        decoding="async"
-                                                                                        src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                        data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-7.png"
-                                                                                        alt="Smart TV"
-                                                                                        class="lazyload  knsl-mb-10" />
-                                                                                    <h5>Smart TV</h5>
-                                                                                </a>
-                                                                            </div> <!-- icon box end -->
-                                                                        </div>
-                                                                        <div class="col-6 col-md-3"> <!-- icon box -->
-                                                                            <div
-                                                                                class="knsl-icon-box knsl-icon-box-sm knsl-scroll-animation">
-                                                                                <a href="#">
-                                                                                    <!-- dynamic link for amenity icons to each -->
-                                                                                    <noscript><img decoding="async"
-                                                                                            src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-4.png"
-                                                                                            alt="Under protection"
-                                                                                            class=" knsl-mb-10" /></noscript><img
-                                                                                        decoding="async"
-                                                                                        src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                        data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/12/f-4.png"
-                                                                                        alt="Under protection"
-                                                                                        class="lazyload  knsl-mb-10" />
-                                                                                    <h5>Under protection</h5>
-                                                                                </a>
-                                                                            </div> <!-- icon box end -->
-                                                                        </div>
-                                                                    </div>
-                                                                </section>
-                                                                <!-- amenity features with icons end -->
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section> {% endcomment %}
-                                        <!-- Amenity features end -->
-
-                                        {% comment %} <!-- Around the Hotel START -->
-                                        <section
-                                            class="elementor-section elementor-inner-section elementor-element elementor-element-f922a78 elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                                            data-id="f922a78" data-element_type="section">
-                                            <div class="elementor-container elementor-column-gap-no">
-                                                <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-ecfedb3"
-                                                    data-id="ecfedb3" data-element_type="column">
-                                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                                        <div class="elementor-element elementor-element-a34bcad elementor-widget elementor-widget-kinsley-room-services"
-                                                            data-id="a34bcad" data-element_type="widget"
-                                                            data-widget_type="kinsley-room-services.default">
-                                                            <div class="elementor-widget-container">
-                                                                <!-- services -->
-                                                                <section class="knsl-mb-40">
-                                                                    <div class="row">
-                                                                        <div class="col-lg-12">
-                                                                            <h3
-                                                                                class="knsl-mb-40 knsl-scroll-animation">
-                                                                                <span> Around The Hotel </span>
-                                                                            </h3>
-                                                                        </div>
-                                                                        <div class="col-md-6 col-lg-4">
-                                                                            <!-- service card -->
-                                                                            <div
-                                                                                class="knsl-ath-card knsl-scroll-animation">
-                                                                                <div class="knsl-cover-frame">
-                                                                                    <a href="#">
-                                                                                        <!-- dynamic link for around hotel service -->
-                                                                                        <noscript><img decoding="async"
-                                                                                                src="https://kinsley.bslthemes.com/wp-content/uploads/2021/10/service-1-950x1425.jpg"
-                                                                                                alt="Lounge bar" /></noscript><img
-                                                                                            class="lazyload"
-                                                                                            decoding="async"
-                                                                                            src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                            data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/10/service-1-950x1425.jpg"
-                                                                                            alt="Lounge bar" />
-                                                                                    </a>
-                                                                                    <!-- replace img src with path  of  Lounge image  -->
-                                                                                </div>
-                                                                                <div class="knsl-card-description">
-                                                                                    <h5> <a href="#">Lounge
-                                                                                            bar</a></h5>
-                                                                                </div>
-                                                                            </div> <!-- service card end -->
-                                                                        </div>
-                                                                        <div class="col-md-6 col-lg-4">
-                                                                            <!-- service card -->
-                                                                            <div
-                                                                                class="knsl-ath-card knsl-scroll-animation">
-                                                                                <div class="knsl-cover-frame"> <a
-                                                                                        href="#">
-                                                                                        <noscript><img decoding="async"
-                                                                                                src="https://kinsley.bslthemes.com/wp-content/uploads/2021/10/service-2-950x1266.jpg"
-                                                                                                alt="Pool" /></noscript><img
-                                                                                            class="lazyload"
-                                                                                            decoding="async"
-                                                                                            src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                            data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/10/service-2-950x1266.jpg"
-                                                                                            alt="Pool" />
-                                                                                    </a>
-                                                                                    <!-- replace img src with path  of  pool image  -->
-                                                                                </div>
-                                                                                <div class="knsl-card-description">
-                                                                                    <h5> <a href="#">Pool</a>
-                                                                                    </h5>
-                                                                                </div>
-                                                                            </div> <!-- service card end -->
-                                                                        </div>
-                                                                        <div class="col-md-6 col-lg-4">
-                                                                            <!-- service card -->
-                                                                            <div
-                                                                                class="knsl-ath-card knsl-scroll-animation">
-                                                                                <div class="knsl-cover-frame"> <a
-                                                                                        href="#">
-                                                                                        <noscript><img decoding="async"
-                                                                                                src="https://kinsley.bslthemes.com/wp-content/uploads/2021/10/service-4-950x1341.jpg"
-                                                                                                alt="Playroom" /></noscript><img
-                                                                                            class="lazyload"
-                                                                                            decoding="async"
-                                                                                            src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20210%20140%22%3E%3C/svg%3E'
-                                                                                            data-src="https://kinsley.bslthemes.com/wp-content/uploads/2021/10/service-4-950x1341.jpg"
-                                                                                            alt="Playroom" /> </a>
-                                                                                    <!-- replace img src with path  of  playroom image  -->
-                                                                                </div>
-                                                                                <div class="knsl-card-description">
-                                                                                    <h5> <a href="#">Playroom</a>
-                                                                                    </h5>
-                                                                                </div>
-                                                                            </div> <!-- service card end -->
-                                                                        </div>
-                                                                    </div>
-                                                                </section> {% endcomment %}
-                                                                <!-- services end -->
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section>
-                                        <!-- Around the Hotel START -->
-
-
-
-
-
-                                        {% comment %} <!-- Room Feedback START -->
-                                        <section class="rooms-section">
-                                            <h2>Submit Your Feedback</h2>
-                                            <p class="feedback-quote">"Your feedback helps us improve!"</p>
-
-                                            <style>
-                                                .container2 {
-                                                    max-width: 1000px;
-                                                    margin: 0 auto;
-                                                    padding: 30px;
-                                                    background: #fff;
-                                                    border-radius: 10px;
-                                                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-                                                }
-
-                                                .feedback-header {
-                                                    text-align: left;
-                                                    margin-bottom: 30px;
-                                                }
-
-                                                .feedback-header h2 {
-                                                    font-size: 28px;
-                                                    color: #333;
-                                                }
-
-                                                .feedback-quote {
-                                                    font-style: italic;
-                                                    color: #555;
-                                                }
-
-                                                .form-group {
-                                                    margin-bottom: 20px;
-                                                }
-
-                                                label {
-                                                    display: block;
-                                                    font-weight: bold;
-                                                    margin-bottom: 5px;
-                                                    text-align: left;
-                                                }
-
-                                                input,
-                                                textarea {
-                                                    width: 100%;
-                                                    padding: 12px;
-                                                    border: 1px solid #ccc;
-                                                    border-radius: 5px;
-                                                    box-sizing: border-box;
-                                                }
-
-                                                .btn {
-                                                    display: block;
-                                                    width: 100%;
-                                                    padding: 12px;
-                                                    color: #fff;
-                                                    background: #28a745;
-                                                    border: none;
-                                                    border-radius: 5px;
-                                                    cursor: pointer;
-                                                    transition: background 0.3s;
-                                                }
-
-                                                .btn:hover {
-                                                    background: #218838;
-                                                }
-
-                                                .star-rating {
-                                                    text-align: left;
-                                                    margin-bottom: 20px;
-                                                }
-
-                                                .stars {
-                                                    display: flex;
-                                                    justify-content: left;
-                                                    gap: 10px;
-                                                }
-
-                                                .stars input[type="radio"] {
-                                                    display: none;
-                                                }
-
-                                                .stars label {
-                                                    font-size: 35px;
-                                                    cursor: pointer;
-                                                    transition: transform 0.2s;
-                                                    color: #ccc;
-                                                }
-
-                                                .stars input[type="radio"]:checked+label,
-                                                .stars label:hover {
-                                                    color: gold;
-                                                    transform: scale(1.3);
-                                                }
-
-                                                @media (max-width: 600px) {
-                                                    .container {
-                                                        padding: 15px;
-                                                    }
-
-                                                    .stars label {
-                                                        font-size: 28px;
-                                                    }
-                                                }
-                                            </style>
-
-                                            <div class="container2">
-                                                <div class="feedback-header">
-
-                                                </div>
-
-                                                <form method="POST"
-                                                    action="{% url 'feedback:submit_feedback' room.id %}">
-                                                    {% csrf_token %}
-
-                                                    <!-- Name and Country Fields -->
-                                                    <div class="form-group">
-                                                        <label for="id_name">Name:</label>
-                                                        {% if request.user.is_authenticated %}
-                                                        <input type="text" id="id_name"
-                                                            value="{{ request.user.get_full_name }}" readonly
-                                                            placeholder="Enter your name">
-                                                        {% else %}
-                                                        {{ feedback_form.name }}
-                                                        {% endif %}
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label for="id_country">Country:</label>
-                                                        {{ feedback_form.country }}
-                                                    </div>
-
-                                                    <!-- Email and Comment Fields -->
-                                                    <div class="form-group">
-                                                        <label for="id_email">Email:</label>
-                                                        {% if request.user.is_authenticated %}
-                                                        <input type="email" id="id_email"
-                                                            value="{{ request.user.email }}" readonly
-                                                            placeholder="Enter your email">
-                                                        {% else %}
-                                                        {{ feedback_form.email }}
-                                                        {% endif %}
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label for="id_comment">Feedback:</label>
-                                                        {{ feedback_form.comment }}
-                                                    </div>
-
-                                                    <!-- Star Rating Section -->
-                                                    <div class="form-group star-rating">
-                                                        <label>Rating:</label>
-                                                        <div class="stars">
-                                                            {% for choice in feedback_form.rating.field.choices %}
-                                                            <input type="radio" id="star{{ choice.0 }}" name="rating"
-                                                                value="{{ choice.0 }}" {% if
-                                                                feedback_form.rating.value==choice.0 %}checked{% endif
-                                                                %}>
-                                                            <label for="star{{ choice.0 }}">⭐</label>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-
-                                                    <button type="submit" class="btn">Submit Feedback</button>
-                                                </form>
-                                            </div>
-                                        </section>
-                                        <!-- Room Feedback END -->
- {% endcomment %}
-
-
-
-
-                                    </div>
-                                </div>
-                                <!-- LEFT main section END -->
-
-                                <!-- RIGHT main section START -->
                                 <div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-903f3b7"
                                     data-id="903f3b7" data-element_type="column">
                                     <div class="elementor-widget-wrap elementor-element-populated">
-                                        <!-- Price Section -->
                                         <section
                                             class="elementor-section elementor-inner-section elementor-element elementor-element-42382cc elementor-section-full_width elementor-section-height-default elementor-section-height-default"
                                             data-id="42382cc" data-element_type="section">
@@ -803,21 +432,67 @@
                                                             <div class="elementor-widget-container">
                                                                 <div class="knsl-price-card knsl-mb-20">
                                                                     <div class="knsl-price-number">
-                                                                       <p class="mphb-regular-price"><strong>Prices start at:</strong>
+                                                                        <p class="mphb-regular-price"><strong>Prices start at:</strong>
                                                                             <span class="mphb-price">
-                                                                                <span class="mphb-currency" style="font-size: x-large;">₹</span>
+                                                                                <span class="mphb-currency" style="font-size: x-large;"></span>
                                                                                 <span style="font-size: x-large;">{{ room.price }}</span>
                                                                             </span>
-                                                                            <span class="mphb-price-period">per night</span>
                                                                         </p>
 
-                                                                        <br>
+                                                                        <!-- roomcapacity Section -->
+                                                                        <section
+                                                                            class="elementor-section elementor-inner-section elementor-element elementor-element-42382cc elementor-section-full_width elementor-section-height-default elementor-section-height-default"
+                                                                            data-id="42382cc" data-element_type="section">
+                                                                            <div class="elementor-container elementor-column-gap-no">
+                                                                                <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-5e73cb5"
+                                                                                    data-id="5e73cb5" data-element_type="column">
+                                                                                    <div class="elementor-widget-wrap elementor-element-populated">
+                                                                                        <div class="elementor-element elementor-element-65f23fc elementor-widget elementor-widget-kinsley-room-price"
+                                                                                            data-id="65f23fc" data-element_type="widget"
+                                                                                            data-widget_type="kinsley-room-price.default">
+                                                                                            <div class="elementor-widget-container">
+                                                                                                <div class="knsl-price-card knsl-mb-20">
+                                                                                                    <div class="knsl-price-number">
+                                                                                                        <p class="mphb-regular-price"><strong>Room
+                                                                                                                for:</strong>
+                                                                                                            <span class="mphb-price" style="font-size: x-large;"> {{ room.capacity }} </span>
+                                                                                                            <span class="mphb-price-period"
+                                                                                                                title="Choose dates to see relevant prices">guests
+                                                                                                            </span>
+                                                                                                        </p>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </section>
+                                                                        <!-- roomcapacity section end -->
 
-                                                                        <a href="{% url 'rooms:book_room' room.id %}" 
-                                                                        class="btn btn-success"
-                                                                        style="background:#28a745;color:white;padding:12px 25px;border-radius:5px;text-decoration:none;">
-                                                                        Đặt phòng
-                                                                        </a>
+                                                                        <form action="{% url 'rooms:room_booking' %}" method="POST" style="text-align: left;">
+                                                                            {% csrf_token %}
+                                                                            <input type="hidden" name="room_id" value="{{ room.id }}">
+                                                                            
+                                                                            <div style="margin-bottom: 15px;">
+                                                                                <label for="check_in" style="display:block; font-weight:bold; margin-bottom:5px;">Ngày nhận phòng:</label>
+                                                                                <input type="date" id="check_in" name="check_in" required 
+                                                                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                                                                            </div>
+
+                                                                            <div style="margin-bottom: 20px;">
+                                                                                <label for="check_out" style="display:block; font-weight:bold; margin-bottom:5px;">Ngày trả phòng:</label>
+                                                                                <input type="date" id="check_out" name="check_out" required 
+                                                                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                                                                            </div>
+
+                                                                            <p id="room-status-alert" class="text-info" style="font-size: 14px; margin-bottom: 10px;"></p>
+                                                                                
+                                                                            <button type="submit" id="book-now-btn" class="knsl-btn" 
+                                                                                    style="background:#28a745; color:white; padding:12px 25px; border-radius:5px; width:100%; border:none; cursor:pointer;">
+                                                                                Đặt phòng ngay
+                                                                            </button>
+                                                                        </form>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -826,40 +501,6 @@
                                                 </div>
                                             </div>
                                         </section>
-                                        <!-- price section end -->
-
-                                        <!-- roomcapacity Section -->
-                                        <section
-                                            class="elementor-section elementor-inner-section elementor-element elementor-element-42382cc elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                                            data-id="42382cc" data-element_type="section">
-                                            <div class="elementor-container elementor-column-gap-no">
-                                                <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-5e73cb5"
-                                                    data-id="5e73cb5" data-element_type="column">
-                                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                                        <div class="elementor-element elementor-element-65f23fc elementor-widget elementor-widget-kinsley-room-price"
-                                                            data-id="65f23fc" data-element_type="widget"
-                                                            data-widget_type="kinsley-room-price.default">
-                                                            <div class="elementor-widget-container">
-                                                                <div class="knsl-price-card knsl-mb-20">
-                                                                    <div class="knsl-price-number">
-                                                                        <p class="mphb-regular-price"><strong>Room
-                                                                                for:</strong>
-                                                                            <span class="mphb-price" style="font-size: x-large;"> {{ room.capacity }} </span>
-                                                                            <span class="mphb-price-period"
-                                                                                title="Choose dates to see relevant prices">guests
-                                                                            </span>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section>
-                                        <!-- roomcapacity section end -->
-
-                                         <!-- roomsize Section -->
                                          <section
                                          class="elementor-section elementor-inner-section elementor-element elementor-element-42382cc elementor-section-full_width elementor-section-height-default elementor-section-height-default"
                                          data-id="42382cc" data-element_type="section">
@@ -886,189 +527,10 @@
                                              </div>
                                          </div>
                                      </section>
-                                     <!-- roomcapacity section end -->
-
-                                        <!-- Date Booking Form Section Start -->
-                                        <section
-                                            class="elementor-section elementor-inner-section elementor-element elementor-element-444269d elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                                            data-id="444269d" data-element_type="section">
-                                            <div class="elementor-container elementor-column-gap-no">
-                                                <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-b29e760"
-                                                    data-id="b29e760" data-element_type="column">
-                                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                                        <div class="elementor-element elementor-element-62a4f40 elementor-widget elementor-widget-kinsley-mphb-search-form"
-                                                            data-id="62a4f40" data-element_type="widget"
-                                                            data-widget_type="kinsley-mphb-search-form.default">
-                                                            <div class="elementor-widget-container">
-                                                                <div class="knsl-sticky knsl-stycky-right"
-                                                                    data-margin-top="100">
-                                                                    <div
-                                                                        class="mphb_sc_search-wrapper knsl-book-form knsl-book-form-v">
-                                                                        <h3>Check Availability</h3> <br>
-                                                                        {% if messages %}
-                                                                        <ul class="messages">
-                                                                            {% for message in messages %}
-                                                                            <li{% if message.tags %}
-                                                                                class="{{ message.tags }}" {% endif %}>
-                                                                                {{ message }}</li>
-                                                                                {% endfor %}
-                                                                        </ul>
-                                                                        {% endif %}
-                                                                        <form method="GET" class="mphb_sc_search-form"
-                                                                            action="{% url 'rooms:room_search' %}">
-                                                                            <input type="hidden" name="room_id"
-                                                                                value="{{ room.id }}">
-                                                                            <p class="mphb_sc_search-check-in-date">
-                                                                                <label for="check_in">Check-in <abbr
-                                                                                        title="Formatted as yyyy-mm-dd">*</abbr></label>
-                                                                                <br />
-                                                                                <input id="check_in" value=""
-                                                                                    placeholder="Check-in Date"
-                                                                                    required="required" type="date"
-                                                                                    name="check_in"
-                                                                                    class="mphb-datepick"
-                                                                                    autocomplete="off"
-                                                                                    inputmode="none"
-                                                                                    min="{% now "Y-m-d" %}" />
-                                                                            </p>
-                                                                            <p class="mphb_sc_search-check-out-date">
-                                                                                <label for="check_out">Check-out <abbr
-                                                                                        title="Formatted as yyyy-mm-dd">*</abbr></label>
-                                                                                <br />
-                                                                                <input id="check_out" value=""
-                                                                                    placeholder="Check-out Date"
-                                                                                    required="required" type="date"
-                                                                                    name="check_out"
-                                                                                    class="mphb-datepick"
-                                                                                    autocomplete="off"
-                                                                                    inputmode="none" />
-                                                                            </p>
-                                                                            <p class="mphb_sc_search-adults">
-                                                                                <label for="adults">guests</label>
-                                                                                <br />
-                                                                                <select id="adults" name="adults"
-                                                                                    required>
-                                                                                    {% for i in "123456" %}
-                                                                                        {% if forloop.counter <= room.capacity %}
-                                                                                            <option value="{{ forloop.counter }}">{{ forloop.counter }}
-                                                                                                guest{{ forloop.counter|pluralize }}</option>
-                                                                                        {% endif %}
-                                                                                    {% endfor %}
-                                                                                </select>
-                                                                            </p>
-                                                                            <p
-                                                                                class="mphb_sc_search-submit-button-wrapper">
-                                                                                <button type="submit"
-                                                                                    class="button knsl-btn">Search</button>
-                                                                            </p>
-                                                                        </form>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section>
-                                        <!-- Date Booking Form Section End -->
-
-
-                                    </div>
-                                </div>
-                                <!-- RIGHT main section end -->
-
-
-                            </div>
-                        </section>
-                        <!-- MAIN LEFT Right SECTION end -->
-
-
-                        <!-- Similar Rooms (Dynamic with Swiper Carousel) -->
-                        <section
-                            class="elementor-section elementor-top-section elementor-element elementor-element-4e070be elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                            data-id="4e070be" data-element_type="section"
-                            data-settings='{"background_background":"classic"}'>
-                            <div class="elementor-container elementor-column-gap-no">
-                                <div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-54cf1a4"
-                                    data-id="54cf1a4" data-element_type="column">
-                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                        <div class="elementor-element elementor-element-8defa59 elementor-widget elementor-widget-kinsley-rooms-carousel"
-                                            data-id="8defa59" data-element_type="widget"
-                                            data-widget_type="kinsley-rooms-carousel.default">
-                                            <div class="elementor-widget-container">
-                                                <section class="knsl-transition-top knsl-p-0-100">
-                                                    <img src="{% static 'images/palm.svg' %}"
-                                                        class="lazyload knsl-deco-left" alt="palm" />
-                                                    <div class="container">
-                                                        <div class="row align-items-center">
-                                                            <div class="col-lg-12">
-                                                                <div
-                                                                    class="knsl-center knsl-title-frame knsl-scroll-animation knsl-mb-100">
-                                                                    <h2 class="knsl-title--h knsl-mb-20"><span>Similar
-                                                                            Rooms</span></h2>
-                                                                    <div class="knsl-text knsl-mb-30">
-                                                                        <p><span>Discover a variety of rooms at Goan Paradise Retreat, each crafted to offer comfort, style, and a touch of Goan charm.</span></p>
-                                                                    </div>
-                                                                    <a href="{% url 'rooms:room_list' %}"
-                                                                        class="knsl-btn knsl-btn-md"><span>All
-                                                                            rooms</span></a>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-12">
-                                                                <div class="swiper-container knsl-uni-slider">
-                                                                    <div class="swiper-wrapper">
-                                                                        {% for similar_room in similar_rooms %}
-                                                                        <div class="swiper-slide">
-                                                                            <div
-                                                                                class="mphb_sc_room-wrapper knsl-scroll-animation">
-                                                                                <div class="mphb-room-type">
-                                                                                    <a
-                                                                                        href="{% url 'rooms:room_detail' similar_room.id %}">
-                                                                                        <div class="knsl-cover-frame">
-                                                                                            <img class="lazyload"
-                                                                                                decoding="async"
-                                                                                                src="{{ similar_room.image.url|default:'/static/images/placeholder.jpg' }}"
-                                                                                                alt="{{ similar_room.name }}" />
-                                                                                        </div>
-                                                                                        <div
-                                                                                            class="knsl-card-description">
-                                                                                            <h5>{{ similar_room.name }}
-                                                                                            </h5>
-                                                                                            <p>₹{{ similar_room.price }}
-                                                                                                per night</p>
-                                                                                        </div>
-                                                                                    </a>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        {% empty %}
-                                                                        <div class="swiper-slide">
-                                                                            <p>No similar rooms available.</p>
-                                                                        </div>
-                                                                        {% endfor %}
-                                                                    </div>
-                                                                    <div class="knsl-uni-slider-nav-panel">
-                                                                        <div class="knsl-uni-slider-pagination"></div>
-                                                                        <div class="knsl-uni-nav">
-                                                                            <div class="knsl-uni-slider-prev"><i
-                                                                                    class="fas fa-arrow-left"></i></div>
-                                                                            <div class="knsl-uni-slider-next"><i
-                                                                                    class="fas fa-arrow-right"></i>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </section>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </section>
-                        <!-- similar Rooms end -->
                     </div>
                 </div>
             </div>
@@ -1078,7 +540,6 @@
         {% include 'footer.html' %}
 
     </div>
-    <!-- page wrapper end --> <!-- popup -->
 
 
 
@@ -1103,7 +564,7 @@
         src="https://kinsley.bslthemes.com/wp-content/plugins/motopress-hotel-booking/vendors/kbwood/datepick/jquery.plugin.min.js"
         id="mphb-kbwood-plugin-js"></script>
     <script type="text/javascript"
-        id="mphb-js-extra">var MPHB = { "_data": { "settings": { "currency": { "code": "EUR", "price_format": "<span class=\"mphb-currency\">&euro;<\/span>%s", "decimals": 2, "decimal_separator": ".", "thousand_separator": "," }, "siteName": "Kinsley - Hotel &amp; Resort WordPress Theme", "currentLanguage": "en", "firstDay": 1, "numberOfMonthCalendar": 2, "numberOfMonthDatepicker": 2, "dateFormat": "dd\/mm\/yyyy", "dateTransferFormat": "yyyy-mm-dd", "useBilling": true, "useCoupons": true, "datepickerClass": "mphb-datepicker-light-blue", "countryRequired": true, "fullAddressRequired": true, "isDirectBooking": true }, "isAdmin": false, "today": "2025-03-05", "ajaxUrl": "https:\/\/kinsley.bslthemes.com\/wp-admin\/admin-ajax.php", "nonces": { "mphb_update_checkout_info": "eca5a46dc5", "mphb_update_rate_prices": "e3b4f90afb", "mphb_get_billing_fields": "6e45804b14", "mphb_apply_coupon": "4291ae4e04", "mphb_get_room_type_calendar_data": "fc635da243", "mphb_get_room_type_availability_data": "67009467b1", "mphb_update_booking_notes": "dc4dcb5202", "mphb_create_stripe_payment_intent": "0b14710260" }, "translations": { "errorHasOccured": "An error has occurred, please try again later.", "booked": "Booked", "buffer": "Buffer time.", "pending": "Pending", "available": "Available", "notAvailable": "Not available", "earlierMinAdvance": "This is earlier than allowed by our advance reservation rules.", "laterMaxAdvance": "This is later than allowed by our advance reservation rules.", "notStayIn": "Not stay-in", "notCheckIn": "Not check-in", "notCheckOut": "Not check-out", "past": "Day in the past", "checkInDate": "Check-in date", "lessThanMinDaysStay": "Less than min days stay", "moreThanMaxDaysStay": "More than max days stay", "laterThanMaxDate": "Later than max date for current check-in date", "rules": "Rules:", "tokenizationFailure": "Tokenisation failed: %s", "roomsAddedToReservation_singular": "%1$d &times; &ldquo;%2$s&rdquo; has been added to your reservation.", "roomsAddedToReservation_plural": "%1$d &times; &ldquo;%2$s&rdquo; have been added to your reservation.", "countRoomsSelected_singular": "%s accommodation selected.", "countRoomsSelected_plural": "%s accommodations selected.", "emptyCouponCode": "Coupon code is empty.", "checkInNotValid": "Check-in date is not valid.", "checkOutNotValid": "Check-out date is not valid.", "selectDates": "Select dates" }, "page": { "isCheckoutPage": false, "isSingleRoomTypePage": true, "isSearchResultsPage": false, "isCreateBookingPage": false }, "gateways": [], "roomTypeId": 17 } };</script>
+        id="mphb-js-extra">var MPHB = { "_data": { "settings": { "currency": { "code": "EUR", "price_format": "<span class=\"mphb-currency\">&euro;<\/span>%s", "decimals": 2, "decimal_separator": ".", "thousand_separator": "," }, "siteName": "Kinsley - Hotel &amp; Resort WordPress Theme", "currentLanguage": "en", "firstDay": 1, "numberOfMonthCalendar": 2, "numberOfMonthDatepicker": 2, "dateFormat": "dd\/mm\/yyyy", "dateTransferFormat": "yyyy-mm-dd", "useBilling": true, "useCoupons": true, "datepickerClass": "mphb-datepicker-light-blue", "countryRequired": true, "fullAddressRequired": true, "isDirectBooking": true }, "isAdmin": false, "today": "2025-03-05", "ajaxUrl": "https:\/\/kinsley.bslthemes.com\/wp-admin\/admin-ajax.php", "nonces": { "mphb_update_checkout_info": "eca5a46dc5", "mphb_update_rate_prices": "e3b4f90afb", "mphb_get_billing_fields": "6e45804b14", "mphb_apply_coupon": "4291ae4e04", "mphb_get_room_type_calendar_data": "fc635da243", "mphb_get_room_type_availability_data": "67009467b1", "mphb_update_booking_notes": "dc4dcb5202", "mphb_create_stripe_payment_intent": "0b14710260" }, "translations": { "errorHasOccured": "An error has occurred, please try again later.", "booked": "Đã đặt", "buffer": "Buffer time.", "pending": "Pending", "available": "Trống", "notAvailable": "Not available", "earlierMinAdvance": "This is earlier than allowed by our advance reservation rules.", "laterMaxAdvance": "This is later than allowed by our advance reservation rules.", "notStayIn": "Not stay-in", "notCheckIn": "Not check-in", "notCheckOut": "Not check-out", "past": "Day in the past", "checkInDate": "Check-in date", "lessThanMinDaysStay": "Less than min days stay", "moreThanMaxDaysStay": "More than max days stay", "laterThanMaxDate": "Later than max date for current check-in date", "rules": "Rules:", "tokenizationFailure": "Tokenisation failed: %s", "roomsAddedToReservation_singular": "%1$d &times; &ldquo;%2$s&rdquo; has been added to your reservation.", "roomsAddedToReservation_plural": "%1$d &times; &ldquo;%2$s&rdquo; have been added to your reservation.", "countRoomsSelected_singular": "%s accommodation selected.", "countRoomsSelected_plural": "%s accommodations selected.", "emptyCouponCode": "Coupon code is empty.", "checkInNotValid": "Check-in date is not valid.", "checkOutNotValid": "Check-out date is not valid.", "selectDates": "Select dates" }, "page": { "isCheckoutPage": false, "isSingleRoomTypePage": true, "isSearchResultsPage": false, "isCreateBookingPage": false }, "gateways": [], "roomTypeId": 17 } };</script>
     <script type="text/javascript"
         src="https://kinsley.bslthemes.com/wp-content/plugins/motopress-hotel-booking/assets/js/public/mphb.min.js"
         id="mphb-js"></script>
@@ -1115,8 +576,41 @@
     <script defer
         src="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/js/autoptimize_a4efdf3a96bcd12fd7ea34651140649e.js"></script>
 
+    <script>
+        async function checkAvailability() {
+            const cin = document.getElementById('check_in').value; // Đảm bảo ID này trùng với input ngày nhận
+            const cout = document.getElementById('check_out').value; // Đảm bảo ID này trùng với input ngày trả
+            const roomId = "{{ room.id }}";
 
+            if (cin && cout) {
+                // Gọi API kiểm tra
+                const response = await fetch(`/api/check-room?id=${roomId}&in=${cin}&out=${cout}`);
+                const data = await response.json();
+                
+                const btn = document.getElementById('book-now-btn'); // ID của nút Đặt phòng
+                const statusText = document.getElementById('room-status-alert'); // Nơi hiển thị thông báo
 
+                if (data.is_available) {
+                    btn.disabled = false;
+                    btn.style.opacity = "1";
+                    btn.style.cursor = "pointer";
+                    statusText.innerHTML = "✅ Phòng còn trống cho ngày này!";
+                    statusText.className = "text-success";
+                } else {
+                    btn.disabled = true;
+                    btn.style.opacity = "0.5";
+                    btn.style.cursor = "not-allowed";
+                    statusText.innerHTML = "❌ Rất tiếc, phòng đã có người đặt!";
+                    statusText.className = "text-danger";
+                }
+            }
+        }
+
+        // Lắng nghe sự kiện: Khi khách thay đổi ngày, hàm check sẽ tự chạy
+        document.getElementById('check_in').addEventListener('change', checkAvailability);
+        document.getElementById('check_out').addEventListener('change', checkAvailability);
+    </script>
+            
 </body>
 
 </html>

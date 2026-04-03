@@ -395,20 +395,6 @@
                                     data-widget_type="kinsley-intro.default">
                                     <div class="elementor-widget-container">
                                         <section class="knsl-banner-simple knsl-transition-bottom booking-card-header">
-                                            <noscript><img decoding="async"
-                                                    src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg"
-                                                    class="knsl-deco-left" alt="palm" /></noscript>
-                                            <img decoding="async"
-                                                src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg"
-                                                data-src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg"
-                                                class="knsl-deco-left ls-is-cached lazyloaded" alt="palm">
-                                            <noscript><img decoding="async"
-                                                    src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg"
-                                                    class="knsl-deco-right" alt="palm" /></noscript>
-                                            <img decoding="async"
-                                                src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg"
-                                                data-src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg"
-                                                class="knsl-deco-right ls-is-cached lazyloaded" alt="palm">
                                             <div class="container">
                                                 <div class="row">
                                                     <div class="col-lg-12">
@@ -456,24 +442,7 @@
                                                     action="{% url 'rooms:room_booking' %}">
                                                     {% csrf_token %}
                                                     <!-- Booking Details -->
-                                                    <section id="mphb-booking-details"
-                                                        class="mphb-booking-details mphb-checkout-section">
-                                                        <h3 class="mphb-booking-details-title">Booking Details</h3>
-                                                        <p class="mphb-check-in-date">
-                                                            <span>Check-in:</span>
-                                                            <strong style="color: rgb(55, 55, 55);">{{ check_in }},
-                                                                11:00 am</strong>
-                                                        </p>
-                                                        <p class="mphb-check-out-date">
-                                                            <span>Check-out:</span>
-                                                            <strong style="color: rgb(55, 55, 55);">{{ check_out }},
-                                                                11:00 am</strong>
-                                                        </p>
-                                                        <p><span>Room:</span><strong style="color: rgb(55, 55, 55);">{{ room.name }}</strong></p>
-                                                        <p><span>Guests:</span> <strong
-                                                                style="color: rgb(55, 55, 55);">{{ adults }} guest{{ adults|pluralize }}</strong></p>
-                                                    </section>
-                                                    <br>
+                                                    
 
                                                     <!-- Messages Block -->
                                                     {% if messages %}
@@ -537,21 +506,21 @@
                                                                     </td>
                                                                     <td class="mphb-table-price-column">
                                                                         <span class="mphb-price"><span
-                                                                                class="mphb-currency">₹</span>{{ room.price }} × {{ num_nights }}</span>
+                                                                                class="mphb-currency"></span>{{ room.price }} × {{ num_nights }}</span>
                                                                     </td>
                                                                 </tr>
                                                                 <tr class="mphb-price-breakdown-subtotal">
                                                                     <th colspan="1">Subtotal</th>
                                                                     <th class="mphb-table-price-column">
                                                                         <span class="mphb-price"><span
-                                                                                class="mphb-currency">₹</span>{{ subtotal }}</span>
+                                                                                class="mphb-currency"></span>{{ subtotal }}</span>
                                                                     </th>
                                                                 </tr>
                                                                 <tr class="mphb-price-breakdown-accommodation-total">
                                                                     <th colspan="1">Total GST (18%)</th>
                                                                     <th class="mphb-table-price-column">
                                                                         <span class="mphb-price"><span
-                                                                                class="mphb-currency">₹</span>{{ gst }}</span>
+                                                                                class="mphb-currency"></span>{{ gst }}</span>
                                                                     </th>
                                                                 </tr>
                                                                 {% if discount > 0 %}
@@ -560,7 +529,7 @@
                                                                     <th class="mphb-table-price-column">
                                                                         <span class="mphb-price"
                                                                             style="color: rgb(0, 182, 0);"><span
-                                                                                class="mphb-currency">₹</span>{{ discount }}</span>
+                                                                                class="mphb-currency"></span>{{ discount }}</span>
                                                                     </th>
                                                                 </tr>
                                                                 {% endif %}
@@ -570,7 +539,7 @@
                                                                     <th colspan="1">Total Billing</th>
                                                                     <th class="mphb-table-price-column">
                                                                         <span class="mphb-price"><span
-                                                                                class="mphb-currency">₹</span>{{ total }}</span>
+                                                                                class="mphb-currency"></span>{{ total }}</span>
                                                                     </th>
                                                                 </tr>
                                                             </tfoot>

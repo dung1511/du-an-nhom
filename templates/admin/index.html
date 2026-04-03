@@ -1,0 +1,292 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<style>
+    .dashboard-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+    }
+
+    .hero-banner {
+        background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,58,138,0.92), rgba(37,99,235,0.88));
+        color: white;
+        padding: 35px;
+        border-radius: 28px;
+        box-shadow: 0 18px 40px rgba(15,23,42,0.18);
+    }
+
+    .hero-banner h1 {
+        font-size: 34px;
+        margin-bottom: 8px;
+        font-weight: 800;
+    }
+
+    .hero-banner p {
+        font-size: 16px;
+        color: rgba(255,255,255,0.9);
+        margin: 0;
+    }
+
+    .section-box {
+        background: rgba(255,255,255,0.88);
+        border-radius: 28px;
+        padding: 28px;
+        box-shadow: 0 14px 34px rgba(15,23,42,0.08);
+        border: 1px solid rgba(255,255,255,0.6);
+    }
+
+    .section-header h2 {
+        font-size: 24px;
+        color: #0f172a;
+        font-weight: 800;
+        margin-bottom: 18px;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 22px;
+    }
+
+    .manage-card {
+        background: linear-gradient(180deg, #ffffff, #f8fbff);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 12px 24px rgba(15,23,42,0.06);
+        border: 1px solid #e2e8f0;
+        transition: all 0.25s ease;
+    }
+
+    .manage-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 18px 36px rgba(15,23,42,0.10);
+    }
+
+    .manage-card .emoji {
+        font-size: 34px;
+        margin-bottom: 12px;
+    }
+
+    .manage-card h3 {
+        margin: 0 0 10px;
+        color: #0f172a;
+        font-size: 21px;
+        font-weight: 800;
+    }
+
+    .manage-card p {
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 14px;
+    }
+
+    .action-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-admin {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 16px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 700;
+        transition: all 0.25s ease;
+        color: white !important;
+    }
+
+    .btn-add {
+        background: linear-gradient(90deg, #16a34a, #15803d);
+    }
+
+    .btn-manage {
+        background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    }
+</style>
+
+<div class="dashboard-wrapper">
+
+    <div class="hero-banner">
+        <h1>🏨 Hotel Management Dashboard</h1>
+        {% comment %} <p>Quản lý toàn bộ hệ thống khách sạn của bạn trong một giao diện thống nhất.</p> {% endcomment %}
+    </div>
+
+    <!-- 1) QUẢN LÝ PHÒNG -->
+    <div class="section-box">
+        <div class="section-header">
+            <h2>🛏️ Quản lý phòng</h2>
+        </div>
+        <div class="cards-grid">
+            <div class="manage-card">
+                <div class="emoji">🏨</div>
+                <h3>Room</h3>
+                <p>Quản lý danh sách phòng.</p>
+                <div class="action-row">
+                    <a href="/admin/rooms/room/add/" class="btn-admin btn-add">+ Thêm Room</a>
+                    <a href="/admin/rooms/room/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+
+            <div class="manage-card">
+                <div class="emoji">📂</div>
+                <h3>RoomCategory</h3>
+                <p>Quản lý loại phòng.</p>
+                <div class="action-row">
+                    <a href="/admin/rooms/roomcategory/add/" class="btn-admin btn-add">+ Thêm Category</a>
+                    <a href="/admin/rooms/roomcategory/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+
+            <div class="manage-card">
+                <div class="emoji">🖼️</div>
+                <h3>RoomImage</h3>
+                <p>Quản lý ảnh phòng.</p>
+                <div class="action-row">
+                    <a href="/admin/rooms/roomimage/add/" class="btn-admin btn-add">+ Thêm Image</a>
+                    <a href="/admin/rooms/roomimage/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2) QUẢN LÝ ĐẶT PHÒNG -->
+    <div class="section-box">
+        <div class="section-header">
+            <h2>📅 Quản lý đặt phòng</h2>
+        </div>
+        <div class="cards-grid">
+            <div class="manage-card">
+                <div class="emoji">📖</div>
+                <h3>Reservation</h3>
+                <p>Quản lý đơn đặt phòng.</p>
+                <div class="action-row">
+                    <a href="/admin/rooms/reservation/add/" class="btn-admin btn-add">+ Thêm Reservation</a>
+                    <a href="/admin/rooms/reservation/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3) QUẢN LÝ KHUYẾN MÃI -->
+    <div class="section-box">
+        <div class="section-header">
+            <h2>🎟️ Quản lý khuyến mãi</h2>
+        </div>
+        <div class="cards-grid">
+            <div class="manage-card">
+                <div class="emoji">💸</div>
+                <h3>Coupon</h3>
+                <p>Quản lý mã giảm giá.</p>
+                <div class="action-row">
+                    <a href="/admin/rooms/coupon/add/" class="btn-admin btn-add">+ Thêm Coupon</a>
+                    <a href="/admin/rooms/coupon/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4) QUẢN LÝ KHÁCH HÀNG -->
+    <div class="section-box">
+        <div class="section-header">
+            <h2>👤 Quản lý khách hàng</h2>
+        </div>
+        <div class="cards-grid">
+            <div class="manage-card">
+                <div class="emoji">👥</div>
+                <h3>User</h3>
+                <p>Quản lý tài khoản khách hàng.</p>
+                <div class="action-row">
+                    <a href="/admin/auth/user/add/" class="btn-admin btn-add">+ Thêm User</a>
+                    <a href="/admin/auth/user/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+
+            <div class="manage-card">
+                <div class="emoji">🪪</div>
+                <h3>Profile</h3>
+                <p>Quản lý hồ sơ khách hàng.</p>
+                <div class="action-row">
+                    <a href="/admin/accounts/profile/add/" class="btn-admin btn-add">+ Thêm Profile</a>
+                    <a href="/admin/accounts/profile/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5) QUẢN LÝ NỘI DUNG WEBSITE -->
+    <div class="section-box">
+        <div class="section-header">
+            <h2>📝 Quản lý nội dung website</h2>
+        </div>
+        <div class="cards-grid">
+            <div class="manage-card">
+                <div class="emoji">📂</div>
+                <h3>BlogCategory</h3>
+                <p>Quản lý danh mục blog.</p>
+                <div class="action-row">
+                    <a href="/admin/blog/blogcategory/add/" class="btn-admin btn-add">+ Thêm BlogCategory</a>
+                    <a href="/admin/blog/blogcategory/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+
+            <div class="manage-card">
+                <div class="emoji">📰</div>
+                <h3>Blog</h3>
+                <p>Quản lý bài viết.</p>
+                <div class="action-row">
+                    <a href="/admin/blog/blog/add/" class="btn-admin btn-add">+ Thêm Blog</a>
+                    <a href="/admin/blog/blog/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+
+            <div class="manage-card">
+                <div class="emoji">💬</div>
+                <h3>Comment</h3>
+                <p>Quản lý bình luận.</p>
+                <div class="action-row">
+                    <a href="/admin/blog/comment/add/" class="btn-admin btn-add">+ Thêm Comment</a>
+                    <a href="/admin/blog/comment/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+
+            <div class="manage-card">
+                <div class="emoji">📩</div>
+                <h3>Contact</h3>
+                <p>Quản lý liên hệ.</p>
+                <div class="action-row">
+                    <a href="/admin/contact/contact/add/" class="btn-admin btn-add">+ Thêm Contact</a>
+                    <a href="/admin/contact/contact/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+
+            <div class="manage-card">
+                <div class="emoji">⭐</div>
+                <h3>Feedback</h3>
+                <p>Quản lý phản hồi.</p>
+                <div class="action-row">
+                    <a href="/admin/feedback/feedback/add/" class="btn-admin btn-add">+ Thêm Feedback</a>
+                    <a href="/admin/feedback/feedback/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+
+            <div class="manage-card">
+                <div class="emoji">🎨</div>
+                <h3>FooterText</h3>
+                <p>Quản lý footer website.</p>
+                <div class="action-row">
+                    <a href="/admin/footer/footertext/add/" class="btn-admin btn-add">+ Thêm Footer</a>
+                    <a href="/admin/footer/footertext/" class="btn-admin btn-manage">Quản lý</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

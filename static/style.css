@@ -65,6 +65,58 @@
   .btn:hover {
     background-color: #0056b3;
   }
+
+  .room-status-badge {
+    display: inline-block;
+    padding: 8px 14px;
+    color: #fff;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 9px rgba(0,0,0,0.35);
+    border: 2px solid rgba(255,255,255,0.75);
+    backdrop-filter: blur(6px);
+  }
+
+  .room-status-badge.available {
+    background: linear-gradient(135deg, #2dc47f, #1f8f5c);
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(165, 255, 200, 0.95);
+    animation: glow-green 2s infinite ease-in-out;
+  }
+  
+  .room-status-badge.booked {
+    background: linear-gradient(135deg, #dc4450, #9f1f26);
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 150, 150, 0.95);
+    animation: glow-red 2s infinite ease-in-out;
+  }
+
+  .room-status-text {
+    font-weight: 900;
+    font-size: 14px;
+    color: #333;
+    font-style: italic;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.12);
+  }
+
+  @keyframes glow-green {
+    from { box-shadow: 0 0 8px rgba(45, 196, 127, 0.5); }
+    to { box-shadow: 0 0 20px rgba(45, 196, 127, 1); }
+  }
+
+  @keyframes glow-red {
+    from { box-shadow: 0 0 8px rgba(224, 63, 68, 0.5); }
+    to { box-shadow: 0 0 20px rgba(224, 63, 68, 1); }
+  }
+  
+
+  .room-status-badge.booked {
+    background-color: #e03f44;
+  }
+
   /* styles.css */
 
 body {

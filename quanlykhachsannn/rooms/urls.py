@@ -12,4 +12,7 @@ urlpatterns = [
     path('booking-confirmation/<int:reservation_id>/', views.booking_confirmation, name='booking_confirmation'),
     path('rooms/filter/', views.room_list_filtered, name='room_list_filtered'),
     path('my-bookings/', views.my_bookings, name='my_bookings'),
+
+    path('book-room/<int:room_id>/', views.book_room, name='book_room'),
+    path('my-bookings/', views.my_bookings, name='my_bookings'),
 ]   

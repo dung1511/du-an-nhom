@@ -538,7 +538,15 @@
                                 <a href="{% url 'rooms:room_detail' room.id %}">
                                   <div class="knsl-cover-frame">
                                     <img class="lazyload" decoding="async"
-                                      src="{{ room.image.url|default:'/static/images/placeholder.jpg' }}"
+                                     {% if room.image %}
+                                        <img class="lazyload" decoding="async"
+                                            src="{{ room.image.url }}"
+                                            alt="{{ room.name }}" />
+                                        {% else %}
+                                        <img class="lazyload" decoding="async"
+                                            src="/static/images/placeholder.jpg"
+                                            alt="No image" />
+                                        {% endif %}
                                       alt="{{ room.name }}" />
                                   </div>
                                   <br>

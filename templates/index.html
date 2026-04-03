@@ -292,6 +292,26 @@
       border-radius: 50%;
       /* Optional, if circular images are desired */
     }
+    /* Màu cho trạng thái phòng */
+    .room-status-badge {
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      color: white;
+      z-index: 10;
+      text-transform: uppercase;
+    }
+
+    /* Phòng trống - Màu xanh */
+    .room-status-badge.available {
+      background-color: #28a745 !important;
+    }
+
+    /* Đã đặt - Màu đỏ */
+    .room-status-badge.booked {
+      background-color: #dc3545 !important;
+    }
   </style>
 
   </head>
@@ -532,39 +552,40 @@
                       <div class="swiper-container knsl-uni-slider rooms-carousel">
                         <div class="swiper-wrapper">
                           {% for room in rooms %}
-                          <div class="swiper-slide">
-                            <div class="mphb_sc_room-wrapper knsl-scroll-animation">
-                              <div class="mphb-room-type">
-                                <a href="{% url 'rooms:room_detail' room.id %}">
-                                  <div class="knsl-cover-frame">
-                                    <img class="lazyload" decoding="async"
-                                     {% if room.image %}
-                                        <img class="lazyload" decoding="async"
-                                            src="{{ room.image.url }}"
-                                            alt="{{ room.name }}" />
-                                        {% else %}
-                                        <img class="lazyload" decoding="async"
-                                            src="/static/images/placeholder.jpg"
-                                            alt="No image" />
-                                        {% endif %}
-                                      alt="{{ room.name }}" />
-                                  </div>
-                                  <br>
-                                  <div class="knsl-card-description">
-                                    <h5>{{ room.name }}</h5>
-                                    <br>
-                                    <p>₹{{ room.price }} per night</p>
-                                  </div>
-                                </a>
+                            <div class="swiper-slide">
+                              <div class="mphb_sc_room-wrapper knsl-scroll-animation">
+                                <div class="mphb-room-type">
+                                  <a href="{% url 'rooms:room_detail' room.id %}" style="text-decoration: none; color: inherit;">
+                                    <div class="knsl-cover-frame" style="position: relative;">
+                                      {% if room.image %}
+                                        <img class="lazyload" src="{{ room.image.url }}" alt="{{ room.name }}" />
+                                      {% else %}
+                                        <img class="lazyload" src="/static/images/placeholder.jpg" alt="No image" />
+                                      {% endif %}
+
+                                      <span class="room-status-badge {% if room.availability_status == 'Phòng trống' %}available{% else %}booked{% endif %}" 
+                                            style="position: absolute; top: 10px; right: 10px;">
+                                        {{ room.availability_status }}
+                                      </span>
+                                    </div>
+
+                                    <div class="knsl-card-description" style="padding: 15px 0;">
+                                      <h5>{{ room.name }}</h5>
+                                      <p>{{ room.price }}</p>
+                                      <div class="btn-book" style="display:inline-block; padding:8px 14px; background:#4e6cff; color:#fff; border-radius:6px; font-weight:600;">
+                                          Đặt phòng
+                                      </div>
+                                    </div>
+                                  </a>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          {% empty %}
-                          <div class="swiper-slide">
-                            <p>No rooms available.</p>
-                          </div>
-                          {% endfor %}
-                        </div>
+                            {% empty %}
+                            <div class="swiper-slide">
+                              <p>No rooms available.</p>
+                            </div>
+                            {% endfor %}
+                          </div> 
                         <div class="knsl-uni-slider-nav-panel">
                           <div class="knsl-uni-slider-pagination"></div>
                           <div class="knsl-uni-nav">

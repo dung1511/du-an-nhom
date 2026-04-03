@@ -38,7 +38,10 @@
     <!-- Room Listings -->
     <div class="container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; padding: 20px;">
         {% for room in rooms %}
-            <div class="room-card" style="background: #fff; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <div class="room-card" style="position: relative; background: #fff; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <div style="position: absolute; top: 12px; right: 12px; z-index: 2;">
+                    <span style="display:inline-block;padding:8px 14px;border-radius:999px;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.75);" class="room-status-badge {% if room.availability_status == 'Phòng trống' %}available{% else %}booked{% endif %}">{{ room.availability_status }}</span>
+                </div>
                 <a href="{% url 'rooms:room_detail' room.id %}">
                     {% if room.image %}
                         <img src="{{ room.image.url }}" alt="{{ room.name }}" style="width: 100%; height: 280px; object-fit: cover; display: block;">
@@ -58,7 +61,8 @@
                         {{ room.description|slice:":100" }}...
                     </p>
                     <div class="price" style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 18px; color: #2a2a2a;">₹{{ room.price }} per night</span>
+                        <span style="font-size: 18px; color: #2a2a2a;">{{ room.price }}</span>
+                        <a href="{% url 'rooms:room_detail' room.id %}" class="btn-book" style="padding: 8px 14px; background: #4e6cff; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600;">Đặt phòng</a>
                     </div>
                 </div>
             </div>

@@ -166,8 +166,8 @@
                                                             <h3>Reservation #{{ booking.id }}</h3>
                                                             <p><strong style="color: #414141;">Name:</strong> {{ booking.first_name }} {{ booking.last_name }}</p>
                                                             <p><strong style="color: #414141;">Room:</strong> {{ booking.room.name }}</p>
-                                                            <p><strong style="color: #414141;">Check-in:</strong> {{ booking.check_in_date|date:"F d, Y" }} at 11:00 AM</p>
-                                                            <p><strong style="color: #414141;">Check-out:</strong> {{ booking.check_out_date|date:"F d, Y" }} at 10:00 AM</p>
+                                                            {% comment %} <p><strong style="color: #414141;">Check-in:</strong> {{ booking.check_in_date|date:"F d, Y" }} at 11:00 AM</p>
+                                                            <p><strong style="color: #414141;">Check-out:</strong> {{ booking.check_out_date|date:"F d, Y" }} at 10:00 AM</p> {% endcomment %}
                                                             <p><strong style="color: #414141;">Guests:</strong> {{ booking.adults }} guest{{ booking.adults|pluralize }}</p>
                                                             <p><strong style="color: #414141;">Payment Method:</strong> {{ booking.get_payment_method_display }} </p>
                                                             <p><strong style="color: #414141;">Total:</strong> ₹{{ booking.total }}</p>
