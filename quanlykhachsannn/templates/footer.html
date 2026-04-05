@@ -1,0 +1,59 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'footer.css' %}">
+<footer class="footer" style="background-color: #1a1a2e; color: white;">
+    <div class="footer-container">
+        <div class="footer-brand">
+            <h2 style="color: white;">Hotel Paradise</h2>
+            <p style="color: white;">Where luxury meets tradition in the heart of Goa. Connect with us on social media for the latest updates and exclusive offers...</p>
+            <div class="social-icons">
+                <a href="#"><i class="fas fa-times" style="color: white;"></i></a>
+                <a href="#"><i class="fab fa-facebook-f" style="color: white;"></i></a>
+                <a href="#"><i class="fab fa-youtube-square" style="color: white;"></i></a>
+                <a href="#"><i class="fab fa-instagram" style="color: white;"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in" style="color: white;"></i></a>
+            </div>
+            <div style="margin-top: 20px;">
+                <h5 style="color: white; text-align: center;">© 2025 Paradise –</h5>
+            </div>
+        </div>
+        <div class="footer-menu" style="padding-left: 20px;">
+            <h3 style="color: white;">Menu</h3>
+            <ul>
+                <li><a href="{% url 'home' %}" style="color: white;">Home</a></li>
+                <li><a href="{% url 'rooms:room_list' %}" style="color: white;">Rooms</a></li>
+                <li><a href="{% url 'blog:blog_list' %}" style="color: white;">Blog</a></li>
+                <li><a href="{% url 'feedback:feedback_list' %}" style="color: white;">Feedback</a></li>
+                <li><a href="{% url 'about' %}" style="color: white;">About Us</a></li>
+                <li><a href="{% url 'contact:contact_us' %}" style="color: white;">Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="footer-meet">
+            <h3 style="color: white;">Meet Hotel Paradise</h3>
+            <ul>
+                <li><a href="#" style="color: white;">FAQ</a></li>
+                <li><a href="#" style="color: white;">Gallery</a></li>
+                <li><a href="#" style="color: white;">Menu</a></li>
+                
+            </ul>
+        </div>
+        <div class="footer-instagram">
+            <h3 style="color: white;">Instagram</h3>
+            <div class="instagram-gallery">
+                <img src="{% static 'images/about-1-140x140.jpg' %}" alt="Instagram 1">
+                <img src="{% static 'images/about-2-140x140.jpg' %}" alt="Instagram 2">
+                <img src="{% static 'images/about-3-140x140.jpg' %}" alt="Instagram 3">
+                <img src="{% static 'images/about-4-140x140.jpg' %}" alt="Instagram 4">
+                <img src="{% static 'images/about-5-140x140.jpg' %}" alt="Instagram 5">
+                <img src="{% static 'images/about-6-140x140.jpg' %}" alt="Instagram 6">
+            </div>
+        </div>
+    </div>
+    <div style="background-color: #1a1a2e; color: white; padding: 20px; text-align: center; margin-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+        <p style="margin: 0;">© 2025 Hotel Paradise,Goa. All rights reserved.</p>
+        <p style="font-size: 14px; margin-top: 10px; color: #ccc;">
+            {% with footer_text=footer_text_obj.text %}
+                <a href="https://github.com/shubhambirari3" style="font-weight: bold; font-size: 16px; color: white; text-decoration: none;">{{ footer_text }}</a>
+            {% endwith %}
+        </p>
+    </div>
+</footer>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Ensure full height and width */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* Prevents scrollbars */
+        }
+
+        /* Background animation */
+        @keyframes slowZoom {
+            0%, 100% { background-size: 100%; }
+            50% { background-size: 105%; }
+        }
+
+        /* Background container */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("/static/images/pool-with-palm-trees-sides_1203-2070.jpg") no-repeat center center/cover;
+            animation: slowZoom 10s infinite ease-in-out;
+            z-index: -1;
+        }
+
+        /* Dark overlay for readability */
+        .background-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Centering the edit profile form */
+        .edit-container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 80px; /* Adds padding above the container */
+        }
+
+        .card {
+            width: 100%;
+            max-width: 500px; /* Reduced width for a smaller form */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 20px; /* Reduced padding */
+        }
+
+        .card h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-label {
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .alert {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        hr {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        
+        /* Navbar */
+        .navbar {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            background: rgb(255, 255, 255); /* Semi-transparent */
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 3;
+            transition: background 0.3s ease;
+        }
+
+       
+
+        .navbar a {
+            color: #000000;
+            font-size: 18px;
+            text-decoration: none;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            transition: color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            color: #007bff; /* Blue hover effect */
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3); /* Gradient */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px; /* Rounded */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px); /* Lift effect */
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5); /* Glow */
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #ff4d4d, #cc0000); /* Gradient */
+            color: white;
+            padding: 6px 12px; /* Smaller padding */
+            font-size: 14px; /* Smaller font size */
+            border-radius: 25px;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #ff6666, #e60000);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.5);
+        }
+
+        .btn-signup {
+            background: linear-gradient(135deg, #28a745, #218838); /* Green gradient */
+            color: white;
+            padding: 6px 12px; /* Smaller padding */
+            font-size: 14px; /* Smaller font size */
+            border-radius: 25px;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+
+        .btn-signup:hover {
+            background: linear-gradient(135deg, #34d058, #28a745);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background -->
+    <div class="background-container"></div>
+
+    
+    <nav class="navbar">
+        <a href="{% url 'home' %}"> Paradise</a>
+        <div class="navbar-right">
+            <a href="{% url 'accounts:sign_up' %}" class="btn-signup" style="font-size: 12px; color: white;">Create Account</a>
+            <a href="{% url 'accounts:logout_user' %}" class="btn-logout" style="font-size: 12px;color: white;">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Edit Profile Form -->
+    {% block content %}
+    <div class="edit-container">
+        <div class="card shadow-lg">
+            <h2>Edit Profile</h2>
+            <hr>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="first_name" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" value="{{ form.first_name.value|default_if_none:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="last_name" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ form.last_name.value|default_if_none:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ form.username.value|default_if_none:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ form.email.value|default_if_none:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phone_number" class="form-label">Phone Number</label>
+                    <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ form.phone_number.value|default_if_none:'' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="profile_picture" class="form-label">Profile Picture</label>
+                    <input type="file" class="form-control" id="profile_picture" name="profile_picture">
+                </div>
+                <button type="submit" class="btn btn-success w-100">Save Changes</button>
+            </form>
+        </div>
+    </div>
+    {% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

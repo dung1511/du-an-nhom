@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Paradise - Hotel & Resort</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link media="all"
+    href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_86433fa97a80a986cad08803f18701d2.css"
+    rel="stylesheet">
+  <link media="only screen and (max-width: 768px)"
+    href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_41f59b21c4bbf5bf8ff4257643b4a543.css"
+    rel="stylesheet">
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+
+  <style>
+    img:is([sizes="auto" i], [sizes^="auto," i]) {
+      contain-intrinsic-size: 3000px 1500px;
+    }
+
+    /* Fix image sizing in carousel cards */
+    .knsl-cover-frame {
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .knsl-cover-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Existing styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      position: fixed;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: white;
+      z-index: 99;
+      width: 100%;
+    }
+
+    .navbar a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: black;
+    }
+
+    @keyframes slowZoom {
+      0% {
+        background-size: 100%;
+      }
+
+      50% {
+        background-size: 110%;
+      }
+
+      100% {
+        background-size: 100%;
+      }
+    }
+
+    .hero {
+      position: relative;
+      background-image: url('{% static "images/img-banner-2-scaled-1-1920x1315.jpg" %}');
+      background-size: cover;
+      background-position: center;
+      background-color: rgba(0, 0, 0, 0.5);
+      background-blend-mode: darken;
+      height: 100vh;
+      color: white;
+      text-align: center;
+      animation: slowZoom 10s infinite ease-in-out;
+    }
+
+    .hero-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: large;
+      font-weight: bold;
+    }
+
+    .hero-content p {
+      color: white;
+    }
+
+    .search-form {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .hero-content h1 {
+      color: white;
+    }
+
+    .search-form input,
+    .search-form select,
+    .search-form button {
+      padding: 20px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .search-form label {
+      background-color: #f8fcfd;
+      color: rgba(0, 0, 0, 0.639);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50px;
+      width: 100%;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .menu {
+      display: flex;
+      gap: 10px;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: #333;
+      font-size: 16px;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .menu a:hover {
+      color: #007BFF;
+    }
+
+    .book {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .book button {
+      background-color: #3366FF;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .book button:hover {
+      background-color: #004FCC;
+    }
+
+    .book i {
+      font-size: 20px;
+      color: #333;
+      position: relative;
+    }
+
+    .book i::after {
+      content: "0";
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background-color: #28A745;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Fix Swiper carousel styles */
+    .swiper-container {
+      overflow: hidden !important;
+    }
+
+    .swiper-wrapper {
+      display: flex !important;
+    }
+
+    .swiper-slide {
+      flex-shrink: 0 !important;
+      width: auto !important;
+    }
+
+
+
+
+    input[type="date"]:focus:before {
+      content: "";
+    }
+
+    /* Hover and Focus Effects */
+    .search-form:hover {
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .search-form input:focus,
+    .search-form select:focus {
+      border-color: #207feb;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .search-form label[for="Search"]:hover {
+      background: #357abd;
+    }
+
+
+
+
+    /* Ensure the input looks empty until a date is selected */
+    input[type="date"] {
+      -webkit-appearance: none;
+      /* Remove default styling */
+      appearance: none;
+    }
+
+    /* Style the selected date text */
+    input[type="date"]:valid {
+      color: #333;
+      /* Matches the label color */
+    }
+
+    /* Remove placeholder-like behavior before focus */
+    input[type="date"]:not(:focus):not(:valid) {
+      color: transparent;
+      /* Keeps it invisible until a date is picked */
+    }
+
+    /* Hover and Focus Effects */
+    .search-form:hover {
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .search-form input:focus,
+    .search-form select:focus {
+      border-color: #4a90e2;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .search-form label[for="Search"]:hover {
+      background: #357abd;
+    }
+
+    .select2-container--default .select2-selection--single {
+      background-color: #ffffff0a;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .knsl-p-0-100 {
+      padding-bottom: 0px;
+    }
+
+    /* feedbacl profile img */
+    .testimonial .profile img {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 50%;
+      /* Optional, if circular images are desired */
+    }
+  </style>
+
+  </head>
+
+  <body>
+    {% include 'navbar.html' %}
+
+  
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1 style="white-space: nowrap;">Welcome to Paradise</h1> <br>
+        <p><em>Welcome to Goa Paradise Retreat, your gateway to paradise in Goa. Experience luxury, comfort, and the vibrant spirit of Goa with us..</em></p>
+        <br><br>
+        <form method="GET" action="{% url 'rooms:room_list_filtered' %}" class="search-form" style="
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.631), rgba(240, 248, 255, 0.568));
+            backdrop-filter: blur(12px);
+            border-radius: 15px;
+            padding: 15px 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 0;
+            transition: all 0.3s ease;">
+            <label for="check_in" style="
+                font-size: 15px;
+                color: #333;
+                font-weight: 500;
+                padding: 10px 15px;
+                background: transparent;
+                margin: 0%;
+                backdrop-filter: blur(100%);">
+                Check-in
+            </label>
+            <input type="date" id="check_in" name="check_in" required style="
+                padding: 10px 15px;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.5);
+                outline: none;
+                transition: border-color 0.3s ease;
+                color: #333;
+                margin: 0%;
+                height: 40px;">
+            <label for="check_out" style="
+                font-size: 15px;
+                color: #333;
+                font-weight: 500;
+                padding: 10px 15px;
+                margin: 0%;
+                background: transparent;
+                backdrop-filter: blur(100%);">
+                Check-out
+            </label>
+            <input type="date" id="check_out" name="check_out" required style="
+                padding: 10px 15px;
+                margin: 0%;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.584);
+                outline: none;
+                transition: border-color 0.3s ease;
+                color: #333;
+                height: 40px;">
+            <select name="adults" style="
+                padding: 10px 15px;
+                background-color: transparent;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                outline: none;
+                transition: border-color 0.3s ease;
+                height: 40px;">
+                <option value="1">1 guest</option>
+                <option value="2">2 guests</option>
+                <option value="3">3 guests</option>
+                <option value="4">4 guests</option>
+                <option value="5">5 guests</option>
+                <option value="6">6 guests</option>
+            </select>
+            <button type="submit" style="
+                background: #1e7de9;
+                padding: 10px 15px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background 0.3s ease;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                border: none;">
+                <i class="fas fa-search" style="color: white;"></i>
+            </button>
+        </form>
+      </div>
+    </section>
+
+
+    <section style="background-color: #f8fcfd; padding: 50px 0;">
+    <!-- Features Section -->
+    <div class="features" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 50px;">
+      <div class="feature-item"
+        style="text-align: center; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <img src="{% static 'images/f-1.png' %}" alt="Airport Transfer Icon" style="width: 30px; height: 30px;">
+        <p>Airport transfer</p>
+      </div>
+      <div class="feature-item"
+        style="text-align: center; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <img src="{% static 'images/f-2.png' %}" alt="All Inclusive Icon" style="width: 30px; height: 30px;">
+        <p>All inclusive</p>
+      </div>
+      <div class="feature-item"
+        style="text-align: center; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <img src="{% static 'images/f-3.png' %}" alt="Air Conditioned Icon" style="width: 30px; height: 30px;">
+        <p>Air-conditioned</p>
+      </div>
+      <div class="feature-item"
+        style="text-align: center; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <img src="{% static 'images/f-4.png' %}" alt="Under Protection Icon" style="width: 30px; height: 30px;">
+        <p>Under protection</p>
+      </div>
+    </div>
+
+    <!--   We have 17+ years of Experience Experience Section -->
+    <div class="experience"
+      style="display: flex; align-items: center; gap: 50px; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+      <div class="experience-image" style="flex: 1;">
+        <img src="{% static 'images/swimming-pool_74190-1977.jpg' %}" alt="Hotel" style="width: 100%; border-radius: 10px;">
+      </div>
+      <div class="experience-text" style="flex: 1; text-align: left;">
+        <h2 style="font-size: 28px; margin-bottom: 20px;">We have 17+ years of Experience</h2>
+        <p style="margin-bottom: 20px; color: #555;">
+          Nestled in the heart of Goa, Goan Paradise Retreat offers a unique blend of modern amenities and traditional Goan hospitality, making your stay unforgettable.
+        </p>
+        <a href="{% url 'about' %}"
+          style="display: inline-block; padding: 10px 20px; background: #4a90e2; color: white; border-radius: 5px; text-decoration: none;">More
+          about us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Start your Amazing Adventure! -->
+  <section style="background-color: #f8fcfd; padding: 50px 0;">
+    <!-- Start Your Amazing Adventure Section -->
+    <div class="adventure-section"
+      style="display: flex; align-items: center; gap: 50px; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+      <div class="adventure-text" style="flex: 1; text-align: left;">
+        <h2 style="font-size: 28px; margin-bottom: 20px;">Start your Amazing Adventure!</h2>
+        <p style="margin-bottom: 20px; color: #555;">
+          Explore our range of elegantly designed rooms. From cozy singles to spacious family suites, each room is crafted to offer comfort and style in the heart of Goa.
+        </p>
+        <a href="{% url 'rooms:room_list' %}"
+          style="display: inline-block; padding: 10px 20px; background: #4a90e2; color: white; border-radius: 5px; text-decoration: none;">Choose
+          a room</a>
+      </div>
+      <div class="adventure-image" style="flex: 1;">
+        <img src="{% static 'images/luxury-architecture-exterior-design_23-2151920951.jpg' %}" alt="Building" style="width: 100%; border-radius: 10px;">
+      </div>
+    </div>
+  </section>
+
+  <!-- Kinsley is Waiting for You Section -->
+  <section style="background-color: #c4eff96b; padding: 50px 0;">
+    <div class="waiting-section" style="text-align: center; padding: 50px 20px;">
+      <h2 style="font-size: 28px; margin-bottom: 20px;">Hotel Paradise is Waiting for You!</h2>
+      <p style="margin-bottom: 20px; color: #555; max-width: 600px; margin-left: auto; margin-right: auto;">
+        “Welcome to Hotel Paradise! Nestled in the heart of Goa’s breathtaking coast, our hotel blends traditional Indian warmth with modern luxury. Whether you’re here for a family vacation or a romantic getaway, our exquisite rooms, lush amenities, and vibrant local experiences promise an unforgettable stay.”
+      </p>
+      
+    </div>
+  </section>
+
+  <!-- Images Section -->
+  <section class="adventure-section">
+    <div class="adventure-image">
+      <img src="{% static 'images/about-1.jpg' %}" alt="View from the Sea">
+      <div class="image-label">View from the Sea</div>
+    </div>
+    <div class="adventure-image">
+      <img src="{% static 'images/about-2.jpg' %}" alt="East Terrace">
+      <div class="image-label">East Terrace</div>
+    </div>
+    <div class="adventure-image">
+      <img src="{% static 'images/about-3.jpg' %}" alt="West Terrace">
+      <div class="image-label">West Terrace</div>
+    </div>
+  </section>
+
+  <!-- Hotel Numbers -->
+  <section class="stats-section">
+    <div class="stats-container">
+      <div class="stat-item">
+        <h1>4</h1>
+        <p>Hotels</p>
+      </div>
+      <div class="stat-item">
+        <h1>127</h1>
+        <p>Rooms</p>
+      </div>
+      <div class="stat-item">
+        <h1>6</h1>
+        <p>Beaches</p>
+      </div>
+      <div class="stat-item">
+        <h1>4586</h1>
+        <p>Guests</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Best Rooms (Dynamic with Swiper Carousel) -->
+  <section
+    class="elementor-section elementor-top-section elementor-element elementor-element-4e070be elementor-section-full_width elementor-section-height-default elementor-section-height-default"
+    data-id="4e070be" data-element_type="section" data-settings='{"background_background":"classic"}'>
+    <div class="elementor-container elementor-column-gap-no">
+      <div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-54cf1a4"
+        data-id="54cf1a4" data-element_type="column">
+        <div class="elementor-widget-wrap elementor-element-populated">
+          <div
+            class="elementor-element elementor-element-8defa59 elementor-widget elementor-widget-kinsley-rooms-carousel"
+            data-id="8defa59" data-element_type="widget" data-widget_type="kinsley-rooms-carousel.default">
+            <div class="elementor-widget-container">
+              <section class="knsl-transition-top knsl-p-0-100">
+                <img src="{% static 'images/palm.svg' %}" class="lazyload knsl-deco-left" alt="palm" />
+                <div class="container">
+                  <div class="row align-items-center">
+                    <div class="col-lg-12">
+                      <div class="knsl-center knsl-title-frame knsl-scroll-animation knsl-mb-100">
+                        <h2 class="knsl-title--h knsl-mb-20"><span>Our Best Rooms</span></h2>
+                        <div class="knsl-text knsl-mb-30">
+                          <p><span>"Discover a variety of rooms at Goan Paradise Retreat, each crafted to offer comfort, style, and a touch of Goan charm."</span></p>
+                        </div>
+                        <a href="{% url 'rooms:room_list' %}" class="knsl-btn knsl-btn-md"><span>All rooms</span></a>
+                      </div>
+                    </div>
+                    
+                    <div class="col-lg-12">
+                      <div class="swiper-container knsl-uni-slider rooms-carousel">
+                        <div class="swiper-wrapper">
+                          {% for room in rooms %}
+                          <div class="swiper-slide">
+                            <div class="mphb_sc_room-wrapper knsl-scroll-animation">
+                              <div class="mphb-room-type">
+                                <a href="{% url 'rooms:room_detail' room.id %}">
+                                  <div class="knsl-cover-frame">
+                                    <img class="lazyload" decoding="async"
+                                     {% if room.image %}
+                                        <img class="lazyload" decoding="async"
+                                            src="{{ room.image.url }}"
+                                            alt="{{ room.name }}" />
+                                        {% else %}
+                                        <img class="lazyload" decoding="async"
+                                            src="/static/images/placeholder.jpg"
+                                            alt="No image" />
+                                        {% endif %}
+                                      alt="{{ room.name }}" />
+                                  </div>
+                                  <br>
+                                  <div class="knsl-card-description">
+                                    <h5>{{ room.name }}</h5>
+                                    <br>
+                                    <p>₹{{ room.price }} per night</p>
+                                  </div>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                          {% empty %}
+                          <div class="swiper-slide">
+                            <p>No rooms available.</p>
+                          </div>
+                          {% endfor %}
+                        </div>
+                        <div class="knsl-uni-slider-nav-panel">
+                          <div class="knsl-uni-slider-pagination"></div>
+                          <div class="knsl-uni-nav">
+                            <div class="knsl-uni-slider-prev"><i class="fas fa-arrow-left"></i></div>
+                            <div class="knsl-uni-slider-next"><i class="fas fa-arrow-right"></i></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feedback -->
+  <!-- Feedback -->
+  <section class="rooms-section">
+    <h2>Feedback from our Guests</h2> <br>
+    <p>"We value your thoughts! Share your experience at Goan Paradise Retreat to help us serve you better."</p> <br>
+    <a href="{% url 'feedback:feedback_list' %}" class="knsl-btn knsl-btn-md"><span>All feedbacks</span></a>
+  </section>
+  <section class="testimonials-section">
+    <div class="container">
+      {% for feedback in feedbacks %}
+      <div class="testimonial">
+        <div class="profile">
+          {% if feedback.user and feedback.user.profile.profile_picture %}
+          <img src="{{ feedback.user.profile.profile_picture.url }}" alt="{{ feedback.user.get_full_name }}">
+          {% else %}
+          <img src="{% static 'images/default_profile.jpg' %}" alt="Default Profile">
+          {% endif %}
+          <h3>
+            {% if feedback.user %}
+            {{ feedback.user.get_full_name }}
+            {% else %}
+            {{ feedback.name|default:"Anonymous" }}
+            {% endif %}
+          </h3>
+          <p>From {{ feedback.country|default:"Unknown" }}</p>
+        </div>
+        <div class="testimonial-content">
+          <div class="stars">
+            {% for i in '12345' %}
+            {% if forloop.counter <= feedback.rating %} ⭐ {% else %} ☆ {% endif %} {% endfor %} </div>
+              <p>{{ feedback.comment }}</p>
+          </div>
+        </div>
+        {% empty %}
+        <p>No feedbacks available.</p>
+        {% endfor %}
+      </div>
+  </section>
+
+
+
+  <!-- Our Blogs (Dynamic with Swiper Carousel) -->
+  <section
+    class="elementor-section elementor-top-section elementor-element elementor-element-4e070be elementor-section-full_width elementor-section-height-default elementor-section-height-default"
+    data-id="4e070be" data-element_type="section" data-settings='{"background_background":"classic"}'>
+    <div class="elementor-container elementor-column-gap-no">
+      <div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-54cf1a4"
+        data-id="54cf1a4" data-element_type="column">
+        <div class="elementor-widget-wrap elementor-element-populated">
+          <div
+            class="elementor-element elementor-element-8defa59 elementor-widget elementor-widget-kinsley-rooms-carousel"
+            data-id="8defa59" data-element_type="widget" data-widget_type="kinsley-rooms-carousel.default">
+            <div class="elementor-widget-container">
+              <section class="knsl-transition-top knsl-p-0-100">
+                <div class="container">
+                  <div class="row align-items-center">
+                    <div class="col-lg-12">
+                      <div class="knsl-center knsl-title-frame knsl-scroll-animation knsl-mb-100">
+                        <h2 class="knsl-title--h knsl-mb-20"><span>Our Blogs</span></h2>
+                        <div class="knsl-text knsl-mb-30">
+                          <p><span>"Explore our blog for travel tips, local stories, and insights about Goa and Goan Paradise Retreat."</span></p>
+                        </div>
+                        <a href="{% url 'blog:blog_list' %}" class="knsl-btn knsl-btn-md"><span>All
+                            Publications</span></a>
+                      </div>
+                    </div>
+                    <div class="col-lg-12">
+                      <div class="swiper-container knsl-uni-slider blogs-carousel">
+                        <div class="swiper-wrapper">
+                          {% for blog in blogs %}
+                          <div class="swiper-slide">
+                            <div class="mphb_sc_room-wrapper knsl-scroll-animation">
+                              <div class="mphb-room-type">
+                                <a href="{% url 'blog:blog_detail' blog.id %}">
+                                  <div class="knsl-cover-frame">
+                                    <img class="lazyloa</div>d" decoding="async"
+                                      src="{{ blog.image1.url|default:'/static/images/placeholder.jpg' }}"
+                                      alt="{{ blog.title }}" />
+                                  </div>
+                                  <br>
+                                  <div class="knsl-card-description">
+                                    <h5>{{ blog.title }}</h5><br>
+                                    <p>{{ blog.author }} | {{ blog.created_at|date:"F j, Y" }}</p>
+                                    
+                                  </div>
+                                  
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                          {% empty %}
+                          <div class="swiper-slide">
+                            <p>No blogs available.</p>
+                          </div>
+                          {% endfor %}
+                        </div>
+                        <div class="knsl-uni-slider-nav-panel">
+                          <div class="knsl-uni-slider-pagination"></div>
+                          <div class="knsl-uni-nav">
+                            <div class="knsl-uni-slider-prev"><i class="fas fa-arrow-left"></i></div>
+                            <div class="knsl-uni-slider-next"><i class="fas fa-arrow-right"></i></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  {% include 'footer.html' %}
+
+  <!-- JavaScript and Swiper Initialization -->
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Destroy existing Swiper instances if any
+      const roomsContainer = document.querySelector('.rooms-carousel');
+      if (roomsContainer.swiper) {
+        roomsContainer.swiper.destroy(true, true);
+      }
+      var roomsSwiper = new Swiper('.rooms-carousel', {
+        slidesPerView: 3,
+        spaceBetween: 30,
+        loop: true,
+        observer: true,
+        observeParents: true,
+        navigation: {
+          nextEl: '.rooms-carousel .knsl-uni-slider-next',
+          prevEl: '.rooms-carousel .knsl-uni-slider-prev',
+        },
+        pagination: {
+          el: '.rooms-carousel .knsl-uni-slider-pagination',
+          clickable: true,
+          type: 'fraction', // Matches roomdetails.html if it uses fraction
+        },
+        breakpoints: {
+          320: { slidesPerView: 1 },
+          768: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 },
+        }
+      });
+
+      const blogsContainer = document.querySelector('.blogs-carousel');
+      if (blogsContainer.swiper) {
+        blogsContainer.swiper.destroy(true, true);
+      }
+      var blogsSwiper = new Swiper('.blogs-carousel', {
+        slidesPerView: 3,
+        spaceBetween: 30,
+        loop: true,
+        observer: true,
+        observeParents: true,
+        navigation: {
+          nextEl: '.blogs-carousel .knsl-uni-slider-next',
+          prevEl: '.blogs-carousel .knsl-uni-slider-prev',
+        },
+        pagination: {
+          el: '.blogs-carousel .knsl-uni-slider-pagination',
+          clickable: true,
+          type: 'fraction', // Matches roomdetails.html if it uses fraction
+        },
+        breakpoints: {
+          320: { slidesPerView: 1 },
+          768: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 },
+        }
+      });
+    });
+  </script>
+
+  <script type="text/javascript" src="https://kinsley.bslthemes.com/wp-includes/js/jquery/jquery.min.js"
+    id="jquery-core-js"></script>
+  <script type="text/javascript"
+    src="https://kinsley.bslthemes.com/wp-content/plugins/motopress-hotel-booking/vendors/kbwood/datepick/jquery.plugin.min.js"
+    id="mphb-kbwood-plugin-js"></script>
+  <script defer
+    src="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/js/autoptimize_a4efdf3a96bcd12fd7ea34651140649e.js"></script>
+
+  <script>const lazyloadRunObserver = () => {
+      const lazyloadBackgrounds = document.querySelectorAll(`.e-con.e-parent:not(.e-lazyloaded)`);
+      const lazyloadBackgroundObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            let lazyloadBackground = entry.target;
+            if (lazyloadBackground) { lazyloadBackground.classList.add('e-lazyloaded'); }
+            lazyloadBackgroundObserver.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '200px 0px 200px 0px' });
+      lazyloadBackgrounds.forEach((lazyloadBackground) => { lazyloadBackgroundObserver.observe(lazyloadBackground); });
+    };
+    const events = ['DOMContentLoaded', 'elementor/lazyload/observe'];
+    events.forEach((event) => { document.addEventListener(event, lazyloadRunObserver); });</script>
+  <noscript>
+    <style>
+      .lazyload {
+        display: none;
+      }
+    </style>
+  </noscript>
+  <script
+    data-noptimize="1">window.lazySizesConfig = window.lazySizesConfig || {}; window.lazySizesConfig.loadMode = 1;</script>
+  <script async data-noptimize="1"
+    src='https://kinsley.bslthemes.com/wp-content/plugins/autoptimize/classes/external/js/lazysizes.min.js'></script>
+  <script type='text/javascript'>(function () {
+      var c = document.body.className;
+      c = c.replace(/woocommerce-no-js/, 'woocommerce-js');
+      document.body.className = c;
+    })();</script>
+
+
+
+  <script>
+    // Auto-open calendar on click for date inputs
+    document.querySelectorAll('input[type="date"]').forEach(input => {
+      input.addEventListener('click', function () {
+        this.showPicker(); // Forces calendar to open immediately
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Blog </title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <section class="rooms-section">
+        <h1>Create a Blog</h1>
+        <p>Share your experience with us!</p>
+        <div class="breadcrumb">
+            <span><a href="{% url 'blog:blog_list' %}">Blog</a></span> > <span class="current">Create Blog</span>
+        </div>
+    </section>
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Manually render each field without labels, adding placeholders with inline CSS -->
+            <div style="margin-bottom: 15px;">
+                <input type="text" name="title" maxlength="200" required id="id_title" placeholder="Title" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; outline: none;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <textarea name="description" required id="id_description" placeholder="Description" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; outline: none; resize: vertical; height: 150px;"></textarea>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <input type="text" name="country" maxlength="100" required id="id_country" placeholder="Country" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; outline: none;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <select name="category" required id="id_category" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; outline: none;">
+                    <option value="" disabled selected>Select a Category</option>
+                    {% for category in form.category.field.queryset %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <small style="color: #666;">Upload blogs images </small> 
+                <br>
+                <input type="file" name="image1" id="id_image1" accept="image/*" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <input type="file" name="image2" id="id_image2" accept="image/*" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+                
+            </div>
+            <button type="submit" style="width: 100%; padding: 12px; background-color: #3498db; color: #fff; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Submit</button>
+        </form>
+    </div>
+    {% include 'footer.html' %}
+</body>
+</html>

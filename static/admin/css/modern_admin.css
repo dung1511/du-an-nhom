@@ -1,0 +1,65 @@
+/* Tông màu chủ đạo: Dark Sidebar & Blue Accent */
+:root {
+    --primary-color: #4e6cff;
+    --bg-light: #f8faff;
+    --sidebar-bg: #1e293b;
+    --text-dark: #334155;
+}
+
+/* Sidebar hiện đại */
+#nav-sidebar {
+    background-color: var(--sidebar-bg) !important;
+    border: none !important;
+}
+
+#nav-sidebar .module th, #nav-sidebar .module caption {
+    background: transparent !important;
+    color: #94a3b8 !important;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+#nav-sidebar a {
+    color: #cbd5e1 !important;
+    padding: 10px 20px !important;
+    border-radius: 8px;
+    margin: 4px 10px;
+    transition: 0.3s;
+}
+
+#nav-sidebar a:hover, #nav-sidebar tr.selected a {
+    background: rgba(78, 108, 255, 0.2) !important;
+    color: var(--primary-color) !important;
+}
+
+/* Header & Content */
+#header {
+    background: #fff !important;
+    color: var(--text-dark) !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+#header a { color: var(--text-dark) !important; }
+
+body {
+    background-color: var(--bg-light) !important;
+}
+
+/* Biến các khối Model thành các Card trắng sạch sẽ */
+.module {
+    background: #fff !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
+    border: 1px solid #e2e8f0 !important;
+    margin-bottom: 30px !important;
+}
+
+.module h2, .module caption {
+    background: #fff !important;
+    color: var(--text-dark) !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    font-weight: 700 !important;
+    padding: 15px 20px !important;
+}

@@ -1,0 +1,543 @@
+.adventure-image {
+  position: static;
+  flex: 1;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+
+/* Section Styling */
+.adventure-section {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  background-color: #f8fcfd;
+  padding: 50px 0;
+}
+
+/*Container for Each Image */
+.adventure-image {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+/* Image Styling */
+.adventure-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+/* Zoom Effect on Hover */
+.adventure-image:hover img {
+  transform: scale(1.1);
+}
+
+/* Label Styling */
+.image-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 165, 0, 0.9);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  /* z-index: 2;  */
+}
+
+/*Rooms*/
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f9fcff;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  padding: 50px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.room-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.room-card:hover {
+  transform: scale(1.05);
+}
+
+.room-card img {
+  width: 100%;
+  height: auto;
+}
+
+.room-details {
+  padding: 20px;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+h3 {
+  margin: 10px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price span {
+  font-size: 16px;
+  color: #27ae60;
+  font-weight: bold;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/*Footer*/
+
+.footer {
+  background-color: #1a1a2e;
+  color: #fff;
+  padding: 50px 20px;
+  margin-top: 30px;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-brand h2 {
+  font-family: 'Brush Script MT', cursive;
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.footer-brand p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+
+}
+
+.social-icons a {
+  margin-right: 10px;
+  display: inline-block;
+  color: #fff;
+}
+
+.footer-menu,
+.footer-meet {
+  font-size: 14px;
+}
+
+.footer-menu ul,
+.footer-meet ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-menu ul li,
+.footer-meet ul li {
+  margin-bottom: 8px;
+}
+
+.footer-menu ul li a,
+.footer-meet ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer-menu ul li a:hover,
+.footer-meet ul li a:hover {
+  text-decoration: underline;
+}
+
+.footer-instagram .instagram-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.footer-instagram .instagram-gallery img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.footer-instagram h3 {
+  color: #fff;
+}
+
+.footer-meet h3 {
+  color: #fff;
+}
+
+.footer-menu h3 {
+  color: #fff;
+}
+
+/*feedback*/
+.profile {
+  margin-bottom: 20px;
+}
+
+.profile img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.profile img:hover {
+  transform: scale(1.05);
+}
+
+.profile h3 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.profile p {
+  font-size: 14px;
+  color: #555;
+}
+
+.instagram-gallery img:hover {
+  transform: scale(1.05);
+}
+
+/* Testimonial Content */
+.testimonial-content {
+  text-align: left;
+}
+
+.stars {
+  color: #f5c518;
+  /* Star color */
+  margin-bottom: 10px;
+}
+
+.testimonial-content p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Section Background */
+.room-header {
+  display: flex;
+  background-color: #f7fcfe;
+  /* Light blue background */
+  padding: 50px 20px;
+  text-align: center;
+  position: relative;
+
+}
+
+
+/* Title */
+.room-header h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Description */
+.room-header p {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: inline-block;
+  background-color: #fdf6e3;
+  color: #f5a623;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.breadcrumb .current {
+  font-weight: bold;
+}
+
+.breadcrumb span a {
+  color: #171616;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.filter {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filter.active {
+  background-color: #4c6ef5;
+  /* Blue for active */
+  color: #fff;
+  border-color: #4c6ef5;
+}
+
+.filter:hover {
+  background-color: #edf2ff;
+  border-color: #4c6ef5;
+  color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .room-header h1 {
+    font-size: 2rem;
+  }
+
+  .filter {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+}
+
+/*-----------------------------------------------media--------------------------------------------*/
+/* For tablets (widths 768px and below) */
+@media screen and (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .menu {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .hero {
+    height: 70vh;
+  }
+
+  .hero-content {
+    font-size: medium;
+  }
+
+  .search-form {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .experience,
+  .adventure-section {
+    flex-direction: column;
+  }
+
+  .experience-image,
+  .adventure-image {
+    margin-bottom: 20px;
+  }
+}
+
+/* For mobile phones (widths 480px and below) */
+@media screen and (max-width: 480px) {
+  .navbar {
+    padding: 10px;
+  }
+
+  .menu a {
+    font-size: 14px;
+  }
+
+  .hero h1 {
+    font-size: 1.5rem;
+  }
+
+  .hero-content p {
+    font-size: 0.9rem;
+  }
+
+  .features {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .feature-item {
+    flex: 1 1 100%;
+  }
+
+  .stats-container {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .stats-container .stat-item {
+    flex: 1 1 45%;
+  }
+
+  .room-card {
+    flex: 1 1 100%;
+    margin-bottom: 20px;
+  }
+
+  .testimonial {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 1200px) {
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 cards per row for smaller screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
+    /* 1 card per row for very small screens */
+  }
+}
+
+/* feedbaack */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fc;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+.header {
+  background: #eef5fc;
+  padding: 30px 0;
+}
+
+.header h2 {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.header p {
+  color: #666;
+  max-width: 700px;
+  margin: auto;
+}
+
+.feedback-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  padding: 40px 20px;
+}
+
+.feedback-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-card img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ddd;
+}
+
+.feedback-card h3 {
+  margin: 10px 0 5px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.feedback-card p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.stars {
+  color: gold;
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.feedback-box {
+  background: #f1f5f9;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #333;
+  margin-top: 10px;
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Rooms</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <section class="rooms-section">
+        <h1>Phòng Phù Hợp <br><br> <small style="color: rgb(80, 80, 80);">
+            {{ check_in }} ←→ {{ check_out }} | 
+            {{ total_guests }} Khách 
+            {% if adults > 0 %}({{ adults }} người lớn{% if children > 0 %} + {{ children }} trẻ em{% endif %}){% endif %}
+            | {{ num_nights }} đêm
+        </small></h1>
+        <div class="breadcrumb">
+            <span><a href="{% url 'home' %}">Trang chủ</a></span> > <span class="current">Phòng phù hợp</span>
+        </div>
+    </section>
+
+    <div class="container">
+        {% for room in rooms %}
+        <div class="room-card" style="position: relative;">
+            <a href="{% url 'rooms:room_detail' room.id %}">
+                {% if room.image %}
+                    <img src="{{ room.image.url }}" alt="{{ room.name }}">
+                {% else %}
+                    <img src="{% static 'images/placeholder.jpg' %}" alt="No image available">
+                {% endif %}
+            </a>
+            <div class="room-details">
+                <div class="info">
+                    <span>👥 Tổng: {{ room.total_capacity }} người</span>
+                    <span>👨‍👩‍👧 Người lớn: {{ room.capacity_adults }} | 👧 Trẻ em: {{ room.capacity_children }}</span>
+                    <span>📏 Loại: {{ room.get_size_display }}</span>
+                </div>
+                <h3><a href="{% url 'rooms:room_detail' room.id %}">{{ room.name }}</a></h3>
+                <p class="room-status-badge {% if room.availability_status == 'Phòng trống' %}available{% else %}booked{% endif %}">{{ room.availability_status }}</p>
+                <p>{{ room.description|slice:":100"  }}</p>
+                <div class="price">
+                    <span>₹{{ room.price }}/đêm</span>
+                   
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>Không có phòng trống cho ngày và số khách đã chọn.</p>
+        {% endfor %}
+    </div>
+
+    {% include 'footer.html' %}
+</body>
+</html>

@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kết quả tìm kiếm phòng</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link media="all" href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_86433fa97a80a986cad08803f18701d2.css" rel="stylesheet">
+    <style>
+        .search-results-container { padding: 60px 0; background: #fff; }
+        .room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-top: 20px; }
+        .room-card { border: 1px solid #eee; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .room-card img { width: 100%; height: 200px; object-fit: cover; }
+        .room-info { padding: 20px; }
+        .recommendation-box { background: #f0f7ff; padding: 30px; border-radius: 15px; border: 1px solid #cce5ff; margin-top: 40px; }
+        .combo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-top: 20px; }
+        .combo-item { background: #fff; padding: 20px; border-radius: 10px; border-left: 5px solid #007bff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .btn-detail { background: #222; color: #fff; padding: 8px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 10px; }
+    </style>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+
+    <div id="page" class="site">
+        <div id="content" class="site-content">
+            <div class="search-results-container">
+                <div class="container">
+                    
+                    <h2 style="font-weight: bold; margin-bottom: 10px;">Kết quả tìm kiếm</h2>
+                    <p style="color: #666; margin-bottom: 40px;">Đang hiển thị các lựa chọn tốt nhất cho <strong>{{ total_guests }} khách</strong> từ {{ check_in }} đến {{ check_out }}</p>
+
+                    {% if suitable_rooms %}
+                        <h3 style="font-size: 24px; border-left: 4px solid #007bff; padding-left: 15px;">Phòng đơn phù hợp:</h3>
+                        <div class="room-grid">
+                            {% for room in suitable_rooms %}
+                                <div class="room-card">
+                                    {% if room.image %}
+                                        <img src="{{ room.image.url }}" alt="{{ room.name }}">
+                                    {% endif %}
+                                    <div class="room-info">
+                                        <h4 style="margin: 0 0 10px;">{{ room.name }}</h4>
+                                        <p><i class="fa fa-users"></i> Sức chứa: {{ room.capacity }} người</p>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                                            <span style="color: #e44d26; font-weight: bold; font-size: 18px;">₹{{ room.price }}</span>
+                                            <a href="{% url 'rooms:room_detail' room.id %}" class="btn-detail">Chi tiết</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if recommended_combos %}
+                        <div class="recommendation-box">
+                            <h3 style="color: #004085; margin: 0;"><i class="fa fa-star" style="color: #ffc107;"></i> Gợi ý đặt nhóm</h3>
+                            <p style="margin: 10px 0 20px;">Vì không có một phòng đơn nào đủ cho {{ total_guests }} người, bạn nên kết hợp các phòng sau:</p>
+                            
+                            <div class="combo-grid">
+                                {% for combo in recommended_combos %}
+                                    <div class="combo-item">
+                                        <strong style="color: #007bff;">Phương án {{ forloop.counter }}:</strong>
+                                        <ul style="margin: 15px 0; padding-left: 20px;">
+                                            {% for r in combo.rooms %}
+                                                <li>{{ r.name }} ({{ r.capacity }} người)</li>
+                                            {% endfor %}
+                                        </ul>
+                                        <div style="border-top: 1px dashed #ddd; padding-top: 10px;">
+                                            <p style="margin: 0;"><strong>Tổng sức chứa:</strong> {{ combo.total_capacity }} người</p>
+                                            <p style="margin: 5px 0; font-size: 18px; color: #d9534f;"><strong>Tổng giá:</strong> ₹{{ combo.total_price }} / đêm</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if not suitable_rooms and not recommended_combos %}
+                        <div style="text-align: center; padding: 100px 20px;">
+                            <i class="fa fa-search" style="font-size: 50px; color: #eee; margin-bottom: 20px;"></i>
+                            <h3>Rất tiếc, không tìm thấy phòng!</h3>
+                            <p>Không có phòng nào trống hoặc đủ sức chứa cho yêu cầu của bạn.</p>
+                            <a href="{% url 'home' %}" style="color: #007bff; text-decoration: underline;">Quay lại tìm kiếm</a>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+</body>
+</html>
