@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tim Kiem Phong</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f4f7fc; }
+        .card-room img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; }
+        .muted { color: #6c757d; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <h3 class="mb-3">Search + Filter + Pagination (Phong)</h3>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <label class="form-label">Tu khoa</label>
+                    <input id="keyword" class="form-control" placeholder="Vi du: single, deluxe...">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Danh muc</label>
+                    <select id="category" class="form-select">
+                        <option value="">Tat ca</option>
+                        {% for c in categories %}
+                            <option value="{{ c.name }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Gia tu</label>
+                    <input id="price-min" type="number" class="form-control" min="0">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Gia den</label>
+                    <input id="price-max" type="number" class="form-control" min="0">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Limit</label>
+                    <select id="limit" class="form-select">
+                        <option>6</option>
+                        <option selected>10</option>
+                        <option>20</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="status" class="mb-3 muted"></div>
+    <div id="room-list" class="row g-3"></div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <button id="prev-btn" class="btn btn-outline-primary">Trang truoc</button>
+        <div id="page-info" class="fw-semibold"></div>
+        <button id="next-btn" class="btn btn-outline-primary">Trang sau</button>
+    </div>
+</div>
+
+<script>
+    const keywordInput = document.getElementById('keyword');
+    const categoryInput = document.getElementById('category');
+    const priceMinInput = document.getElementById('price-min');
+    const priceMaxInput = document.getElementById('price-max');
+    const limitInput = document.getElementById('limit');
+    const roomList = document.getElementById('room-list');
+    const statusEl = document.getElementById('status');
+    const pageInfo = document.getElementById('page-info');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    let state = {
+        page: 1,
+        limit: 10,
+        tuKhoa: '',
+        danhMuc: '',
+        giaTu: '',
+        giaDen: '',
+    };
+
+    function debounce(fn, delay) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn(...args), delay);
+        };
+    }
+
+    function syncStateFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        state.page = Number(params.get('page') || 1);
+        state.limit = Number(params.get('limit') || 10);
+        state.tuKhoa = params.get('tuKhoa') || '';
+        state.danhMuc = params.get('danhMuc') || '';
+        state.giaTu = params.get('giaTu') || '';
+        state.giaDen = params.get('giaDen') || '';
+
+        keywordInput.value = state.tuKhoa;
+        categoryInput.value = state.danhMuc;
+        priceMinInput.value = state.giaTu;
+        priceMaxInput.value = state.giaDen;
+        limitInput.value = String(state.limit);
+    }
+
+    function syncUrlFromState() {
+        const params = new URLSearchParams();
+        Object.entries(state).forEach(([key, value]) => {
+            if (value !== '' && value !== null && value !== undefined) {
+                params.set(key, value);
+            }
+        });
+        history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+    }
+
+    function buildApiUrl() {
+        const params = new URLSearchParams();
+        params.set('page', state.page);
+        params.set('limit', state.limit);
+        if (state.tuKhoa) params.set('tuKhoa', state.tuKhoa);
+        if (state.danhMuc) params.set('danhMuc', state.danhMuc);
+        if (state.giaTu) params.set('giaTu', state.giaTu);
+        if (state.giaDen) params.set('giaDen', state.giaDen);
+        return `/api/rooms/?${params.toString()}`;
+    }
+
+    function renderRooms(results) {
+        roomList.innerHTML = '';
+        if (!results.length) {
+            roomList.innerHTML = '<div class="col-12"><div class="alert alert-warning">Khong co phong phu hop.</div></div>';
+            return;
+        }
+
+        results.forEach((room) => {
+            const imageHtml = room.image
+                ? `<img src="${room.image}" alt="${room.name}">`
+                : '<div class="border rounded p-4 text-center muted">Khong co anh</div>';
+
+            const col = document.createElement('div');
+            col.className = 'col-md-4';
+            col.innerHTML = `
+                <div class="card card-room h-100 shadow-sm">
+                    <div class="card-body">
+                        ${imageHtml}
+                        <h5 class="mt-2 mb-1">${room.name}</h5>
+                        <div class="muted mb-1">${room.category || 'N/A'}</div>
+                        <div class="fw-semibold">Gia: ${room.price}</div>
+                        <div class="small">Suc chua: ${room.capacity}</div>
+                    </div>
+                </div>`;
+            roomList.appendChild(col);
+        });
+    }
+
+    async function loadRooms() {
+        syncUrlFromState();
+        statusEl.textContent = 'Dang tai du lieu...';
+
+        try {
+            const response = await fetch(buildApiUrl());
+            const data = await response.json();
+
+            renderRooms(data.results || []);
+
+            const pagination = data.pagination || {};
+            pageInfo.textContent = `Trang ${pagination.page || 1} / ${pagination.total_pages || 1}`;
+            prevBtn.disabled = !pagination.has_previous;
+            nextBtn.disabled = !pagination.has_next;
+            statusEl.textContent = `Tong ${pagination.total_items || 0} phong`;
+        } catch (error) {
+            statusEl.textContent = 'Khong the tai du lieu.';
+        }
+    }
+
+    const debouncedSearch = debounce(() => {
+        state.page = 1;
+        state.tuKhoa = keywordInput.value.trim();
+        loadRooms();
+    }, 400);
+
+    keywordInput.addEventListener('input', debouncedSearch);
+    categoryInput.addEventListener('change', () => {
+        state.page = 1;
+        state.danhMuc = categoryInput.value;
+        loadRooms();
+    });
+    priceMinInput.addEventListener('change', () => {
+        state.page = 1;
+        state.giaTu = priceMinInput.value;
+        loadRooms();
+    });
+    priceMaxInput.addEventListener('change', () => {
+        state.page = 1;
+        state.giaDen = priceMaxInput.value;
+        loadRooms();
+    });
+    limitInput.addEventListener('change', () => {
+        state.page = 1;
+        state.limit = Number(limitInput.value || 10);
+        loadRooms();
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (state.page > 1) {
+            state.page -= 1;
+            loadRooms();
+        }
+    });
+    nextBtn.addEventListener('click', () => {
+        state.page += 1;
+        loadRooms();
+    });
+
+    syncStateFromUrl();
+    loadRooms();
+</script>
+</body>
+</html>

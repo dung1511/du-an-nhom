@@ -1,193 +1,324 @@
-<html lang="en-US" >
-
-<head> <!-- Meta Data -->
+<!doctype html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="profile" href="https://gmpg.org/xfn/11">
-    <link media="all"
-        href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_86433fa97a80a986cad08803f18701d2.css"
-        rel="stylesheet">
-    <link media="only screen and (max-width: 768px)"
-        href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_41f59b21c4bbf5bf8ff4257643b4a543.css"
-        rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings</title>
-    {% load static %}
-    <meta name="robots" content="max-image-preview:large">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
-        img:is([sizes="auto" i], [sizes^="auto," i]) {
-            contain-intrinsic-size: 3000px 1500px
+        :root {
+            --ink: #182228;
+            --muted: #617076;
+            --surface: #ffffff;
+            --shell: #f6f4ef;
+            --accent: #0f7f6e;
+            --accent-soft: #ddf4ef;
+            --warn: #b35252;
+            --warn-soft: #fee8e8;
+            --line: #d9dfdf;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --shadow: 0 20px 40px rgba(24, 34, 40, 0.08);
         }
-    </style>
-    <link rel="dns-prefetch" href="//bslthemes.com">
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="alternate" type="application/rss+xml" title="Kinsley - Hotel &amp; Resort WordPress Theme » Feed"
-        href="https://kinsley.bslthemes.com/feed/">
-    <link rel="alternate" type="application/rss+xml"
-        title="Kinsley - Hotel &amp; Resort WordPress Theme » Comments Feed"
-        href="https://kinsley.bslthemes.com/comments/feed/">
-    <style id="classic-theme-styles-inline-css" type="text/css">
-        /*! This file is auto-generated */
-        .wp-block-button__link {
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: radial-gradient(circle at 12% 16%, #f9ead9 0%, rgba(249, 234, 217, 0) 45%),
+                        radial-gradient(circle at 88% 8%, #d7efe8 0%, rgba(215, 239, 232, 0) 35%),
+                        var(--shell);
+            font-family: "Manrope", sans-serif;
+        }
+
+        .bookings-page {
+            width: min(1100px, 92vw);
+            margin: 3rem auto 5rem;
+        }
+
+        .hero {
+            margin-bottom: 1.8rem;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-family: "Playfair Display", serif;
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            letter-spacing: 0.02em;
+        }
+
+        .hero p {
+            margin: 0.8rem 0 0;
+            color: var(--muted);
+            max-width: 720px;
+            line-height: 1.6;
+        }
+
+        .booking-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .booking-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.3rem;
+            display: grid;
+            gap: 1rem;
+            animation: cardRise 360ms ease both;
+        }
+
+        .booking-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .booking-code {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .booking-room {
+            margin: 0.35rem 0 0;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .status-badge {
+            border-radius: 999px;
+            padding: 0.36rem 0.8rem;
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border-color: #b7e7dd;
+        }
+
+        .status-checked-out {
+            background: var(--warn-soft);
+            color: var(--warn);
+            border-color: #f6c9c9;
+        }
+
+        .facts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.7rem;
+        }
+
+        .fact {
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 0.65rem 0.75rem;
+            background: #fff;
+        }
+
+        .fact-label {
+            display: block;
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .fact-value {
+            margin-top: 0.26rem;
+            display: block;
+            font-weight: 700;
+        }
+
+        .service-box {
+            border: 1px dashed #b9cbcb;
+            border-radius: var(--radius-md);
+            padding: 0.9rem;
+            background: #fbfdfd;
+        }
+
+        .service-title {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 800;
+        }
+
+        .service-list {
+            list-style: none;
+            margin: 0.7rem 0 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+        }
+
+        .service-item {
+            border-radius: 999px;
+            padding: 0.4rem 0.72rem;
+            background: #eef6f4;
+            border: 1px solid #d3e5e0;
+            font-size: 0.86rem;
+            font-weight: 600;
+        }
+
+        .service-empty {
+            margin: 0.55rem 0 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .empty-state {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 2rem 1.2rem;
+            text-align: center;
+        }
+
+        .empty-state h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .empty-state p {
+            margin: 0.65rem auto 0;
+            max-width: 500px;
+            color: var(--muted);
+        }
+
+        .book-btn {
+            margin-top: 1rem;
+            display: inline-block;
+            border-radius: 999px;
+            background: var(--accent);
             color: #fff;
-            background-color: #32373c;
-            border-radius: 9999px;
-            box-shadow: none;
             text-decoration: none;
-            padding: calc(.667em + 2px) calc(1.333em + 2px);
-            font-size: 1.125em
+            font-weight: 700;
+            padding: 0.68rem 1.2rem;
         }
 
-        .wp-block-file__button {
-            background: #32373c;
-            color: #fff;
-            text-decoration: none
-        }
-    </style>
-    <link rel="stylesheet" id="bslthms-advanced-btns-style-css"
-        href="https://bslthemes.com/bslthms-advanced-btns/assets/style.css" type="text/css" media="all">
-    <link rel="stylesheet" id="mphb-kbwood-datepick-css-css"
-        href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_single_c72a62925997a10f520b96d14652edde.css"
-        type="text/css" media="all">
-    <style id="woocommerce-inline-inline-css" type="text/css">
-        .woocommerce form .form-row .required {
-            visibility: visible
-        }
-    </style>
-    <link rel="stylesheet" id="kinsley-primary-fonts-css"
-        href="https://fonts.googleapis.com/css2?family=Jost:wght@200;400;600&amp;display=swap" type="text/css"
-        media="all">
-    <link rel="stylesheet" id="kinsley-secondary-fonts-css"
-        href="https://fonts.googleapis.com/css2?family=Monoton&amp;display=swap" type="text/css" media="all">
-    <link rel="stylesheet" id="elementor-post-5762-css"
-        href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_single_54b486a773dc1fff1726e27ba12fa9c9.css"
-        type="text/css" media="all">
-    <link rel="stylesheet" id="elementor-post-9-css"
-        href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_single_7d81b387e4ac0890cded7d9e00a15169.css"
-        type="text/css" media="all">
-    <script type="text/javascript" src="https://kinsley.bslthemes.com/wp-includes/js/jquery/jquery.min.js"
-        id="jquery-core-js"></script>
-    <script type="text/javascript"
-        id="breeze-prefetch-js-extra">var breeze_prefetch = { "local_url": "https:\/\/kinsley.bslthemes.com", "ignore_remote_prefetch": "1", "ignore_list": ["\/hotel\/cart\/", "\/hotel\/checkout\/", "\/hotel\/my-account\/", "(.)\/accommodation\/(.)", "\/accommodation\/", "wp-admin", "wp-login.php"] };</script>
-    <script type="text/javascript"
-        id="wc-add-to-cart-js-extra">var wc_add_to_cart_params = { "ajax_url": "\/wp-admin\/admin-ajax.php", "wc_ajax_url": "\/?wc-ajax=%%endpoint%%", "i18n_view_cart": "View cart", "cart_url": "https:\/\/kinsley.bslthemes.com\/cart\/", "is_cart": "", "cart_redirect_after_add": "no" };</script>
-    <script type="text/javascript"
-        id="woocommerce-js-extra">var woocommerce_params = { "ajax_url": "\/wp-admin\/admin-ajax.php", "wc_ajax_url": "\/?wc-ajax=%%endpoint%%" };</script>
-    <link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://kinsley.bslthemes.com/xmlrpc.php?rsd">
-    <meta name="generator" content="WordPress 6.7.2">
-    <meta name="generator" content="WooCommerce 9.6.0">
-    <link rel="canonical" href="https://kinsley.bslthemes.com/booking-confirmation/">
-    <link rel="shortlink" href="https://kinsley.bslthemes.com/?p=9">
-    <link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed"
-        href="https://kinsley.bslthemes.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fkinsley.bslthemes.com%2Fbooking-confirmation%2F">
-    <link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed"
-        href="https://kinsley.bslthemes.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fkinsley.bslthemes.com%2Fbooking-confirmation%2F&amp;format=xml">
-    <meta name="description" content="Kinsley - Hotel &amp; Resort WordPress Theme - Just another WordPress site">
-    <style></style><noscript>
-        <style>
-            .woocommerce-product-gallery {
-                opacity: 1 !important
+        @keyframes cardRise {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
             }
-        </style>
-    </noscript>
-    <meta name="generator"
-        content="Elementor 3.27.2; features: e_font_icon_svg, additional_custom_breakpoints; settings: css_print_method-external, google_font-enabled, font_display-auto">
-    <style>
-        .e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload),
-        .e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload) * {
-            background-image: none !important
-        }
-
-        @media screen and (max-height:1024px) {
-
-            .e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload),
-            .e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload) * {
-                background-image: none !important
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        @media screen and (max-height:640px) {
+        @media (max-width: 640px) {
+            .bookings-page {
+                margin-top: 2rem;
+                margin-bottom: 3rem;
+            }
 
-            .e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload),
-            .e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload) * {
-                background-image: none !important
+            .booking-card {
+                padding: 1rem;
             }
         }
     </style>
-    <style class="wp-fonts-local" type="text/css">
-        @font-face {
-            font-family: Inter;
-            font-style: normal;
-            font-weight: 300 900;
-            font-display: fallback;
-            src: url('https://kinsley.bslthemes.com/wp-content/plugins/woocommerce/assets/fonts/Inter-VariableFont_slnt,wght.woff2') format('woff2');
-            font-stretch: normal
-        }
-
-        @font-face {
-            font-family: Cardo;
-            font-style: normal;
-            font-weight: 400;
-            font-display: fallback;
-            src: url('https://kinsley.bslthemes.com/wp-content/plugins/woocommerce/assets/fonts/cardo_normal_400.woff2') format('woff2')
-        }
-    </style>
-    <link rel="icon" href="https://kinsley.bslthemes.com/wp-content/uploads/2021/11/cropped-logo-32x32.png"
-        sizes="32x32">
-    <link rel="icon" href="https://kinsley.bslthemes.com/wp-content/uploads/2021/11/cropped-logo-192x192.png"
-        sizes="192x192">
-    <link rel="apple-touch-icon"
-        href="https://kinsley.bslthemes.com/wp-content/uploads/2021/11/cropped-logo-180x180.png">
-    <meta name="msapplication-TileImage"
-        content="https://kinsley.bslthemes.com/wp-content/uploads/2021/11/cropped-logo-270x270.png">
-    <link href="https://kinsley.bslthemes.com/booking-confirmation/#" rel="prefetch">
-    <link href="https://kinsley.bslthemes.com/accommodation/deluxe-room/" rel="prefetch">
 </head>
-
 <body>
     {% include 'navbar.html' %}
-    <div class="knsl-app">
-        <div id="post-9" class="post-9 page type-page status-publish hentry">
-            <div data-elementor-type="wp-page" data-elementor-id="9" class="elementor elementor-9">
-                <section class="elementor-section elementor-top-section elementor-element elementor-element-35098dab elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="35098dab" data-element_type="section">
-                    <div class="elementor-container elementor-column-gap-default">
-                        <div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-48d7eda8" data-id="48d7eda8" data-element_type="column">
-                            <div class="elementor-widget-wrap elementor-element-populated">
-                                <div class="elementor-element elementor-element-57346c9f elementor-widget elementor-widget-shortcode" data-id="57346c9f" data-element_type="widget" data-widget_type="shortcode.default">
-                                    <div class="elementor-widget-container">
-                                        <div class="elementor-shortcode">
-                                            <div class="mphb_sc_checkout-wrapper">
-                                                
-                                                <h1>My Bookings</h1>
-                                                <br>
-                                                {% if bookings %}
-                                                    {% for booking in bookings %}
-                                                        <section class="mphb-checkout-section" style="border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 5px;">
-                                                            <h3>Reservation #{{ booking.id }}</h3>
-                                                            <p><strong style="color: #414141;">Name:</strong> {{ booking.first_name }} {{ booking.last_name }}</p>
-                                                            <p><strong style="color: #414141;">Room:</strong> {{ booking.room.name }}</p>
-                                                            {% comment %} <p><strong style="color: #414141;">Check-in:</strong> {{ booking.check_in_date|date:"F d, Y" }} at 11:00 AM</p>
-                                                            <p><strong style="color: #414141;">Check-out:</strong> {{ booking.check_out_date|date:"F d, Y" }} at 10:00 AM</p> {% endcomment %}
-                                                            <p><strong style="color: #414141;">Guests:</strong> {{ booking.adults }} guest{{ booking.adults|pluralize }}</p>
-                                                            <p><strong style="color: #414141;">Payment Method:</strong> {{ booking.get_payment_method_display }} </p>
-                                                            <p><strong style="color: #414141;">Total:</strong> ₹{{ booking.total }}</p>
-                                                        </section>
-                                                    {% endfor %}
-                                                {% else %}
-                                                    <p>You have no bookings.</p>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
+
+    <main class="bookings-page">
+        <div class="hero">
+            <h1>My Bookings</h1>
+            <p>Track your room, payment details, and selected hotel services in one place.</p>
         </div>
-    </div>
+
+        {% if bookings %}
+            <div class="booking-grid">
+                {% for booking in bookings %}
+                    <article class="booking-card">
+                        <header class="booking-head">
+                            <div>
+                                <h2 class="booking-code">Reservation #{{ booking.id }}</h2>
+                                <p class="booking-room">{{ booking.room.name }}</p>
+                            </div>
+                            {% if booking.is_checked_out %}
+                                <span class="status-badge status-checked-out">Checked Out</span>
+                            {% else %}
+                                <span class="status-badge status-active">Active Stay</span>
+                            {% endif %}
+                        </header>
+
+                        <section class="facts">
+                            <div class="fact">
+                                <span class="fact-label">Guest Name</span>
+                                <span class="fact-value">{{ booking.first_name }} {{ booking.last_name }}</span>
+                            </div>
+                            <div class="fact">
+                                <span class="fact-label">Check In</span>
+                                <span class="fact-value">{{ booking.check_in_date|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="fact">
+                                <span class="fact-label">Check Out</span>
+                                <span class="fact-value">{{ booking.check_out_date|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="fact">
+                                <span class="fact-label">Guests</span>
+                                <span class="fact-value">{{ booking.adults }} Adult{{ booking.adults|pluralize }}, {{ booking.children }} Child{{ booking.children|pluralize }}</span>
+                            </div>
+                            <div class="fact">
+                                <span class="fact-label">Payment</span>
+                                <span class="fact-value">{{ booking.get_payment_method_display }} ({{ booking.get_payment_status_display }})</span>
+                            </div>
+                            <div class="fact">
+                                <span class="fact-label">Service Total</span>
+                                <span class="fact-value">₹{{ booking.service_total }}</span>
+                            </div>
+                            <div class="fact">
+                                <span class="fact-label">Total</span>
+                                <span class="fact-value">₹{{ booking.total }}</span>
+                            </div>
+                        </section>
+
+                        <section class="service-box">
+                            <h3 class="service-title">Included Services</h3>
+                            {% with services=booking.selected_services.all %}
+                                {% if services %}
+                                    <ul class="service-list">
+                                        {% for service in services %}
+                                            <li class="service-item">{{ service.name }} - ₹{{ service.price }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="service-empty">No extra services selected for this reservation.</p>
+                                {% endif %}
+                            {% endwith %}
+                        </section>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <section class="empty-state">
+                <h3>No bookings yet</h3>
+                <p>Your confirmed reservations will appear here with room and service details.</p>
+                <a class="book-btn" href="{% url 'rooms:room_list' %}">Book a Room</a>
+            </section>
+        {% endif %}
+    </main>
+
     {% include 'footer.html' %}
 </body>
-
 </html>

@@ -32,6 +32,41 @@
         .btn-hotel-primary { background-color: var(--hotel-primary); color: white; border: none; }
         .btn-hotel-outline { border: 2px solid #dee2e6; color: #495057; background: white; }
         .btn-hotel:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .checkout-form-panel {
+            display: none;
+            margin-top: 1rem;
+            background: #fff5f5;
+            border: 1px solid #ffc9c9;
+            border-radius: 14px;
+            padding: 1rem;
+        }
+        .checkout-form-panel.show {
+            display: block;
+            animation: fadeSlide 0.24s ease;
+        }
+        .checkout-note {
+            width: 100%;
+            min-height: 110px;
+            border: 1px solid #f1b0b7;
+            border-radius: 10px;
+            padding: 0.75rem;
+            resize: vertical;
+        }
+        .checkout-note:focus {
+            outline: none;
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+        }
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -119,26 +154,16 @@
                                             <td class="p-3 text-muted">Thuế phí (GST 18%)</td>
                                             <td class="p-3 text-end fw-bold">₹{{ reservation.gst }}</td>
                                         </tr>
-                                        {% if reservation.discount_applied > 0 %}
-                                        <tr class="text-success">
-                                            <td class="p-3">Mã giảm giá đã áp dụng</td>
-                                            <td class="p-3 text-end fw-bold">-₹{{ reservation.discount_applied }}</td>
+                                        {% if reservation.service_total > 0 %}
+                                        <tr>
+                                            <td class="p-3 text-muted">Dịch vụ đi kèm
+                                                {% if reservation.selected_services.all %}
+                                                <br><small class="text-secondary">{% for service in reservation.selected_services.all %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</small>
+                                                {% endif %}
+                                            </td>
+                                            <td class="p-3 text-end fw-bold">₹{{ reservation.service_total }}</td>
                                         </tr>
                                         {% endif %}
-                                    </tbody><tbody class="border-top">
-                                        <tr>
-                                            <td class="p-3 text-muted">
-                                                Giá phòng ({{ reservation.room.name }})<br>
-                                                <small class="text-secondary">₹{{ reservation.room.price }} × {{ num_nights }} đêm</small>
-                                            </td>
-                                            <td class="p-3 text-end fw-bold">
-                                                ₹{% widthratio reservation.room.price 1 num_nights %}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="p-3 text-muted">Thuế phí (GST 18%)</td>
-                                            <td class="p-3 text-end fw-bold">₹{{ reservation.gst }}</td>
-                                        </tr>
                                         {% if reservation.discount_applied > 0 %}
                                         <tr class="text-success">
                                             <td class="p-3">Mã giảm giá đã áp dụng</td>
@@ -146,7 +171,7 @@
                                         </tr>
                                         {% endif %}
                                     </tbody>
-                                                                        <tfoot class="bg-light">
+                                    <tfoot class="bg-light">
                                         <tr>
                                             <td class="p-3 fw-bold fs-5 text-dark">Tổng cộng thanh toán</td>
                                             <td class="p-3 text-end price-total">₹{{ reservation.total }}</td>
@@ -168,12 +193,9 @@
 
                         <div class="d-flex flex-wrap gap-3 justify-content-center">
                             {% if not reservation.is_checked_out %}
-                            <form action="{% url 'rooms:checkout_reservation' reservation.id %}" method="POST" class="m-0">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-hotel shadow-sm" onclick="return confirm('Bạn muốn trả phòng sớm?')">
-                                    <i class="fas fa-sign-out-alt me-2"></i> Trả phòng (Check-out)
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-danger btn-hotel shadow-sm" id="showCheckoutFormBtn">
+                                <i class="fas fa-sign-out-alt me-2"></i> Trả phòng (Check-out)
+                            </button>
                             {% endif %}
                             <a href="{% url 'rooms:room_list' %}" class="btn btn-hotel btn-hotel-primary shadow-sm">
                                 <i class="fas fa-plus me-2 text-white"></i> Đặt thêm phòng khác
@@ -182,6 +204,28 @@
                                 <i class="fas fa-print me-2"></i> In hóa đơn
                             </button>
                         </div>
+
+                        {% if not reservation.is_checked_out %}
+                        <div class="checkout-form-panel" id="checkoutFormPanel">
+                            <h6 class="fw-bold text-danger mb-2">Xác nhận trả phòng</h6>
+                            <p class="mb-3 small text-muted">Vui lòng kiểm tra lại thông tin trước khi xác nhận trả phòng. Sau khi gửi, đặt phòng sẽ được chuyển sang trạng thái đã trả.</p>
+
+                            <form action="{% url 'rooms:checkout_reservation' reservation.id %}" method="POST" class="m-0">
+                                {% csrf_token %}
+                                <label for="checkout_note" class="form-label fw-semibold">Ghi chú trả phòng (không bắt buộc)</label>
+                                <textarea id="checkout_note" name="checkout_note" class="checkout-note" placeholder="Ví dụ: Trả phòng sớm lúc 10:30..."></textarea>
+
+                                <div class="d-flex gap-2 flex-wrap mt-3">
+                                    <button type="submit" class="btn btn-danger btn-hotel shadow-sm">
+                                        <i class="fas fa-check me-2"></i> Xác nhận trả phòng
+                                    </button>
+                                    <button type="button" class="btn btn-hotel btn-hotel-outline shadow-sm" id="cancelCheckoutFormBtn">
+                                        Hủy
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -189,6 +233,34 @@
     </div>
 
     {% include 'footer.html' %}
+
+    <script>
+        (function () {
+            const openBtn = document.getElementById('showCheckoutFormBtn');
+            const cancelBtn = document.getElementById('cancelCheckoutFormBtn');
+            const panel = document.getElementById('checkoutFormPanel');
+            const noteInput = document.getElementById('checkout_note');
+
+            if (!openBtn || !panel) {
+                return;
+            }
+
+            openBtn.addEventListener('click', function () {
+                panel.classList.add('show');
+                openBtn.style.display = 'none';
+                if (noteInput) {
+                    noteInput.focus();
+                }
+            });
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function () {
+                    panel.classList.remove('show');
+                    openBtn.style.display = 'inline-flex';
+                });
+            }
+        })();
+    </script>
 
 </body>
 </html>

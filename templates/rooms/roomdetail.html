@@ -1,617 +1,602 @@
-<!doctype html>
-<html lang="en-US">
-
-<head> <!-- Meta Data -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="profile" href="https://gmpg.org/xfn/11">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ room.name }} | Room Detail</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-
-    <link media="all"
-        href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_86433fa97a80a986cad08803f18701d2.css"
-        rel="stylesheet">
-    <link media="only screen and (max-width: 768px)"
-        href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_41f59b21c4bbf5bf8ff4257643b4a543.css"
-        rel="stylesheet">
-    <title>room</title>
-    <meta name='robots' content='max-image-preview:large' />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        img:is([sizes="auto" i], [sizes^="auto," i]) {
-            contain-intrinsic-size: 3000px 1500px
+        :root {
+            --ink: #152434;
+            --muted: #5a6e82;
+            --line: rgba(21, 36, 52, 0.12);
+            --sea: #007f9f;
+            --sea-2: #00a7c6;
+            --cream: #f5efe5;
+            --card: rgba(255, 255, 255, 0.92);
+            --shadow: 0 24px 52px rgba(8, 27, 44, 0.14);
         }
-    </style>
 
+        body {
+            font-family: 'Manrope', sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(56rem 30rem at -6% 0%, rgba(0, 167, 198, 0.15), transparent 72%),
+                radial-gradient(48rem 27rem at 100% 8%, rgba(245, 239, 229, 0.95), transparent 75%),
+                linear-gradient(180deg, #f8fcff 0%, #ffffff 44%, #f8f5ef 100%);
+        }
 
+        .room-shell {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4.7rem 1rem 4rem;
+        }
 
-    <style id='classic-theme-styles-inline-css' type='text/css'>
-        /*! This file is auto-generated */
-        .wp-block-button__link {
-            color: #fff;
-            background-color: #32373c;
-            border-radius: 9999px;
-            box-shadow: none;
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            font-size: 0.9rem;
+            color: #607389;
+            margin-bottom: 0.95rem;
+        }
+
+        .breadcrumbs a {
+            color: #436684;
             text-decoration: none;
-            padding: calc(.667em + 2px) calc(1.333em + 2px);
-            font-size: 1.125em
+            font-weight: 600;
         }
 
-        .wp-block-file__button {
-            background: #32373c;
+        .room-title-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.15rem;
+        }
+
+        .room-title {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            line-height: 1.08;
+            letter-spacing: -0.02em;
+        }
+
+        .status-pill {
+            border-radius: 999px;
+            padding: 0.44rem 0.85rem;
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+        }
+
+        .status-pill.available {
+            color: #0a7a3f;
+            background: rgba(29, 190, 107, 0.16);
+            border: 1px solid rgba(29, 190, 107, 0.36);
+        }
+
+        .status-pill.booked {
+            color: #a62839;
+            background: rgba(230, 77, 94, 0.16);
+            border: 1px solid rgba(230, 77, 94, 0.34);
+        }
+
+        .room-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.8fr);
+            gap: 1.4rem;
+            align-items: start;
+        }
+
+        .showcase-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-image-wrap {
+            position: relative;
+        }
+
+        .hero-image-wrap::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 44%;
+            background: linear-gradient(180deg, transparent 0%, rgba(8, 26, 43, 0.64) 100%);
+            pointer-events: none;
+        }
+
+        .hero-image {
+            display: block;
+            width: 100%;
+            height: 460px;
+            object-fit: cover;
+        }
+
+        .price-tag {
+            position: absolute;
+            right: 1rem;
+            bottom: 1rem;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 0.62rem 0.78rem;
+            box-shadow: 0 14px 28px rgba(10, 35, 56, 0.27);
+        }
+
+        .price-tag small {
+            display: block;
+            color: #5c7188;
+            font-size: 0.78rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .price-tag strong {
+            color: #015f77;
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+        .room-content {
+            padding: 1.35rem 1.3rem 1.45rem;
+        }
+
+        .room-lead {
+            color: var(--muted);
+            line-height: 1.8;
+            margin: 0 0 1rem;
+        }
+
+        .feature-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.42rem;
+            background: #f3f8fc;
+            border: 1px solid #d8e4ef;
+            color: #2d4a63;
+            border-radius: 999px;
+            padding: 0.48rem 0.8rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .thumb-grid {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .thumb {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            background: #f8fbfe;
+        }
+
+        .thumb img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .booking-card {
+            position: sticky;
+            top: 105px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 1.15rem;
+        }
+
+        .booking-title {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.7rem;
+        }
+
+        .booking-sub {
+            color: var(--muted);
+            margin: 0.45rem 0 1rem;
+            line-height: 1.6;
+            font-size: 0.93rem;
+        }
+
+        .booking-row {
+            display: grid;
+            gap: 0.32rem;
+            margin-bottom: 0.88rem;
+        }
+
+        .booking-row label {
+            font-weight: 700;
+            color: #20364a;
+            font-size: 0.93rem;
+        }
+
+        .booking-row input {
+            width: 100%;
+            border: 1px solid #cfdbe6;
+            border-radius: 12px;
+            padding: 0.68rem 0.8rem;
+            font-family: inherit;
+            color: #1e3347;
+            background: #fff;
+        }
+
+        .booking-row input:focus {
+            outline: 2px solid rgba(0, 127, 159, 0.25);
+            border-color: #72b4c7;
+        }
+
+        .guests-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-bottom: 0.88rem;
+        }
+
+        .guest-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.32rem;
+        }
+
+        .guest-group label {
+            font-weight: 700;
+            color: #20364a;
+            font-size: 0.93rem;
+        }
+
+        .guest-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #fff;
+            border: 1px solid #cfdbe6;
+            border-radius: 12px;
+            padding: 0.35rem;
+        }
+
+        .guest-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f0f4f8;
+            border-radius: 8px;
+            color: #20364a;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            font-size: 1rem;
+        }
+
+        .guest-btn:hover {
+            background: #e8eef5;
+            color: #007f9f;
+        }
+
+        .guest-btn:active {
+            transform: scale(0.95);
+        }
+
+        .guest-count {
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+            color: #20364a;
+            font-size: 0.95rem;
+        }
+
+        .status-box {
+            margin: 0.2rem 0 0.85rem;
+            border-radius: 12px;
+            padding: 0.75rem 0.8rem;
+            background: rgba(0, 127, 159, 0.09);
+            color: #234b65;
+            font-size: 0.92rem;
+            min-height: 46px;
+            display: flex;
+            align-items: center;
+        }
+
+        .book-btn {
+            width: 100%;
+            border: none;
+            border-radius: 999px;
+            padding: 0.9rem 1rem;
+            background: linear-gradient(135deg, var(--sea), var(--sea-2));
             color: #fff;
-            text-decoration: none
+            font-weight: 800;
+            letter-spacing: 0.01em;
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+            box-shadow: 0 14px 25px rgba(0, 127, 159, 0.32);
         }
-    </style>
-    <link rel='stylesheet' id='bslthms-advanced-btns-style-css'
-        href='https://bslthemes.com/bslthms-advanced-btns/assets/style.css' type='text/css' media='all' />
-    <link rel='stylesheet' id='mphb-kbwood-datepick-css-css'
-        href='https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_single_c72a62925997a10f520b96d14652edde.css'
-        type='text/css' media='all' />
-    <style id='woocommerce-inline-inline-css' type='text/css'>
-        .woocommerce form .form-row .required {
-            visibility: visible
+
+        .book-btn:hover {
+            transform: translateY(-1px);
         }
-    </style>
-    <link rel='stylesheet' id='kinsley-primary-fonts-css'
-        href='https://fonts.googleapis.com/css2?family=Jost:wght@200;400;600&#038;display=swap' type='text/css'
-        media='all' />
-    <link rel='stylesheet' id='kinsley-secondary-fonts-css'
-        href='https://fonts.googleapis.com/css2?family=Monoton&#038;display=swap' type='text/css' media='all' />
-    <link rel='stylesheet' id='elementor-post-5762-css'
-        href='https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_single_54b486a773dc1fff1726e27ba12fa9c9.css'
-        type='text/css' media='all' />
-    <link rel='stylesheet' id='elementor-post-17-css'
-        href='https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_single_0324d2eb58788ced4127721eb7a934a8.css'
-        type='text/css' media='all' />
-    <script type="text/javascript" src="https://kinsley.bslthemes.com/wp-includes/js/jquery/jquery.min.js"
-        id="jquery-core-js"></script>
-    <script type="text/javascript"
-        id="breeze-prefetch-js-extra">var breeze_prefetch = { "local_url": "https:\/\/kinsley.bslthemes.com", "ignore_remote_prefetch": "1", "ignore_list": ["\/cart\/", "\/checkout\/", "\/my-account\/", "(.)\/accommodation\/(.)", "\/accommodation\/", "wp-admin", "wp-login.php"] };</script>
-    <script type="text/javascript"
-        id="wc-add-to-cart-js-extra">var wc_add_to_cart_params = { "ajax_url": "\/wp-admin\/admin-ajax.php", "wc_ajax_url": "\/?wc-ajax=%%endpoint%%", "i18n_view_cart": "View cart", "cart_url": "https:\/\/kinsley.bslthemes.com\/cart\/", "is_cart": "", "cart_redirect_after_add": "no" };</script>
-    <script type="text/javascript"
-        id="woocommerce-js-extra">var woocommerce_params = { "ajax_url": "\/wp-admin\/admin-ajax.php", "wc_ajax_url": "\/?wc-ajax=%%endpoint%%" };</script>
-    <link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://kinsley.bslthemes.com/xmlrpc.php?rsd" />
-    <meta name="generator" content="WordPress 6.7.2" />
-    <meta name="generator" content="WooCommerce 9.6.0" />
-    <link rel="canonical" href="https://kinsley.bslthemes.com/accommodation/deluxe-room/" />
-    <link rel='shortlink' href='https://kinsley.bslthemes.com/?p=17' />
-    <link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed"
-        href="https://kinsley.bslthemes.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fkinsley.bslthemes.com%2Faccommodation%2Fdeluxe-room%2F" />
-    <link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed"
-        href="https://kinsley.bslthemes.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fkinsley.bslthemes.com%2Faccommodation%2Fdeluxe-room%2F&#038;format=xml" />
-    <meta name="description" content="Kinsley - Hotel &amp; Resort WordPress Theme - Just another WordPress site" />
-    <style></style><noscript>
-        <style>
-            .woocommerce-product-gallery {
-                opacity: 1 !important
+
+        .book-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            box-shadow: none;
+        }
+
+        .services-hint {
+            margin-top: 0.95rem;
+            padding: 0.75rem 0.82rem;
+            border-radius: 12px;
+            background: rgba(245, 239, 229, 0.88);
+            color: #456179;
+            font-size: 0.89rem;
+            line-height: 1.6;
+        }
+
+        .services-hint a {
+            color: #055f78;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        @media (max-width: 980px) {
+            .room-grid {
+                grid-template-columns: 1fr;
             }
-        </style>
-    </noscript>
-    <meta name="generator"
-        content="Elementor 3.27.2; features: e_font_icon_svg, additional_custom_breakpoints; settings: css_print_method-external, google_font-enabled, font_display-auto">
-    <style>
-        .e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload),
-        .e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload) * {
-            background-image: none !important
-        }
 
-        @media screen and (max-height:1024px) {
+            .booking-card {
+                position: static;
+            }
 
-            .e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload),
-            .e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload) * {
-                background-image: none !important
+            .hero-image {
+                height: 360px;
             }
         }
 
-        @media screen and (max-height:640px) {
+        @media (max-width: 680px) {
+            .room-shell {
+                padding-top: 4.2rem;
+            }
 
-            .e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload),
-            .e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload) * {
-                background-image: none !important
+            .hero-image {
+                height: 260px;
+            }
+
+            .thumb-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .room-title-row {
+                flex-direction: column;
+                gap: 0.6rem;
             }
         }
     </style>
-    <style class='wp-fonts-local' type='text/css'>
-        @font-face {
-            font-family: Inter;
-            font-style: normal;
-            font-weight: 300 900;
-            font-display: fallback;
-            src: url('https://kinsley.bslthemes.com/wp-content/plugins/woocommerce/assets/fonts/Inter-VariableFont_slnt,wght.woff2') format('woff2');
-            font-stretch: normal
-        }
-
-        @font-face {
-            font-family: Cardo;
-            font-style: normal;
-            font-weight: 400;
-            font-display: fallback;
-            src: url('https://kinsley.bslthemes.com/wp-content/plugins/woocommerce/assets/fonts/cardo_normal_400.woff2') format('woff2')
-        }
-    /* Tổng thể trang */
-    body {
-        background-color: #f4f7f6; /* Màu nền nhẹ cho sang trọng */
-        color: #333;
-        line-height: 1.6;
-    }
-
-    /* Tiêu đề phòng */
-    .knsl-room-detail h1 {
-        font-size: 32px;
-        font-weight: 700;
-        color: #1a1a1a;
-        margin-bottom: 20px;
-        letter-spacing: -0.5px;
-    }
-
-    /* Badge trạng thái (Phòng trống/Đã đặt) */
-    .room-status-badge {
-        display: inline-block;
-        padding: 6px 16px;
-        border-radius: 50px; /* Bo tròn hoàn toàn cho hiện đại */
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .room-status-badge.available {
-        background: linear-gradient(135deg, #28a745, #218838) !important;
-    }
-
-    .room-status-badge.booked {
-        background: linear-gradient(135deg, #dc3545, #c82333) !important;
-    }
-
-    /* Khung hiển thị giá */
-    .knsl-price-frame {
-        background: #ffffff;
-        padding: 20px;
-        border-radius: 12px;
-        border-left: 5px solid #4e6cff;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        margin: 20px 0;
-    }
-
-    .knsl-price-frame .knsl-price {
-        font-size: 24px;
-        color: #4e6cff;
-        font-weight: 800;
-    }
-
-    /* Nút đặt phòng chính */
-    .knsl-btn {
-        background: #4e6cff;
-        color: #fff !important;
-        padding: 12px 30px;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        text-transform: uppercase;
-        display: inline-block;
-        text-decoration: none;
-    }
-
-    .knsl-btn:hover {
-        background: #3554d1;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(78, 108, 255, 0.3);
-    }
-
-    /* Tiện ích (Amenities) */
-    .knsl-amenities-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-        margin-top: 20px;
-    }
-
-    .knsl-amenity-item {
-        background: white;
-        padding: 10px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        border: 1px solid #eee;
-    }
-
-    .knsl-amenity-item i {
-        color: #4e6cff;
-        margin-right: 10px;
-    }
-    </style>
-    <link rel="icon" href="https://kinsley.bslthemes.com/wp-content/uploads/2021/11/cropped-logo-32x32.png"
-        sizes="32x32" />
-    <link rel="icon" href="https://kinsley.bslthemes.com/wp-content/uploads/2021/11/cropped-logo-192x192.png"
-        sizes="192x192" />
-    <link rel="apple-touch-icon"
-        href="https://kinsley.bslthemes.com/wp-content/uploads/2021/11/cropped-logo-180x180.png" />
-    <meta name="msapplication-TileImage"
-        content="https://kinsley.bslthemes.com/wp-content/uploads/2021/11/cropped-logo-270x270.png" />
-
-
 </head>
-
-<body
-    class="mphb_room_type-template mphb_room_type-template-template-layout-builder mphb_room_type-template-template-layout-builder-php single single-mphb_room_type postid-17 theme-kinsley woocommerce-no-js elementor-default elementor-kit-5762 elementor-page elementor-page-17">
-
+<body>
     {% include 'navbar.html' %}
-    <!-- page wrapper -->
-    <div class="knsl-app">
 
+    <main class="room-shell">
+        <nav class="breadcrumbs">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'rooms:room_list' %}">Rooms</a>
+            <span>/</span>
+            <span>{{ room.name }}</span>
+        </nav>
 
-        <!-- top navbar end -->
-        <div id="container">
-            <div id="content" role="main">
-                <div
-                    class="post-17 mphb_room_type type-mphb_room_type status-publish has-post-thumbnail hentry mphb_room_type_category-luxe mphb_room_type_tag-luxe mphb_room_type_facility-4-private-pools mphb_room_type_facility-air-conditioning mphb_room_type_facility-airport-transfer mphb_room_type_facility-all-inclusive mphb_room_type_facility-wifi mphb_room_type_facility-laundry mphb_room_type_facility-smart-tv mphb_room_type_facility-under-protection mphb-room-type-adults-4 mphb-room-type-children-0 ">
-                    <div data-elementor-type="wp-post" data-elementor-id="17" class="elementor elementor-17">
-                        <!-- Room Type Name -->
-                        <section
-                            class="elementor-section elementor-top-section elementor-element elementor-element-13dc6a5e elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                            data-id="13dc6a5e" data-element_type="section">
-                            <div class="elementor-container elementor-column-gap-no">
-                                <div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-62df5820"
-                                    data-id="62df5820" data-element_type="column">
-                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                        <div class="elementor-element elementor-element-45ff20b elementor-widget elementor-widget-kinsley-intro"
-                                            data-id="45ff20b" data-element_type="widget"
-                                            data-widget_type="kinsley-intro.default">
-                                            <div class="elementor-widget-container">
-                                                <section class="knsl-banner-simple knsl-transition-bottom">
-
-                                                    <div class="container">
-                                                        <div class="row">
-                                                            <div class="col-lg-12">
-                                                                <div class="knsl-center knsl-title-frame">
-                                                                    <h1 class="knsl-title--h knsl-mb-20 knsl-h1-inner">
-                                                                        <span>{{ room.name }}</span>
-                                                                    </h1>
-                                                                    <ul class="knsl-breadcrumbs">
-                                                                        <li><a href="{% url 'home' %}">Home</a></li>
-                                                                        <li><a
-                                                                                href="{% url 'rooms:room_list' %}">Rooms</a>
-                                                                        </li>
-                                                                        <li class="tst-active"><a>{{ room.name }}</a>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </section>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                        <!-- room type name end -->
-
-                        <!-- MAIN LEFT Right SECTION start -->
-                        <section
-                            class="elementor-section elementor-top-section elementor-element elementor-element-70b6a68 set-sticky-container elementor-reverse-mobile elementor-reverse-tablet elementor-section-boxed elementor-section-height-default elementor-section-height-default"
-                            data-id="70b6a68" data-element_type="section">
-                            <div class="elementor-container elementor-column-gap-default">
-
-                                <!-- MAIN LEFT SECTION start -->
-                                <div class="elementor-column elementor-col-66 elementor-top-column elementor-element elementor-element-51ec0b9"
-                                    data-id="51ec0b9" data-element_type="column">
-                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                        <!-- Room Pictures -->
-
-                                        <section
-                                            class="elementor-section elementor-inner-section elementor-element elementor-element-2aa2e95 elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                                            data-id="2aa2e95" data-element_type="section">
-                                            <div class="elementor-container elementor-column-gap-no">
-                                                <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-1330fc8"
-                                                    data-id="1330fc8" data-element_type="column">
-                                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                                        <div class="elementor-element elementor-element-a999888 elementor-widget elementor-widget-kinsley-photo-gallery"
-                                                            data-id="a999888" data-element_type="widget"
-                                                            data-widget_type="kinsley-photo-gallery.default">
-                                                            <div class="elementor-widget-container">
-                                                                <div class="knsl-room-detail-slider-frame knsl-mb-60">
-                                                                    <div
-                                                                        class="swiper-container knsl-rd-slider-2 knsl-mb-10">
-                                                                        <div class="swiper-wrapper">
-                                                                            {% for image in room.images.all %}
-                                                                            <div class="swiper-slide">
-                                                                                <a data-elementor-lightbox-slideshow="photo-gallery-a999888"
-                                                                                    data-elementor-lightbox-title="{{ room.name }} Image"
-                                                                                    href="{{ image.image.url }}"
-                                                                                    class="knsl-room-detail-photo-lg"
-                                                                                    data-swiper-parallax="-80"
-                                                                                    data-swiper-parallax-scale="1.2"
-                                                                                    data-swiper-parallax-duration="400">
-                                                                                    <img class="lazyload"
-                                                                                        decoding="async"
-                                                                                        src="{{ image.image.url }}"
-                                                                                        alt="{{ room.name }} Image" />
-                                                                                    <span class="knsl-zoom"><i
-                                                                                            class="fas fa-search-plus"></i></span>
-                                                                                </a>
-                                                                            </div>
-                                                                            {% empty %}
-                                                                            <div class="swiper-slide">
-                                                                                <a data-elementor-lightbox-slideshow="photo-gallery-a999888"
-                                                                                    data-elementor-lightbox-title="{{ room.name }} Image"
-                                                                                    href="{% if room.image %}{{ room.image.url }}{% else %}/static/images/placeholder.jpg{% endif %}"
-                                                                                    class="knsl-room-detail-photo-lg"
-                                                                                    data-swiper-parallax="-80"
-                                                                                    data-swiper-parallax-scale="1.2"
-                                                                                    data-swiper-parallax-duration="400">
-                                                                                    <img class="lazyload"
-                                                                                        decoding="async"
-                                                                                        src="{% if room.image %}{{ room.image.url }}{% else %}/static/images/placeholder.jpg{% endif %}"
-                                                                                        alt="{{ room.name }} Image" />
-                                                                                    <span class="knsl-zoom"><i
-                                                                                            class="fas fa-search-plus"></i></span>
-                                                                                </a>
-                                                                            </div>
-                                                                            {% endfor %}
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {% comment %} <div class="swiper-container knsl-rd-slider-1">
-                                                                        <div class="swiper-wrapper">
-                                                                            {% for image in room.images.all %}
-                                                                            <div class="swiper-slide">
-                                                                                <div class="knsl-room-detail-photo-sm">
-                                                                                    <img class="lazyload"
-                                                                                        decoding="async"
-                                                                                        src="{{ image.image.url }}"
-                                                                                        alt="{{ room.name }} Image" />
-                                                                                </div>
-                                                                            </div>
-                                                                            {% empty %}
-                                                                            <div class="swiper-slide">
-                                                                                <div class="knsl-room-detail-photo-sm">
-                                                                                    <img class="lazyload"
-                                                                                        decoding="async"
-                                                                                        src="{% if room.image %}{{ room.image.url }}{% else %}/static/images/placeholder.jpg{% endif %}"
-                                                                                        alt="{{ room.name }} Image" />
-                                                                                </div>
-                                                                            </div>
-                                                                            {% endfor %}
-                                                                        </div>
-                                                                    </div> {% endcomment %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section>
-                                        <section
-                                            class="elementor-section elementor-inner-section elementor-element elementor-element-cb09e69 elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                                            data-id="cb09e69" data-element_type="section">
-                                            <div class="elementor-container elementor-column-gap-no">
-                                                <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-928b65e"
-                                                    data-id="928b65e" data-element_type="column">
-                                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                                        <div class="elementor-element elementor-element-74e738a elementor-widget elementor-widget-kinsley-room-description"
-                                                            data-id="74e738a" data-element_type="widget"
-                                                            data-widget_type="kinsley-room-description.default">
-                                                            <div class="elementor-widget-container">
-                                                                <section class="knsl-mb-60">
-                                                                    <h3 class="knsl-mb-40"><span>Welcome to {{ room.name }}!</span></h3>
-                                                                    <div>
-                                                                        <p>{{ room.description }}</p>
-                                                                    </div>
-                                                                </section>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section>
-                                <div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-903f3b7"
-                                    data-id="903f3b7" data-element_type="column">
-                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                        <section
-                                            class="elementor-section elementor-inner-section elementor-element elementor-element-42382cc elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                                            data-id="42382cc" data-element_type="section">
-                                            <div class="elementor-container elementor-column-gap-no">
-                                                <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-5e73cb5"
-                                                    data-id="5e73cb5" data-element_type="column">
-                                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                                        <div class="elementor-element elementor-element-65f23fc elementor-widget elementor-widget-kinsley-room-price"
-                                                            data-id="65f23fc" data-element_type="widget"
-                                                            data-widget_type="kinsley-room-price.default">
-                                                            <div class="elementor-widget-container">
-                                                                <div class="knsl-price-card knsl-mb-20">
-                                                                    <div class="knsl-price-number">
-                                                                        <p class="mphb-regular-price"><strong>Prices start at:</strong>
-                                                                            <span class="mphb-price">
-                                                                                <span class="mphb-currency" style="font-size: x-large;"></span>
-                                                                                <span style="font-size: x-large;">{{ room.price }}</span>
-                                                                            </span>
-                                                                        </p>
-
-                                                                        <!-- roomcapacity Section -->
-                                                                        <section
-                                                                            class="elementor-section elementor-inner-section elementor-element elementor-element-42382cc elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                                                                            data-id="42382cc" data-element_type="section">
-                                                                            <div class="elementor-container elementor-column-gap-no">
-                                                                                <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-5e73cb5"
-                                                                                    data-id="5e73cb5" data-element_type="column">
-                                                                                    <div class="elementor-widget-wrap elementor-element-populated">
-                                                                                        <div class="elementor-element elementor-element-65f23fc elementor-widget elementor-widget-kinsley-room-price"
-                                                                                            data-id="65f23fc" data-element_type="widget"
-                                                                                            data-widget_type="kinsley-room-price.default">
-                                                                                            <div class="elementor-widget-container">
-                                                                                                <div class="knsl-price-card knsl-mb-20">
-                                                                                                    <div class="knsl-price-number">
-                                                                                                        <p class="mphb-regular-price"><strong>Room
-                                                                                                                for:</strong>
-                                                                                                            <span class="mphb-price" style="font-size: x-large;"> {{ room.capacity }} </span>
-                                                                                                            <span class="mphb-price-period"
-                                                                                                                title="Choose dates to see relevant prices">guests
-                                                                                                            </span>
-                                                                                                        </p>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </section>
-                                                                        <!-- roomcapacity section end -->
-
-                                                                        <form action="{% url 'rooms:room_booking' %}" method="POST" style="text-align: left;">
-                                                                            {% csrf_token %}
-                                                                            <input type="hidden" name="room_id" value="{{ room.id }}">
-                                                                            
-                                                                            <div style="margin-bottom: 15px;">
-                                                                                <label for="check_in" style="display:block; font-weight:bold; margin-bottom:5px;">Ngày nhận phòng:</label>
-                                                                                <input type="date" id="check_in" name="check_in" required 
-                                                                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-                                                                            </div>
-
-                                                                            <div style="margin-bottom: 20px;">
-                                                                                <label for="check_out" style="display:block; font-weight:bold; margin-bottom:5px;">Ngày trả phòng:</label>
-                                                                                <input type="date" id="check_out" name="check_out" required 
-                                                                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-                                                                            </div>
-
-                                                                            <p id="room-status-alert" class="text-info" style="font-size: 14px; margin-bottom: 10px;"></p>
-                                                                                
-                                                                            <button type="submit" id="book-now-btn" class="knsl-btn" 
-                                                                                    style="background:#28a745; color:white; padding:12px 25px; border-radius:5px; width:100%; border:none; cursor:pointer;">
-                                                                                Đặt phòng ngay
-                                                                            </button>
-                                                                        </form>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section>
-                                         <section
-                                         class="elementor-section elementor-inner-section elementor-element elementor-element-42382cc elementor-section-full_width elementor-section-height-default elementor-section-height-default"
-                                         data-id="42382cc" data-element_type="section">
-                                         <div class="elementor-container elementor-column-gap-no">
-                                             <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-5e73cb5"
-                                                 data-id="5e73cb5" data-element_type="column">
-                                                 <div class="elementor-widget-wrap elementor-element-populated">
-                                                     <div class="elementor-element elementor-element-65f23fc elementor-widget elementor-widget-kinsley-room-price"
-                                                         data-id="65f23fc" data-element_type="widget"
-                                                         data-widget_type="kinsley-room-price.default">
-                                                         <div class="elementor-widget-container">
-                                                             <div class="knsl-price-card knsl-mb-20">
-                                                                 <div class="knsl-price-number">
-                                                                     <p class="mphb-regular-price"><strong>Room
-                                                                             size:</strong>
-                                                                         <span class="mphb-price" style="font-size: x-large;"> {{ room.get_size_display }} </span>
-                                                                        
-                                                                     </p>
-                                                                 </div>
-                                                             </div>
-                                                         </div>
-                                                     </div>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                     </section>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
+        <div class="room-title-row">
+            <h1 class="room-title">{{ room.name }}</h1>
+            {% if room.is_available %}
+                <span class="status-pill available">Available</span>
+            {% else %}
+                <span class="status-pill booked">Booked</span>
+            {% endif %}
         </div>
 
-        <!-- footer -->
-        {% include 'footer.html' %}
+        <section class="room-grid">
+            <article class="showcase-card">
+                <div class="hero-image-wrap">
+                    {% with main_image=room.images.first %}
+                        {% if main_image %}
+                            <img src="{{ main_image.image.url }}" alt="{{ room.name }}" class="hero-image">
+                        {% elif room.image %}
+                            <img src="{{ room.image.url }}" alt="{{ room.name }}" class="hero-image">
+                        {% else %}
+                            <img src="{% static 'images/placeholder.jpg' %}" alt="{{ room.name }}" class="hero-image">
+                        {% endif %}
+                    {% endwith %}
+                    <div class="price-tag">
+                        <small>Giá từ mỗi đêm</small>
+                        <strong>₹{{ room.price }}</strong>
+                    </div>
+                </div>
 
-    </div>
+                <div class="room-content">
+                    <p class="room-lead">{{ room.description }}</p>
+                    <div class="feature-chips">
+                        <span class="chip"><i class="fas fa-user-friends"></i> {{ room.capacity }} khách</span>
+                        <span class="chip"><i class="fas fa-ruler-combined"></i> {{ room.get_size_display }}</span>
+                        <span class="chip"><i class="fas fa-concierge-bell"></i> Có thể thêm dịch vụ</span>
+                    </div>
 
+                    <div class="thumb-grid">
+                        {% for image in room.images.all|slice:":6" %}
+                            <a href="{{ image.image.url }}" class="thumb" target="_blank" rel="noopener noreferrer">
+                                <img src="{{ image.image.url }}" alt="{{ room.name }} image {{ forloop.counter }}">
+                            </a>
+                        {% empty %}
+                            <div class="thumb">
+                                {% if room.image %}
+                                    <img src="{{ room.image.url }}" alt="{{ room.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.jpg' %}" alt="No image">
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
 
+            <aside class="booking-card">
+                <h2 class="booking-title">Đặt phòng</h2>
+                <p class="booking-sub">Chọn ngày lưu trú. Hệ thống sẽ kiểm tra tình trạng phòng trước khi chuyển qua bước chọn dịch vụ.</p>
 
+                <form action="{% url 'rooms:service_selection' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="room_id" value="{{ room.id }}">
+                    <input type="hidden" id="hidden_adults" name="adults" value="1">
+                    <input type="hidden" id="hidden_children" name="children" value="0">
 
+                    <div class="booking-row">
+                        <label for="check_in">Ngày nhận phòng</label>
+                        <input type="date" id="check_in" name="check_in" required>
+                    </div>
 
-   
-    <script
-        data-noptimize="1">window.lazySizesConfig = window.lazySizesConfig || {}; window.lazySizesConfig.loadMode = 1;</script>
-    <script async data-noptimize="1"
-        src='https://kinsley.bslthemes.com/wp-content/plugins/autoptimize/classes/external/js/lazysizes.min.js'></script>
-    <script
-        type='text/javascript'>(function () { var c = document.body.className; c = c.replace(/woocommerce-no-js/, 'woocommerce-js'); document.body.className = c; })();</script>
-    <link rel='stylesheet' id='elementor-post-275-css'
-        href='https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_single_63f030bfcc17a012881b2b2dbac1c674.css'
-        type='text/css' media='all' />
-    <link rel='stylesheet' id='elementor-post-831-css'
-        href='https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_single_c6f17810557622c18b22fcc3e337c79c.css'
-        type='text/css' media='all' />
-    <script type="text/javascript" src="https://bslthemes.com/bslthms-advanced-btns/assets/script.js"
-        id="bslthms-advanced-btns-script-js"></script>
-    <script type="text/javascript"
-        src="https://kinsley.bslthemes.com/wp-content/plugins/motopress-hotel-booking/vendors/kbwood/datepick/jquery.plugin.min.js"
-        id="mphb-kbwood-plugin-js"></script>
-    <script type="text/javascript"
-        id="mphb-js-extra">var MPHB = { "_data": { "settings": { "currency": { "code": "EUR", "price_format": "<span class=\"mphb-currency\">&euro;<\/span>%s", "decimals": 2, "decimal_separator": ".", "thousand_separator": "," }, "siteName": "Kinsley - Hotel &amp; Resort WordPress Theme", "currentLanguage": "en", "firstDay": 1, "numberOfMonthCalendar": 2, "numberOfMonthDatepicker": 2, "dateFormat": "dd\/mm\/yyyy", "dateTransferFormat": "yyyy-mm-dd", "useBilling": true, "useCoupons": true, "datepickerClass": "mphb-datepicker-light-blue", "countryRequired": true, "fullAddressRequired": true, "isDirectBooking": true }, "isAdmin": false, "today": "2025-03-05", "ajaxUrl": "https:\/\/kinsley.bslthemes.com\/wp-admin\/admin-ajax.php", "nonces": { "mphb_update_checkout_info": "eca5a46dc5", "mphb_update_rate_prices": "e3b4f90afb", "mphb_get_billing_fields": "6e45804b14", "mphb_apply_coupon": "4291ae4e04", "mphb_get_room_type_calendar_data": "fc635da243", "mphb_get_room_type_availability_data": "67009467b1", "mphb_update_booking_notes": "dc4dcb5202", "mphb_create_stripe_payment_intent": "0b14710260" }, "translations": { "errorHasOccured": "An error has occurred, please try again later.", "booked": "Đã đặt", "buffer": "Buffer time.", "pending": "Pending", "available": "Trống", "notAvailable": "Not available", "earlierMinAdvance": "This is earlier than allowed by our advance reservation rules.", "laterMaxAdvance": "This is later than allowed by our advance reservation rules.", "notStayIn": "Not stay-in", "notCheckIn": "Not check-in", "notCheckOut": "Not check-out", "past": "Day in the past", "checkInDate": "Check-in date", "lessThanMinDaysStay": "Less than min days stay", "moreThanMaxDaysStay": "More than max days stay", "laterThanMaxDate": "Later than max date for current check-in date", "rules": "Rules:", "tokenizationFailure": "Tokenisation failed: %s", "roomsAddedToReservation_singular": "%1$d &times; &ldquo;%2$s&rdquo; has been added to your reservation.", "roomsAddedToReservation_plural": "%1$d &times; &ldquo;%2$s&rdquo; have been added to your reservation.", "countRoomsSelected_singular": "%s accommodation selected.", "countRoomsSelected_plural": "%s accommodations selected.", "emptyCouponCode": "Coupon code is empty.", "checkInNotValid": "Check-in date is not valid.", "checkOutNotValid": "Check-out date is not valid.", "selectDates": "Select dates" }, "page": { "isCheckoutPage": false, "isSingleRoomTypePage": true, "isSearchResultsPage": false, "isCreateBookingPage": false }, "gateways": [], "roomTypeId": 17 } };</script>
-    <script type="text/javascript"
-        src="https://kinsley.bslthemes.com/wp-content/plugins/motopress-hotel-booking/assets/js/public/mphb.min.js"
-        id="mphb-js"></script>
-    <script type="text/javascript"
-        id="wc-order-attribution-js-extra">var wc_order_attribution = { "params": { "lifetime": 1.0e-5, "session": 30, "base64": false, "ajaxurl": "https:\/\/kinsley.bslthemes.com\/wp-admin\/admin-ajax.php", "prefix": "wc_order_attribution_", "allowTracking": true }, "fields": { "source_type": "current.typ", "referrer": "current_add.rf", "utm_campaign": "current.cmp", "utm_source": "current.src", "utm_medium": "current.mdm", "utm_content": "current.cnt", "utm_id": "current.id", "utm_term": "current.trm", "utm_source_platform": "current.plt", "utm_creative_format": "current.fmt", "utm_marketing_tactic": "current.tct", "session_entry": "current_add.ep", "session_start_time": "current_add.fd", "session_pages": "session.pgs", "session_count": "udata.vst", "user_agent": "udata.uag" } };</script>
-    <script type="text/javascript"
-        id="elementor-frontend-js-before">var elementorFrontendConfig = { "environmentMode": { "edit": false, "wpPreview": false, "isScriptDebug": false }, "i18n": { "shareOnFacebook": "Share on Facebook", "shareOnTwitter": "Share on Twitter", "pinIt": "Pin it", "download": "Download", "downloadImage": "Download image", "fullscreen": "Fullscreen", "zoom": "Zoom", "share": "Share", "playVideo": "Play Video", "previous": "Previous", "next": "Next", "close": "Close", "a11yCarouselPrevSlideMessage": "Previous slide", "a11yCarouselNextSlideMessage": "Next slide", "a11yCarouselFirstSlideMessage": "This is the first slide", "a11yCarouselLastSlideMessage": "This is the last slide", "a11yCarouselPaginationBulletMessage": "Go to slide" }, "is_rtl": false, "breakpoints": { "xs": 0, "sm": 480, "md": 768, "lg": 1025, "xl": 1440, "xxl": 1600 }, "responsive": { "breakpoints": { "mobile": { "label": "Mobile Portrait", "value": 767, "default_value": 767, "direction": "max", "is_enabled": true }, "mobile_extra": { "label": "Mobile Landscape", "value": 880, "default_value": 880, "direction": "max", "is_enabled": false }, "tablet": { "label": "Tablet Portrait", "value": 1024, "default_value": 1024, "direction": "max", "is_enabled": true }, "tablet_extra": { "label": "Tablet Landscape", "value": 1200, "default_value": 1200, "direction": "max", "is_enabled": false }, "laptop": { "label": "Laptop", "value": 1366, "default_value": 1366, "direction": "max", "is_enabled": false }, "widescreen": { "label": "Widescreen", "value": 2400, "default_value": 2400, "direction": "min", "is_enabled": false } }, "hasCustomBreakpoints": false }, "version": "3.27.2", "is_static": false, "experimentalFeatures": { "e_font_icon_svg": true, "additional_custom_breakpoints": true, "e_swiper_latest": true, "e_onboarding": true, "home_screen": true, "landing-pages": true, "editor_v2": true, "link-in-bio": true, "floating-buttons": true }, "urls": { "assets": "https:\/\/kinsley.bslthemes.com\/wp-content\/plugins\/elementor\/assets\/", "ajaxurl": "https:\/\/kinsley.bslthemes.com\/wp-admin\/admin-ajax.php", "uploadUrl": "https:\/\/kinsley.bslthemes.com\/wp-content\/uploads" }, "nonces": { "floatingButtonsClickTracking": "41be016fd6" }, "swiperClass": "swiper", "settings": { "page": [], "editorPreferences": [] }, "kit": { "active_breakpoints": ["viewport_mobile", "viewport_tablet"], "global_image_lightbox": "yes", "lightbox_enable_counter": "yes", "lightbox_enable_fullscreen": "yes", "lightbox_enable_zoom": "yes", "lightbox_enable_share": "yes", "lightbox_title_src": "title", "lightbox_description_src": "description" }, "post": { "id": 17, "title": "Deluxe%20room%20%E2%80%93%20Kinsley%20%E2%80%93%20Hotel%20%26%20Resort%20WordPress%20Theme", "excerpt": "Image for cattle earth. May one Which life divide sea. Optio veniam quibusdam fugit aspernatur ratione rerum necessitatibus ipsa eligendi? Laudantium beatae aut earum ab doloribus tempore veritatis repellat natus illo, veniam quibusdam fugit aspernatur cumque harum quos esse libero nesciunt, molestiae saepe, possimus a suscipit.", "featuredImage": "https:\/\/kinsley.bslthemes.com\/wp-content\/uploads\/2021\/08\/room-1.jpg" } };</script>
+                    <div class="booking-row">
+                        <label for="check_out">Ngày trả phòng</label>
+                        <input type="date" id="check_out" name="check_out" required>
+                    </div>
 
-    <script defer
-        src="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/js/autoptimize_a4efdf3a96bcd12fd7ea34651140649e.js"></script>
+                    <!-- Adults and Children Selectors -->
+                    <div class="guests-grid">
+                        <div class="guest-group">
+                            <label>Người lớn</label>
+                            <div class="guest-input-wrap">
+                                <button type="button" class="guest-btn" id="adults-minus">−</button>
+                                <span class="guest-count" id="adults-count">1</span>
+                                <button type="button" class="guest-btn" id="adults-plus">+</button>
+                            </div>
+                        </div>
+
+                        <div class="guest-group">
+                            <label>Trẻ em</label>
+                            <div class="guest-input-wrap">
+                                <button type="button" class="guest-btn" id="children-minus">−</button>
+                                <span class="guest-count" id="children-count">0</span>
+                                <button type="button" class="guest-btn" id="children-plus">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="room-status-alert" class="status-box">Vui lòng chọn ngày để kiểm tra phòng trống.</div>
+
+                    <button type="submit" id="book-now-btn" class="book-btn">Chọn dịch vụ va dat phong</button>
+                </form>
+
+                <div class="services-hint">
+                    Ban co the xem nhanh cac dich vu tai
+                    <a href="{% url 'rooms:service_list' %}">trang Services</a>
+                    truoc khi dat.
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    {% include 'footer.html' %}
 
     <script>
+        // Guest count management
+        let adultsCount = 1;
+        let childrenCount = 0;
+        const maxGuests = 10;
+
+        function updateGuestDisplay() {
+            document.getElementById('adults-count').textContent = adultsCount;
+            document.getElementById('children-count').textContent = childrenCount;
+            document.getElementById('hidden_adults').value = adultsCount;
+            document.getElementById('hidden_children').value = childrenCount;
+        }
+
+        document.getElementById('adults-plus').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (adultsCount + childrenCount < maxGuests) {
+                adultsCount++;
+                updateGuestDisplay();
+            }
+        });
+
+        document.getElementById('adults-minus').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (adultsCount > 1) {
+                adultsCount--;
+                updateGuestDisplay();
+            }
+        });
+
+        document.getElementById('children-plus').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (adultsCount + childrenCount < maxGuests) {
+                childrenCount++;
+                updateGuestDisplay();
+            }
+        });
+
+        document.getElementById('children-minus').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (childrenCount > 0) {
+                childrenCount--;
+                updateGuestDisplay();
+            }
+        });
+
+        // Availability check
         async function checkAvailability() {
-            const cin = document.getElementById('check_in').value; // Đảm bảo ID này trùng với input ngày nhận
-            const cout = document.getElementById('check_out').value; // Đảm bảo ID này trùng với input ngày trả
+            const cin = document.getElementById('check_in').value;
+            const cout = document.getElementById('check_out').value;
             const roomId = "{{ room.id }}";
 
             if (cin && cout) {
-                // Gọi API kiểm tra
-                const response = await fetch(`/api/check-room?id=${roomId}&in=${cin}&out=${cout}`);
+                const response = await fetch(`/api/check-room/?id=${roomId}&in=${cin}&out=${cout}`);
                 const data = await response.json();
-                
-                const btn = document.getElementById('book-now-btn'); // ID của nút Đặt phòng
-                const statusText = document.getElementById('room-status-alert'); // Nơi hiển thị thông báo
+
+                const btn = document.getElementById('book-now-btn');
+                const statusText = document.getElementById('room-status-alert');
 
                 if (data.is_available) {
                     btn.disabled = false;
-                    btn.style.opacity = "1";
-                    btn.style.cursor = "pointer";
-                    statusText.innerHTML = "✅ Phòng còn trống cho ngày này!";
-                    statusText.className = "text-success";
+                    statusText.textContent = 'Phong con trong cho ngay ban chon.';
+                    statusText.style.background = 'rgba(29, 190, 107, 0.14)';
+                    statusText.style.color = '#0f6b3d';
                 } else {
                     btn.disabled = true;
-                    btn.style.opacity = "0.5";
-                    btn.style.cursor = "not-allowed";
-                    statusText.innerHTML = "❌ Rất tiếc, phòng đã có người đặt!";
-                    statusText.className = "text-danger";
+                    statusText.textContent = 'Phong da co khach dat trong khoang ngay nay.';
+                    statusText.style.background = 'rgba(230, 77, 94, 0.14)';
+                    statusText.style.color = '#8e2131';
                 }
             }
         }
 
-        // Lắng nghe sự kiện: Khi khách thay đổi ngày, hàm check sẽ tự chạy
         document.getElementById('check_in').addEventListener('change', checkAvailability);
         document.getElementById('check_out').addEventListener('change', checkAvailability);
     </script>
-            
 </body>
-
 </html>
-<!-- plugin=object-cache-pro client=phpredis metric#hits=7107 metric#misses=669 metric#hit-ratio=91.4 metric#bytes=3333108 metric#prefetches=9 metric#store-reads=933 metric#store-writes=205 metric#store-hits=484 metric#store-misses=657 metric#sql-queries=203 metric#ms-total=2369.04 metric#ms-cache=255.96 metric#ms-cache-avg=0.2251 metric#ms-cache-ratio=10.8 sample#redis-hits=148086250 sample#redis-misses=158111692 sample#redis-hit-ratio=48.4 sample#redis-ops-per-sec=730 sample#redis-evicted-keys=2182373 sample#redis-used-memory=409970288 sample#redis-used-memory-rss=76083200 sample#redis-memory-fragmentation-ratio=0.2 sample#redis-connected-clients=2 sample#redis-tracking-clients=0 sample#redis-rejected-connections=3 sample#redis-keys=3072 -->

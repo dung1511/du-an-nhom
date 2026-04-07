@@ -3,7 +3,13 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from .models import Coupon, Reservation, Room, RoomCategory
+from .models import Coupon, Reservation, Room, RoomCategory, Service
+
+
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = ["id", "name", "slug", "description", "price", "image_url", "active", "order"]
 
 
 class ReservationCreateSerializer(serializers.ModelSerializer):
@@ -38,6 +44,7 @@ class ReservationCreateSerializer(serializers.ModelSerializer):
             "subtotal",
             "gst",
             "discount_applied",
+            "service_total",
             "total",
             "created_at",
         ]
@@ -47,6 +54,7 @@ class ReservationCreateSerializer(serializers.ModelSerializer):
             "subtotal",
             "gst",
             "discount_applied",
+            "service_total",
             "total",
             "payment_status",
             "created_at",
@@ -179,6 +187,7 @@ class ReservationDetailSerializer(serializers.ModelSerializer):
         decimal_places=2,
         read_only=True
     )
+    selected_services = ServiceSerializer(many=True, read_only=True)
     num_nights = serializers.SerializerMethodField()
     
     class Meta:
@@ -203,6 +212,8 @@ class ReservationDetailSerializer(serializers.ModelSerializer):
             'subtotal',
             'gst',
             'discount_applied',
+            'service_total',
+            'selected_services',
             'total',
             'payment_method',
             'payment_status',

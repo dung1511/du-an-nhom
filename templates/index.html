@@ -507,27 +507,14 @@
 
     <section style="background-color: #f8fcfd; padding: 50px 0;">
     <!-- Features Section -->
-    <div class="features" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 50px;">
-      <div class="feature-item"
-        style="text-align: center; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <img src="{% static 'images/f-1.png' %}" alt="Airport Transfer Icon" style="width: 30px; height: 30px;">
-        <p>Airport transfer</p>
-      </div>
-      <div class="feature-item"
-        style="text-align: center; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <img src="{% static 'images/f-2.png' %}" alt="All Inclusive Icon" style="width: 30px; height: 30px;">
-        <p>All inclusive</p>
-      </div>
-      <div class="feature-item"
-        style="text-align: center; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <img src="{% static 'images/f-3.png' %}" alt="Air Conditioned Icon" style="width: 30px; height: 30px;">
-        <p>Air-conditioned</p>
-      </div>
-      <div class="feature-item"
-        style="text-align: center; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <img src="{% static 'images/f-4.png' %}" alt="Under Protection Icon" style="width: 30px; height: 30px;">
-        <p>Under protection</p>
-      </div>
+    <div class="features" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 50px; flex-wrap: wrap;">
+      {% for service in featured_services %}
+      <a href="{% url 'rooms:service_detail' service.slug %}" class="feature-item"
+        style="text-decoration: none; color: inherit; width: 180px; text-align: center; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <img src="{{ service.image_url }}" alt="{{ service.name }}" style="width: 34px; height: 34px; object-fit: contain;">
+        <p style="margin-top: 12px; font-weight: 600;">{{ service.name }}</p>
+      </a>
+      {% endfor %}
     </div>
 
     <!--   We have 17+ years of Experience Experience Section -->

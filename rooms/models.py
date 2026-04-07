@@ -3,13 +3,27 @@ from django.contrib.auth.models import User
 from datetime import date, timedelta
 from django.core.exceptions import ValidationError
 from datetime import date, timedelta
+from django.utils.text import slugify
+import os
+import uuid
+
+
+def room_cover_upload_path(instance, filename):
+    ext = os.path.splitext(filename)[1].lower() or ".jpg"
+    return f"uploads/rooms/{uuid.uuid4().hex}{ext}"
+
+
+def room_gallery_upload_path(instance, filename):
+    ext = os.path.splitext(filename)[1].lower() or ".jpg"
+    return f"uploads/room-gallery/{uuid.uuid4().hex}{ext}"
 
 class RoomManager(models.Manager):
     def available_rooms(self, check_in, check_out, adults):
         """Tìm phòng trống và đủ sức chứa"""
         reserved_rooms = Reservation.objects.filter(
             check_in_date__lt=check_out,
-            check_out_date__gt=check_in
+            check_out_date__gt=check_in,
+            is_checked_out=False,
         ).values_list('room_id', flat=True)
 
         return self.filter(capacity__gte=adults).exclude(id__in=reserved_rooms)
@@ -81,7 +95,7 @@ class Room(models.Model):
     total_capacity = models.PositiveIntegerField(default=4) # Thêm default ở đây
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='rooms/', blank=True, null=True)
+    image = models.ImageField(upload_to=room_cover_upload_path, blank=True, null=True)
 
     objects = RoomManager()
 
@@ -129,7 +143,7 @@ class Room(models.Model):
 
 class RoomImage(models.Model):
     room = models.ForeignKey(Room, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='room_images/')
+    image = models.ImageField(upload_to=room_gallery_upload_path)
 
     def __str__(self):
         return f"Image for {self.room.name}"
@@ -144,6 +158,24 @@ class Coupon(models.Model):
 
     def __str__(self):
         return self.code
+
+
+class Service(models.Model):
+    name = models.CharField(max_length=120, unique=True)
+    slug = models.SlugField(max_length=140, unique=True)
+    description = models.TextField(blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    image_url = models.CharField(max_length=255, blank=True)
+    active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
 
 
 class Reservation(models.Model):
@@ -193,6 +225,8 @@ class Reservation(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     discount_applied = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    service_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    selected_services = models.ManyToManyField(Service, blank=True, related_name='reservations')
 
     def clean(self):
         if self.check_in_date and self.check_out_date:

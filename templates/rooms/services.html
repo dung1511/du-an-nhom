@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title|default:'Dịch vụ khách sạn' }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --ink: #172636;
+            --muted: #55677b;
+            --primary: #007f9f;
+            --primary-2: #00a5cf;
+            --sand: #f4efe6;
+            --card: #ffffff;
+            --line: rgba(23, 38, 54, 0.1);
+            --shadow: 0 20px 45px rgba(11, 31, 54, 0.12);
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background:
+                radial-gradient(60rem 35rem at 10% -5%, rgba(0, 165, 207, 0.2), transparent 70%),
+                radial-gradient(48rem 30rem at 92% 14%, rgba(244, 239, 230, 0.95), transparent 72%),
+                linear-gradient(180deg, #f8fdff 0%, #ffffff 48%, #f9f6f1 100%);
+            color: var(--ink);
+        }
+        .services-hero {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 4.7rem 1rem 1.2rem;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.5rem 0.85rem;
+            border-radius: 999px;
+            background: rgba(0, 127, 159, 0.11);
+            color: #005b72;
+            font-weight: 700;
+            margin-bottom: 0.9rem;
+            letter-spacing: 0.02em;
+        }
+        .services-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 3.8vw, 3.5rem);
+            letter-spacing: -0.03em;
+            margin-bottom: 0.75rem;
+            line-height: 1.08;
+        }
+        .services-hero p {
+            max-width: 760px;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        .hero-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+        }
+        .hero-stat {
+            background: rgba(255, 255, 255, 0.86);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 0.48rem 0.82rem;
+            color: #29445b;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .services-shell {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 1rem 1rem 4rem;
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.85fr);
+            gap: 1.35rem;
+            align-items: start;
+        }
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.05rem;
+        }
+        .service-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+            position: relative;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 28px 62px rgba(11, 31, 54, 0.16);
+        }
+        .service-image-wrap {
+            position: relative;
+        }
+        .service-image-wrap::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 42%;
+            background: linear-gradient(180deg, transparent 0%, rgba(10, 23, 40, 0.68) 100%);
+            pointer-events: none;
+        }
+        .service-card img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            display: block;
+        }
+        .price-badge {
+            position: absolute;
+            right: 0.8rem;
+            bottom: 0.8rem;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            color: #074f63;
+            border-radius: 999px;
+            padding: 0.4rem 0.72rem;
+            font-weight: 800;
+            font-size: 0.88rem;
+            box-shadow: 0 10px 24px rgba(7, 35, 57, 0.2);
+        }
+        .service-content {
+            padding: 1.1rem 1.1rem 1.15rem;
+        }
+        .service-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        .service-meta h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            line-height: 1.35;
+        }
+        .service-description {
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 0.94rem;
+            margin-bottom: 0.9rem;
+            min-height: 78px;
+        }
+        .service-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            text-decoration: none;
+            color: #046f8b;
+            font-weight: 700;
+        }
+        .service-select {
+            margin-top: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+            padding: 0.78rem 0.82rem;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 127, 159, 0.24);
+            background: rgba(0, 165, 207, 0.08);
+        }
+        .service-select input {
+            width: 19px;
+            height: 19px;
+            accent-color: #007f9f;
+            cursor: pointer;
+        }
+        .service-select-text {
+            color: #234058;
+            font-weight: 600;
+            font-size: 0.92rem;
+        }
+        .booking-summary {
+            position: sticky;
+            top: 110px;
+            background: #ffffff;
+            border-radius: 26px;
+            padding: 1.25rem;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+        }
+        .booking-summary h2 {
+            margin-top: 0;
+            font-size: 1.32rem;
+            font-family: 'Playfair Display', serif;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.55rem 0;
+            border-bottom: 1px solid var(--line);
+            color: #314155;
+        }
+        .summary-row strong {
+            color: #102235;
+            text-align: right;
+        }
+        .summary-total {
+            font-size: 1.06rem;
+            font-weight: 800;
+            color: #046f8b;
+        }
+        .booking-actions {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 1.1rem;
+        }
+        .booking-actions button,
+        .booking-actions a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.95rem 1rem;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        .booking-actions button:hover,
+        .booking-actions a:hover {
+            transform: translateY(-1px);
+        }
+        .btn-primary-action {
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            color: #fff;
+            box-shadow: 0 12px 22px rgba(0, 127, 159, 0.35);
+        }
+        .btn-secondary-action {
+            background: #edf2f5;
+            color: #26384e;
+        }
+        .selected-list {
+            display: grid;
+            gap: 0.45rem;
+            margin-top: 0.75rem;
+        }
+        .selected-pill {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.9rem;
+            align-items: center;
+            padding: 0.7rem 0.85rem;
+            border-radius: 14px;
+            background: #f5fbfd;
+            color: #243448;
+            font-size: 0.95rem;
+            border: 1px dashed rgba(0, 127, 159, 0.25);
+        }
+        .empty-state {
+            padding: 1.2rem;
+            border-radius: 18px;
+            background: rgba(0, 127, 159, 0.08);
+            color: #314155;
+        }
+        .service-empty-text {
+            color: #5d6d7f;
+            margin: 0;
+            line-height: 1.6;
+        }
+        @media (max-width: 980px) {
+            .services-shell {
+                grid-template-columns: 1fr;
+            }
+            .booking-summary {
+                position: static;
+            }
+        }
+        @media (max-width: 700px) {
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+            .services-hero {
+                padding-top: 4.15rem;
+            }
+            .service-description {
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <section class="services-hero">
+        <div class="hero-badge"><i class="fas fa-concierge-bell"></i> Service Collection</div>
+        <h1>{% if room %}Chọn dịch vụ cho phòng {{ room.name }}{% else %}Dịch vụ khách sạn{% endif %}</h1>
+        <p>
+            {% if room %}
+                Bạn có thể chọn thêm dịch vụ ngay trước khi sang trang đặt phòng. Nếu không cần dịch vụ nào, hãy bấm Bỏ qua để tiếp tục.
+            {% else %}
+                Khám phá các dịch vụ nổi bật của khách sạn. Nhấn vào từng thẻ để xem chi tiết.
+            {% endif %}
+        </p>
+        <div class="hero-stats">
+            <span class="hero-stat"><i class="fas fa-star" style="color:#f3a938;"></i> {{ services|length }} dịch vụ khả dụng</span>
+            <span class="hero-stat"><i class="fas fa-clock"></i> Hỗ trợ nhanh 24/7</span>
+            <span class="hero-stat"><i class="fas fa-shield-alt"></i> Xác nhận minh bạch chi phí</span>
+        </div>
+    </section>
+
+    <section class="services-shell">
+        <div>
+            {% if room %}
+            <form action="{% url 'rooms:room_booking' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="room_id" value="{{ room.id }}">
+                <input type="hidden" name="check_in" value="{{ check_in }}">
+                <input type="hidden" name="check_out" value="{{ check_out }}">
+                <input type="hidden" name="adults" value="{{ adults }}">
+                <input type="hidden" name="children" value="{{ children }}">
+            {% endif %}
+
+            <div class="service-grid">
+                {% for service in services %}
+                <article class="service-card">
+                    <div class="service-image-wrap">
+                        <a href="{% url 'rooms:service_detail' service.slug %}">
+                            <img src="{{ service.image_url }}" alt="{{ service.name }}">
+                        </a>
+                        <div class="price-badge">₹{{ service.price }}</div>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-meta">
+                            <h3>{{ service.name }}</h3>
+                        </div>
+                        <div class="service-description">{{ service.description }}</div>
+                        {% if room %}
+                        <label class="service-select">
+                            <span class="service-select-text">Chọn dịch vụ này</span>
+                            <input class="service-checkbox" type="checkbox" name="service_ids" value="{{ service.id }}" data-name="{{ service.name }}" data-price="{{ service.price|floatformat:2 }}">
+                        </label>
+                        {% else %}
+                        <a class="service-action" href="{% url 'rooms:service_detail' service.slug %}">
+                            Xem chi tiết <i class="fas fa-arrow-right"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </article>
+                {% empty %}
+                <div class="empty-state">Hiện chưa có dịch vụ nào được kích hoạt.</div>
+                {% endfor %}
+            </div>
+
+            {% if room %}
+                <div class="booking-actions" style="margin-top: 1.25rem; grid-template-columns: repeat(2, minmax(0, 1fr));">
+                    <button type="submit" class="btn-primary-action">
+                        Tiếp tục đặt phòng
+                    </button>
+                </div>
+            </form>
+            <form action="{% url 'rooms:room_booking' %}" method="POST" style="margin-top: 0.75rem;">
+                {% csrf_token %}
+                <input type="hidden" name="room_id" value="{{ room.id }}">
+                <input type="hidden" name="check_in" value="{{ check_in }}">
+                <input type="hidden" name="check_out" value="{{ check_out }}">
+                <input type="hidden" name="adults" value="{{ adults }}">
+                <input type="hidden" name="children" value="{{ children }}">
+                <button type="submit" class="btn-secondary-action" style="width: 100%;">
+                    Bỏ qua
+                </button>
+            </form>
+            {% else %}
+                <div style="margin-top: 1.25rem;">
+                    <a href="{% url 'rooms:room_list' %}" class="btn-primary-action" style="width: 100%;">Xem phòng</a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if room %}
+        <aside class="booking-summary">
+            <h2>Tóm tắt đặt phòng</h2>
+            <div class="summary-row"><span>Phòng</span><strong>{{ room.name }}</strong></div>
+            <div class="summary-row"><span>Ngày nhận</span><strong>{{ check_in }}</strong></div>
+            <div class="summary-row"><span>Ngày trả</span><strong>{{ check_out }}</strong></div>
+            <div class="summary-row"><span>Số khách</span><strong>{{ adults }} người lớn, {{ children }} trẻ em</strong></div>
+            <div class="summary-row"><span>Số đêm</span><strong>{{ num_nights }}</strong></div>
+            <div class="summary-row"><span>Tiền phòng</span><strong>₹{{ subtotal }}</strong></div>
+            <div class="summary-row"><span>GST</span><strong>₹{{ gst }}</strong></div>
+            <div class="summary-row"><span>Tổng trước dịch vụ</span><strong>₹{{ subtotal|add:gst }}</strong></div>
+            <p class="summary-total" style="margin-top: 0.9rem; margin-bottom: 0.35rem;">Dịch vụ đã chọn</p>
+            <div class="selected-list" id="selected-services-live">
+                <div class="selected-pill">
+                    <span>Nếu bạn không chọn thêm dịch vụ nào, hệ thống sẽ bỏ qua bước này.</span>
+                </div>
+            </div>
+            <div class="summary-row" style="margin-top: 0.7rem; border-bottom: none; padding-bottom: 0;">
+                <span>Tổng dịch vụ</span>
+                <strong id="service-total-live">₹0.00</strong>
+            </div>
+        </aside>
+        {% else %}
+        <aside class="booking-summary">
+            <h2>Dịch vụ nổi bật</h2>
+            <p class="service-empty-text">
+                Mỗi dịch vụ đều có trang chi tiết riêng để bạn xem thêm trước khi đặt phòng.
+            </p>
+        </aside>
+        {% endif %}
+    </section>
+
+    {% include 'footer.html' %}
+    {% if room %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkboxes = document.querySelectorAll('.service-checkbox');
+            const liveList = document.getElementById('selected-services-live');
+            const liveTotal = document.getElementById('service-total-live');
+
+            function formatCurrency(amount) {
+                return '₹' + new Intl.NumberFormat('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(amount);
+            }
+
+            function updateSelectionSummary() {
+                let selected = [];
+                let total = 0;
+
+                checkboxes.forEach(function (checkbox) {
+                    if (checkbox.checked) {
+                        const name = checkbox.getAttribute('data-name') || 'Dịch vụ';
+                        const price = parseFloat(checkbox.getAttribute('data-price') || '0');
+                        selected.push({ name: name, price: price });
+                        total += price;
+                    }
+                });
+
+                if (!selected.length) {
+                    liveList.innerHTML = '<div class="selected-pill"><span>Nếu bạn không chọn thêm dịch vụ nào, hệ thống sẽ bỏ qua bước này.</span></div>';
+                } else {
+                    liveList.innerHTML = selected.map(function (item) {
+                        return '<div class="selected-pill"><span>' + item.name + '</span><strong>' + formatCurrency(item.price) + '</strong></div>';
+                    }).join('');
+                }
+
+                liveTotal.textContent = formatCurrency(total);
+            }
+
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener('change', updateSelectionSummary);
+            });
+
+            updateSelectionSummary();
+        });
+    </script>
+    {% endif %}
+</body>
+</html>

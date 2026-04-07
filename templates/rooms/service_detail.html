@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ service.name }} | Dịch vụ khách sạn</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background: linear-gradient(180deg, #f5faff 0%, #ffffff 44%, #f8f4ee 100%);
+            color: #182433;
+        }
+        .service-detail-wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 4rem 1rem 4.5rem;
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+            gap: 1.5rem;
+            align-items: start;
+        }
+        .service-hero-card,
+        .service-side-card {
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(23, 43, 77, 0.08);
+            border-radius: 26px;
+            overflow: hidden;
+            box-shadow: 0 18px 45px rgba(11, 31, 54, 0.08);
+        }
+        .service-hero-card img {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            display: block;
+        }
+        .service-body {
+            padding: 1.35rem 1.4rem 1.5rem;
+        }
+        .service-title {
+            margin: 0 0 0.35rem;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            letter-spacing: -0.03em;
+        }
+        .service-price {
+            color: #0f7ae5;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        .service-description {
+            color: #4f6276;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+        .action-row a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.95rem 1.15rem;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .primary-action {
+            background: linear-gradient(135deg, #0f7ae5, #4aa3ff);
+            color: #fff;
+        }
+        .ghost-action {
+            background: #eef3f8;
+            color: #22344d;
+        }
+        .service-side-card {
+            padding: 1.35rem;
+        }
+        .side-block {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(23, 43, 77, 0.08);
+        }
+        .side-block:last-child {
+            border-bottom: none;
+        }
+        .side-label {
+            display: block;
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #6d7c8c;
+            margin-bottom: 0.35rem;
+        }
+        .related-grid {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+        .related-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.85rem 0.95rem;
+            border-radius: 16px;
+            background: #f7fbff;
+            color: #22344d;
+            text-decoration: none;
+        }
+        @media (max-width: 900px) {
+            .service-detail-wrap {
+                grid-template-columns: 1fr;
+            }
+            .service-hero-card img {
+                height: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <section class="service-detail-wrap">
+        <article class="service-hero-card">
+            <img src="{{ service.image_url }}" alt="{{ service.name }}">
+            <div class="service-body">
+                <h1 class="service-title">{{ service.name }}</h1>
+                <div class="service-price">₹{{ service.price }}</div>
+                <div class="service-description">{{ service.description }}</div>
+                <div class="action-row">
+                    <a href="{% url 'home' %}" class="ghost-action"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
+                    <a href="{% url 'rooms:service_list' %}" class="primary-action"><i class="fas fa-concierge-bell"></i> Xem tất cả dịch vụ</a>
+                </div>
+            </div>
+        </article>
+
+        <aside class="service-side-card">
+            <div class="side-block">
+                <span class="side-label">Tóm tắt</span>
+                <div style="font-size: 1.05rem; font-weight: 700; color: #102235;">{{ service.name }}</div>
+                <div style="color: #0f7ae5; font-weight: 800; margin-top: 0.4rem;">₹{{ service.price }}</div>
+            </div>
+            <div class="side-block">
+                <span class="side-label">Mô tả ngắn</span>
+                <p style="margin: 0; color: #506175; line-height: 1.7;">{{ service.description }}</p>
+            </div>
+            <div class="side-block">
+                <span class="side-label">Dịch vụ liên quan</span>
+                <div class="related-grid">
+                    {% for item in related_services %}
+                    <a href="{% url 'rooms:service_detail' item.slug %}" class="related-item">
+                        <span>{{ item.name }}</span>
+                        <span style="color: #0f7ae5; font-weight: 800;">₹{{ item.price }}</span>
+                    </a>
+                    {% empty %}
+                    <div style="color: #5d6d7f;">Chưa có dịch vụ liên quan.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    {% include 'footer.html' %}
+</body>
+</html>

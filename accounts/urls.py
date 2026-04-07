@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/profile/', views.ProfileAPIView.as_view(), name='api_profile'),
+    path('api/profile/avatar/', views.AvatarUploadAPIView.as_view(), name='api_profile_avatar_upload'),
     path('api/change-password/', views.ChangePasswordAPIView.as_view(), name='api_change_password'),
     path('api/logout/', views.LogoutAPIView.as_view(), name='api_logout'),
     path('api/admin/users/', views.AdminUserListAPIView.as_view(), name='api_admin_users'),

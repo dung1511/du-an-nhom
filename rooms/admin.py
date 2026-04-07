@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Room, RoomCategory, RoomImage, Reservation, Coupon
+from .models import Room, RoomCategory, RoomImage, Reservation, Coupon, Service
 
 class RoomImageInline(admin.TabularInline):
     model = RoomImage
@@ -37,3 +37,11 @@ class CouponAdmin(admin.ModelAdmin):
     list_display = ('code', 'discount_percentage', 'active', 'valid_from', 'valid_to')
     list_filter = ('active', 'valid_from', 'valid_to')
     search_fields = ('code',)
+
+
+@admin.register(Service)
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'active', 'order')
+    list_filter = ('active',)
+    search_fields = ('name', 'description')
+    prepopulated_fields = {'slug': ('name',)}

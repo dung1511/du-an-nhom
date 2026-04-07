@@ -3,23 +3,55 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError as DjangoValidationError
 from .models import Profile
 from .forms import ProfileForm  
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count, Sum, Q
 from .serializers import RegisterSerializer, ProfileSerializer, ChangePasswordSerializer, AdminUserSerializer
+from rooms.upload_security import build_safe_filename, validate_image_file
+
+
+class AdminResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'limit'
+    page_query_param = 'page'
+    max_page_size = 100
+
+    def get_paginated_response(self, data):
+        total_pages = self.page.paginator.num_pages
+        return Response(
+            {
+                'results': data,
+                'pagination': {
+                    'page': self.page.number,
+                    'limit': self.get_page_size(self.request),
+                    'total_items': self.page.paginator.count,
+                    'total_pages': total_pages,
+                    'has_next': self.page.has_next(),
+                    'has_previous': self.page.has_previous(),
+                },
+            }
+        )
 
 # views.py
 def sign_up(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
-        username = request.POST.get('username').strip()
-        email = request.POST.get('email').strip()
+        username = (request.POST.get('username') or '').strip()
+        email = (request.POST.get('email') or '').strip()
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
+
+        if not username:
+            messages.error(request, 'Username is required', extra_tags='danger')
+            return redirect('accounts:sign_up')
 
         # Kiểm tra mật khẩu khớp
         if password != confirm_password:
@@ -27,13 +59,17 @@ def sign_up(request):
             return redirect('accounts:sign_up')
 
         # Kiểm tra trùng Username (Để tránh lỗi IntegrityError bạn gặp lúc nãy)
-        if User.objects.filter(username=username).exists():
+        if User.objects.filter(username__iexact=username).exists():
             messages.error(request, 'Username already exists', extra_tags='danger')
             return redirect('accounts:sign_up')
 
         # Tạo user
-        user = User.objects.create_user(first_name=first_name, username=username, email=email, password=password)
-        user.save()
+        try:
+            user = User.objects.create_user(first_name=first_name, username=username, email=email, password=password)
+            user.save()
+        except IntegrityError:
+            messages.error(request, 'Username already exists', extra_tags='danger')
+            return redirect('accounts:sign_up')
 
         # Thông báo thành công
         messages.success(request, 'Account created successfully! Please login.', extra_tags='success')
@@ -146,6 +182,44 @@ class ProfileAPIView(APIView):
         })
 
 
+class AvatarUploadAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        avatar = request.FILES.get('avatar')
+        if not avatar:
+            return Response({'error': 'Vui lòng chọn file avatar.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            ext = validate_image_file(avatar)
+        except DjangoValidationError as exc:
+            return Response({'error': str(exc.message)}, status=status.HTTP_400_BAD_REQUEST)
+
+        avatar.name = build_safe_filename(ext)
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+        old_path = profile.profile_picture.path if profile.profile_picture else None
+
+        profile.profile_picture = avatar
+        profile.save(update_fields=['profile_picture'])
+
+        if old_path and old_path != profile.profile_picture.path:
+            try:
+                import os
+                if os.path.exists(old_path):
+                    os.remove(old_path)
+            except OSError:
+                pass
+
+        return Response(
+            {
+                'message': 'Upload avatar thành công.',
+                'profile_picture': profile.profile_picture.url,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
 class ChangePasswordAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -174,6 +248,7 @@ class LogoutAPIView(APIView):
 class AdminUserListAPIView(generics.ListAPIView):
     serializer_class = AdminUserSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = AdminResultsSetPagination
 
     def get_queryset(self):
         return User.objects.select_related('profile').order_by('-date_joined')
