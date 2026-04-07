@@ -9,7 +9,7 @@ from .models import Coupon, Reservation, Room, RoomCategory, Service
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = ["id", "name", "slug", "description", "price", "image_url", "active", "order"]
+        fields = ["id", "name", "slug", "description", "price", "image", "image_url", "active", "order"]
 
 
 class ReservationCreateSerializer(serializers.ModelSerializer):

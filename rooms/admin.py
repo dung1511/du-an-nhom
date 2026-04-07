@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from .models import Room, RoomCategory, RoomImage, Reservation, Coupon, Service
 
 class RoomImageInline(admin.TabularInline):
@@ -41,7 +42,25 @@ class CouponAdmin(admin.ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'active', 'order')
+    list_display = ('image_preview', 'name', 'price', 'active', 'order')
     list_filter = ('active',)
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
+    readonly_fields = ('image_preview',)
+    fields = ('image_preview', 'image', 'image_url', 'name', 'slug', 'description', 'price', 'active', 'order')
+
+    def image_preview(self, obj):
+        image_url = None
+        if obj and obj.image:
+            image_url = obj.image.url
+        elif obj and obj.image_url:
+            image_url = obj.image_url
+
+        if image_url:
+            return format_html(
+                '<img src="{}" style="width:56px;height:56px;object-fit:cover;border-radius:14px;border:1px solid #dbe4ef;box-shadow:0 8px 18px rgba(19,32,51,.08);" />',
+                image_url,
+            )
+        return 'No image'
+
+    image_preview.short_description = 'Preview'

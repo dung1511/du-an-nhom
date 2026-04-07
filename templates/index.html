@@ -511,7 +511,13 @@
       {% for service in featured_services %}
       <a href="{% url 'rooms:service_detail' service.slug %}" class="feature-item"
         style="text-decoration: none; color: inherit; width: 180px; text-align: center; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease;">
-        <img src="{{ service.image_url }}" alt="{{ service.name }}" style="width: 34px; height: 34px; object-fit: contain;">
+        {% if service.image %}
+          <img src="{{ service.image.url }}" alt="{{ service.name }}" style="width: 54px; height: 54px; object-fit: cover; border-radius: 16px;">
+        {% elif service.image_url %}
+          <img src="{{ service.image_url }}" alt="{{ service.name }}" style="width: 34px; height: 34px; object-fit: contain;">
+        {% else %}
+          <div style="width: 54px; height: 54px; border-radius: 16px; background: #eef6fb; display: inline-flex; align-items: center; justify-content: center; color: #7a8797; margin: 0 auto;">?</div>
+        {% endif %}
         <p style="margin-top: 12px; font-weight: 600;">{{ service.name }}</p>
       </a>
       {% endfor %}

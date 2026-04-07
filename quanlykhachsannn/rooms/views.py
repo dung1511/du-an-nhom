@@ -333,6 +333,10 @@ def book_room(request, room_id):
                 messages.error(request, 'Invalid booking dates or guest count.')
                 return redirect('rooms:room_detail', room_id=room_id)
 
+            if check_in_date < today:
+                messages.error(request, 'Ngày nhận phòng không được nhỏ hơn hôm nay.')
+                return redirect('rooms:room_detail', room_id=room_id)
+
             num_nights = (check_out_date - check_in_date).days
             if num_nights <= 0:
                 messages.error(request, 'Check-out date must be after check-in date.')

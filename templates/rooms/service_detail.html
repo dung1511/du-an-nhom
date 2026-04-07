@@ -128,7 +128,13 @@
 
     <section class="service-detail-wrap">
         <article class="service-hero-card">
-            <img src="{{ service.image_url }}" alt="{{ service.name }}">
+                {% if service.image %}
+                    <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                {% elif service.image_url %}
+                    <img src="{{ service.image_url }}" alt="{{ service.name }}">
+                {% else %}
+                    <div style="height:420px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#eef6fb,#f7f3ea);color:#7a8797;font-weight:700;">No image</div>
+                {% endif %}
             <div class="service-body">
                 <h1 class="service-title">{{ service.name }}</h1>
                 <div class="service-price">₹{{ service.price }}</div>

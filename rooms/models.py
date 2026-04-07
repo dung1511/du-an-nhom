@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from django.utils.text import slugify
 import os
 import uuid
+from itertools import combinations
 
 
 def room_cover_upload_path(instance, filename):
@@ -16,6 +17,11 @@ def room_cover_upload_path(instance, filename):
 def room_gallery_upload_path(instance, filename):
     ext = os.path.splitext(filename)[1].lower() or ".jpg"
     return f"uploads/room-gallery/{uuid.uuid4().hex}{ext}"
+
+
+def service_image_upload_path(instance, filename):
+    ext = os.path.splitext(filename)[1].lower() or ".jpg"
+    return f"uploads/services/{uuid.uuid4().hex}{ext}"
 
 class RoomManager(models.Manager):
     def available_rooms(self, check_in, check_out, adults):
@@ -69,6 +75,64 @@ class RoomManager(models.Manager):
             suitable_rooms = suitable_rooms[:limit]
         
         return suitable_rooms
+
+    def recommend_room_combinations(self, check_in, check_out, adults, children=0, max_rooms=2, limit=3):
+        """Đề xuất tổ hợp phòng phù hợp cho nhóm khách."""
+        total_guests = adults + children
+        available_rooms = list(
+            self.filter(
+                total_capacity__gte=1,
+            )
+            .exclude(
+                id__in=Reservation.objects.filter(
+                    check_in_date__lt=check_out,
+                    check_out_date__gt=check_in,
+                    is_checked_out=False,
+                ).values_list('room_id', flat=True)
+            )
+            .order_by('total_capacity', 'price')
+        )
+
+        if len(available_rooms) < 2 or total_guests <= 0:
+            return []
+
+        scored_combinations = []
+        max_group_size = 2 if max_rooms is None else max(2, max_rooms)
+
+        for group_size in range(2, max_group_size + 1):
+            for room_group in combinations(available_rooms, group_size):
+                total_capacity = sum(room.total_capacity or room.capacity for room in room_group)
+                if total_capacity < total_guests:
+                    continue
+
+                total_price = sum(room.price for room in room_group)
+                score = (
+                    len(room_group),
+                    total_capacity - total_guests,
+                    total_price,
+                )
+                scored_combinations.append((score, room_group, total_capacity, total_price))
+
+        scored_combinations.sort(key=lambda item: item[0])
+
+        results = []
+        seen_sets = set()
+        for _, room_group, total_capacity, total_price in scored_combinations:
+            room_ids = tuple(sorted(room.id for room in room_group))
+            if room_ids in seen_sets:
+                continue
+            seen_sets.add(room_ids)
+            results.append(
+                {
+                    'rooms': room_group,
+                    'total_capacity': total_capacity,
+                    'total_price': total_price,
+                }
+            )
+            if len(results) >= limit:
+                break
+
+        return results
 
 
 class RoomCategory(models.Model):
@@ -165,6 +229,7 @@ class Service(models.Model):
     slug = models.SlugField(max_length=140, unique=True)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    image = models.ImageField(upload_to=service_image_upload_path, blank=True, null=True)
     image_url = models.CharField(max_length=255, blank=True)
     active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)

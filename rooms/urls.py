@@ -28,6 +28,7 @@ urlpatterns = [
     # Web views
     path('rooms/', views.room_list, name='room_list'),
     path('rooms/<int:room_id>/', views.room_detail, name='room_detail'),
+    path('rooms/combo-detail/', views.room_combo_detail, name='room_combo_detail'),
     path('services/', views.service_list, name='service_list'),
     path('services/select/', views.service_selection, name='service_selection'),
     path('services/<slug:slug>/', views.service_detail, name='service_detail'),

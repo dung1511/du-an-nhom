@@ -222,6 +222,14 @@ class RoomSearchAPIView(APIView):
             children=children,
             limit=limit,
         )
+        recommended_combos = Room.objects.recommend_room_combinations(
+            check_in=check_in,
+            check_out=check_out,
+            adults=adults,
+            children=children,
+            max_rooms=2,
+            limit=3,
+        )
 
         num_nights = (check_out - check_in).days
         rooms_data = []
@@ -233,6 +241,27 @@ class RoomSearchAPIView(APIView):
                     'subtotal': str(room.price * num_nights),
                     'gst': str(room.price * num_nights * Decimal('0.18')),
                     'total': str(room.price * num_nights * Decimal('1.18')),
+                }
+            )
+
+        combo_data = []
+        for combo in recommended_combos:
+            combo_rooms = []
+            for room in combo['rooms']:
+                combo_rooms.append(
+                    {
+                        **RoomSerializer(room).data,
+                        'subtotal': str(room.price * num_nights),
+                        'gst': str(room.price * num_nights * Decimal('0.18')),
+                        'total': str(room.price * num_nights * Decimal('1.18')),
+                    }
+                )
+
+            combo_data.append(
+                {
+                    'rooms': combo_rooms,
+                    'total_capacity': combo['total_capacity'],
+                    'total_price': str(combo['total_price']),
                 }
             )
 
@@ -249,6 +278,7 @@ class RoomSearchAPIView(APIView):
                     'num_nights': num_nights,
                 },
                 'results': {'count': len(rooms_data), 'rooms': rooms_data},
+                'recommended_combos': combo_data,
                 'message': f'Tìm thấy {len(rooms_data)} phòng phù hợp cho {total_guests} khách.',
             },
             status=status.HTTP_200_OK,
@@ -544,17 +574,83 @@ def room_list_filtered(request):
         limit=None,
     )
 
+    recommended_combos = Room.objects.recommend_room_combinations(
+        check_in=check_in_date,
+        check_out=check_out_date,
+        adults=adults,
+        children=children,
+        max_rooms=2,
+        limit=3,
+    )
+
     return render(
         request,
         'rooms/roomsfilter.html',
         {
             'rooms': suitable_rooms,
+            'recommended_combos': recommended_combos,
             'check_in': check_in,
             'check_out': check_out,
             'adults': adults,
             'children': children,
             'total_guests': adults + children,
             'num_nights': (check_out_date - check_in_date).days,
+        },
+    )
+
+
+def room_combo_detail(request):
+    room_ids_raw = request.GET.get('room_ids', '')
+    room_ids = []
+
+    try:
+        room_ids = [int(room_id.strip()) for room_id in room_ids_raw.split(',') if room_id.strip()]
+    except ValueError:
+        room_ids = []
+
+    if len(room_ids) < 2:
+        messages.error(request, 'Vui lòng chọn đủ 2 phòng để xem phương án ghép.')
+        return redirect('rooms:room_list')
+
+    room_map = {room.id: room for room in Room.objects.filter(id__in=room_ids)}
+    combo_rooms = [room_map[room_id] for room_id in room_ids if room_id in room_map]
+
+    if len(combo_rooms) < 2:
+        messages.error(request, 'Không tìm thấy đủ phòng để hiển thị phương án ghép.')
+        return redirect('rooms:room_list')
+
+    check_in = request.GET.get('check_in')
+    check_out = request.GET.get('check_out')
+    adults = request.GET.get('adults')
+    children = request.GET.get('children', '0')
+    num_nights = None
+
+    try:
+        if check_in and check_out:
+            check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
+            check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
+            if check_out_date > check_in_date:
+                num_nights = (check_out_date - check_in_date).days
+    except ValueError:
+        pass
+
+    total_capacity = sum(room.total_capacity or room.capacity for room in combo_rooms)
+    total_price_per_night = sum(room.price for room in combo_rooms)
+    total_stay_price = total_price_per_night * num_nights if num_nights else None
+
+    return render(
+        request,
+        'rooms/room_combo_detail.html',
+        {
+            'combo_rooms': combo_rooms,
+            'total_capacity': total_capacity,
+            'total_price_per_night': total_price_per_night,
+            'total_stay_price': total_stay_price,
+            'check_in': check_in,
+            'check_out': check_out,
+            'adults': adults,
+            'children': children,
+            'num_nights': num_nights,
         },
     )
 
@@ -602,6 +698,21 @@ def room_search(request):
 
         available_rooms = Room.objects.available_rooms(check_in_date, check_out_date, total_guests)
         other_available_rooms = available_rooms.exclude(id=selected_room.id)
+        suitable_rooms = Room.objects.search_suitable_rooms(
+            check_in=check_in_date,
+            check_out=check_out_date,
+            adults=adults,
+            children=children,
+            limit=None,
+        )
+        recommended_combos = Room.objects.recommend_room_combinations(
+            check_in=check_in_date,
+            check_out=check_out_date,
+            adults=adults,
+            children=children,
+            max_rooms=2,
+            limit=3,
+        )
 
         return render(
             request,
@@ -611,6 +722,8 @@ def room_search(request):
                 'is_available': is_available,
                 'capacity_exceeded': capacity_exceeded,
                 'other_available_rooms': other_available_rooms,
+                'suitable_rooms': suitable_rooms,
+                'recommended_combos': recommended_combos,
                 'check_in': check_in,
                 'check_out': check_out,
                 'adults': adults,
@@ -792,6 +905,10 @@ def book_room(request, room_id):
                 adults = int(adults)
             except (ValueError, TypeError):
                 messages.error(request, 'Invalid booking dates or guest count.')
+                return redirect('rooms:room_detail', room_id=room_id)
+
+            if check_in_date < today:
+                messages.error(request, 'Ngày nhận phòng không được nhỏ hơn hôm nay.')
                 return redirect('rooms:room_detail', room_id=room_id)
 
             num_nights = (check_out_date - check_in_date).days

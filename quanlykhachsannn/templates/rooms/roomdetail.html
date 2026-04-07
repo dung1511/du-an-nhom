@@ -941,7 +941,12 @@
                                                                                     name="check_out"
                                                                                     class="mphb-datepick"
                                                                                     autocomplete="off"
-                                                                                    inputmode="none" />
+                                                                                    inputmode="none"
+                                                                                    min="{% now "Y-m-d" %}" />
+                                                                            </p>
+                                                                            <p id="booking-form-notice"
+                                                                                style="margin: 12px 0 18px; padding: 12px 14px; border-radius: 12px; background: rgba(15, 127, 159, 0.12); color: #0b627d; font-size: 0.95rem; line-height: 1.6;">
+                                                                                Chọn ngày nhận phòng từ hôm nay trở đi để kiểm tra phòng trống.
                                                                             </p>
                                                                             <p class="mphb_sc_search-adults">
                                                                                 <label for="adults">guests</label>
@@ -976,6 +981,65 @@
                                     </div>
                                 </div>
                                 <!-- RIGHT main section end -->
+
+                                <script>
+                                    (function () {
+                                        const checkInInput = document.getElementById('check_in');
+                                        const checkOutInput = document.getElementById('check_out');
+                                        const notice = document.getElementById('booking-form-notice');
+                                        const submitButton = document.querySelector('.mphb_sc_search-submit-button-wrapper button');
+                                        if (!checkInInput || !checkOutInput) {
+                                            return;
+                                        }
+
+                                        const today = new Date().toISOString().slice(0, 10);
+
+                                        function setNotice(text, background, color, disableSubmit) {
+                                            if (notice) {
+                                                notice.textContent = text;
+                                                notice.style.background = background;
+                                                notice.style.color = color;
+                                            }
+                                            if (submitButton) {
+                                                submitButton.disabled = Boolean(disableSubmit);
+                                            }
+                                        }
+
+                                        function validateDates() {
+                                            const checkInValue = checkInInput.value;
+                                            const checkOutValue = checkOutInput.value;
+
+                                            if (!checkInValue || !checkOutValue) {
+                                                setNotice('Chọn đủ ngày nhận và ngày trả để kiểm tra phòng trống.', 'rgba(15, 127, 159, 0.12)', '#0b627d', true);
+                                                return false;
+                                            }
+
+                                            if (checkInValue < today) {
+                                                setNotice('Ngày nhận phòng không được nhỏ hơn hôm nay.', 'rgba(230, 77, 94, 0.14)', '#8e2131', true);
+                                                return false;
+                                            }
+
+                                            if (checkOutValue <= checkInValue) {
+                                                setNotice('Ngày trả phòng phải sau ngày nhận phòng.', 'rgba(230, 77, 94, 0.14)', '#8e2131', true);
+                                                return false;
+                                            }
+
+                                            setNotice('Ngày hợp lệ. Hãy bấm Search để xem phòng trống.', 'rgba(29, 190, 107, 0.14)', '#0f6b3d', false);
+                                            return true;
+                                        }
+
+                                        checkInInput.addEventListener('change', () => {
+                                            checkOutInput.min = checkInInput.value || checkOutInput.min;
+                                            if (checkOutInput.value && checkOutInput.value < checkOutInput.min) {
+                                                checkOutInput.value = '';
+                                            }
+                                            validateDates();
+                                        });
+
+                                        checkOutInput.addEventListener('change', validateDates);
+                                        validateDates();
+                                    })();
+                                </script>
 
 
                             </div>

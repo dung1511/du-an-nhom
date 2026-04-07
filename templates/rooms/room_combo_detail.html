@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phương án ghép phòng | Paradise</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --ink: #152434;
+            --muted: #5a6e82;
+            --line: rgba(21, 36, 52, 0.12);
+            --sea: #007f9f;
+            --sea-2: #00a7c6;
+            --card: rgba(255, 255, 255, 0.92);
+            --shadow: 0 24px 52px rgba(8, 27, 44, 0.14);
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(56rem 30rem at -6% 0%, rgba(0, 167, 198, 0.15), transparent 72%),
+                radial-gradient(48rem 27rem at 100% 8%, rgba(245, 239, 229, 0.95), transparent 75%),
+                linear-gradient(180deg, #f8fcff 0%, #ffffff 44%, #f8f5ef 100%);
+        }
+
+        .combo-shell {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 1rem 4rem;
+        }
+
+        .combo-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .combo-title {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            line-height: 1.08;
+        }
+
+        .combo-subtitle {
+            color: var(--muted);
+            margin: 0.45rem 0 0;
+            line-height: 1.8;
+            max-width: 760px;
+        }
+
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.85rem;
+            margin: 1.15rem 0 1.5rem;
+        }
+
+        .summary-chip {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 0.85rem 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .summary-chip small {
+            display: block;
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-chip strong {
+            font-size: 1rem;
+        }
+
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.25rem;
+        }
+
+        .room-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .room-image {
+            position: relative;
+        }
+
+        .room-image img {
+            display: block;
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+        }
+
+        .room-body {
+            padding: 1.1rem 1.15rem 1.2rem;
+        }
+
+        .room-name {
+            margin: 0 0 0.6rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+        }
+
+        .room-name a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .room-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.38rem;
+            background: #f3f8fc;
+            border: 1px solid #d8e4ef;
+            color: #2d4a63;
+            border-radius: 999px;
+            padding: 0.45rem 0.8rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .room-desc {
+            margin: 0 0 1rem;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        .room-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--line);
+        }
+
+        .price-block strong {
+            display: block;
+            color: var(--sea);
+            font-size: 1.2rem;
+        }
+
+        .detail-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            background: linear-gradient(135deg, var(--sea), var(--sea-2));
+            color: #fff;
+            text-decoration: none;
+            border-radius: 999px;
+            padding: 0.72rem 1rem;
+            font-weight: 700;
+            box-shadow: 0 12px 26px rgba(0, 127, 159, 0.24);
+        }
+
+        @media (max-width: 960px) {
+            .room-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="combo-shell">
+        <div class="combo-header">
+            <div>
+                <h1 class="combo-title">Phương án ghép 2 phòng</h1>
+                <p class="combo-subtitle">Trang này hiển thị đầy đủ cả 2 phòng trong phương án bạn vừa chọn, để bạn so sánh nhanh trước khi đặt.</p>
+            </div>
+        </div>
+
+        <div class="summary-bar">
+            <div class="summary-chip">
+                <small>Số phòng</small>
+                <strong>{{ combo_rooms|length }} phòng</strong>
+            </div>
+            <div class="summary-chip">
+                <small>Tổng sức chứa</small>
+                <strong>{{ total_capacity }} người</strong>
+            </div>
+            <div class="summary-chip">
+                <small>Tổng giá / đêm</small>
+                <strong>₹{{ total_price_per_night }}</strong>
+            </div>
+            {% if num_nights %}
+            <div class="summary-chip">
+                <small>Ước tính {{ num_nights }} đêm</small>
+                <strong>₹{{ total_stay_price }}</strong>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if check_in and check_out %}
+        <p style="margin: 0 0 1.25rem; color: var(--muted); font-weight: 600;">
+            <i class="fa fa-calendar"></i> {{ check_in }} ←→ {{ check_out }}
+            {% if adults or children %}
+                | {% if adults %}{{ adults }} người lớn{% endif %}{% if children and children != '0' %}{% if adults %} + {% endif %}{{ children }} trẻ em{% endif %}
+            {% endif %}
+        </p>
+        {% endif %}
+
+        <div class="room-grid">
+            {% for room in combo_rooms %}
+            <article class="room-card">
+                <div class="room-image">
+                    {% if room.image %}
+                        <img src="{{ room.image.url }}" alt="{{ room.name }}">
+                    {% else %}
+                        <img src="{% static 'images/placeholder.jpg' %}" alt="No image available">
+                    {% endif %}
+                </div>
+                <div class="room-body">
+                    <h2 class="room-name"><a href="{% url 'rooms:room_detail' room.id %}">{{ room.name }}</a></h2>
+                    <div class="room-meta">
+                        <span class="pill"><i class="fa fa-users"></i> {{ room.total_capacity }} khách</span>
+                        <span class="pill"><i class="fa fa-bed"></i> {{ room.get_size_display }}</span>
+                        <span class="pill"><i class="fa fa-tag"></i> {{ room.availability_status }}</span>
+                    </div>
+                    <p class="room-desc">{{ room.description|default:"Chưa có mô tả cho phòng này."|slice:":180" }}</p>
+                    <div class="room-footer">
+                        <div class="price-block">
+                            <small>Giá từ mỗi đêm</small>
+                            <strong>₹{{ room.price }}</strong>
+                        </div>
+                        <a href="{% url 'rooms:room_detail' room.id %}" class="detail-link">Xem chi tiết</a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+</body>
+</html>

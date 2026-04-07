@@ -1,182 +1,541 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
-<head> 
-    <!-- Meta Data -->
+<html lang="vi">
+<head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="profile" href="https://gmpg.org/xfn/11">
-    <link media="all" href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_cca0e0029d513f60003e3bc89e52cd79.css" rel="stylesheet">
-    <link media="only screen and (max-width: 768px)" href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_41f59b21c4bbf5bf8ff4257643b4a543.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ blog.title }}</title>
-    <meta name="robots" content="max-image-preview:large">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
-        img:is([sizes="auto" i], [sizes^="auto," i]) {
-            contain-intrinsic-size: 3000px 1500px
+        :root {
+            --ink: #172433;
+            --muted: #5c7082;
+            --bg: #f5f7fb;
+            --surface: rgba(255, 255, 255, 0.96);
+            --line: #d8e3ed;
+            --accent: #0f7f9f;
+            --accent-soft: #e4f7fb;
+            --warm: #f2b84b;
+            --shadow: 0 22px 52px rgba(17, 34, 51, 0.10);
         }
-    </style>
-    <link rel="dns-prefetch" href="//bslthemes.com">
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="alternate" type="application/rss+xml" title="Kinsley - Hotel &amp; Resort WordPress Theme » Feed" href="https://kinsley.bslthemes.com/feed/">
-    <link rel="alternate" type="application/rss+xml" title="Kinsley - Hotel &amp; Resort WordPress Theme » Comments Feed" href="https://kinsley.bslthemes.com/comments/feed/">
-    <link rel="alternate" type="application/rss+xml" title="Kinsley - Hotel &amp; Resort WordPress Theme » The Best Travel Insurance Companies for Seniors Comments Feed" href="https://kinsley.bslthemes.com/2021/10/20/the-best-travel-insurance-companies-for-seniors/feed/">
-    <style id="classic-theme-styles-inline-css" type="text/css">
-        /*! This file is auto-generated */
-        .wp-block-button__link {
-            color: #fff;
-            background-color: #32373c;
-            border-radius: 9999px;
-            box-shadow: none;
-            text-decoration: none;
-            padding: calc(.667em + 2px) calc(1.333em + 2px);
-            font-size: 1.125em
-        }
-        .wp-block-file__button {
-            background: #32373c;
-            color: #fff;
-            text-decoration: none
-        }
-    </style>
-    <link rel="stylesheet" id="bslthms-advanced-btns-style-css" href="https://bslthemes.com/bslthms-advanced-btns/assets/style.css" type="text/css" media="all">
-    <link rel="stylesheet" id="mphb-kbwood-datepick-css-css" href="https://kinsley.bslthemes.com/wp-content/cache/autoptimize/1/css/autoptimize_single_c72a62925997a10f520b96d14652edde.css" type="text/css" media="all">
-    <style id="woocommerce-inline-inline-css" type="text/css">
-        .woocommerce form .form-row .required {
-            visibility: visible
-        }
-    </style>
-    <link rel="stylesheet" id="kinsley-primary-fonts-css" href="https://fonts.googleapis.com/css2?family=Jost:wght@200;400;600&amp;display=swap" type="text/css" media="all">
-    <link rel="stylesheet" id="kinsley-secondary-fonts-css" href="https://fonts.googleapis.com/css2?family=Monoton&amp;display=swap" type="text/css" media="all">
-    <script type="text/javascript" async charset="utf-8" src="https://www.gstatic.com/recaptcha/releases/bUO1BXI8H9PgjAPSW9hwuSeI/recaptcha__en.js" crossorigin="anonymous" integrity="sha384-W6vGSa1gNU2JYZ4aYa4y4W3SgdiTlWqPltQiHH1/PEEh6w3sEdnuACkbWBJN1UBJ"></script>
-    <script type="text/javascript" src="https://kinsley.bslthemes.com/wp-includes/js/jquery/jquery.min.js" id="jquery-core-js"></script>
-    <!-- Other head assets remain unchanged -->
-</head>
 
-<body class="post-template-default single single-post postid-270 single-format-standard theme-kinsley woocommerce-js elementor-default elementor-kit-5762 e--ua-blink e--ua-edge e--ua-webkit" data-elementor-device-mode="desktop">
+        body {
+            margin: 0;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(15, 127, 159, 0.12), transparent 28%),
+                radial-gradient(circle at top right, rgba(242, 184, 75, 0.10), transparent 25%),
+                var(--bg);
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .blog-shell {
+            width: min(1200px, 92vw);
+            margin: 0 auto;
+            padding: 3.8rem 0 4rem;
+        }
+
+        .hero-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(228,247,251,0.88));
+            border: 1px solid rgba(15, 127, 159, 0.12);
+            box-shadow: var(--shadow);
+            padding: 2rem 1.5rem;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(290px, 0.85fr);
+            gap: 1.2rem;
+            align-items: center;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            font-size: 0.9rem;
+            color: #617487;
+            margin-bottom: 0.9rem;
+        }
+
+        .breadcrumbs a {
+            color: #41627d;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .blog-title {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+        }
+
+        .blog-lead {
+            margin: 0.85rem 0 0;
+            font-size: 1.02rem;
+            line-height: 1.8;
+            color: var(--muted);
+            max-width: 760px;
+        }
+
+        .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-top: 1.15rem;
+        }
+
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.55rem 0.82rem;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid var(--line);
+            box-shadow: 0 10px 22px rgba(17, 34, 51, 0.05);
+            font-size: 0.9rem;
+            color: #233849;
+        }
+
+        .hero-image-card {
+            border-radius: 24px;
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid var(--line);
+            box-shadow: 0 18px 36px rgba(17, 34, 51, 0.08);
+        }
+
+        .hero-image-card img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-image-caption {
+            padding: 0.85rem 1rem 1rem;
+            color: var(--muted);
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.72fr);
+            gap: 1.4rem;
+            margin-top: 1.4rem;
+            align-items: start;
+        }
+
+        .article-card,
+        .sidebar-card,
+        .comments-card,
+        .form-card {
+            background: var(--surface);
+            border-radius: 26px;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+        }
+
+        .article-card {
+            padding: 1.4rem;
+        }
+
+        .article-image {
+            width: 100%;
+            max-height: 460px;
+            object-fit: cover;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .article-text {
+            color: #314458;
+            line-height: 1.95;
+            font-size: 1.02rem;
+            white-space: pre-line;
+        }
+
+        .gallery-card {
+            margin-top: 1rem;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+        }
+
+        .gallery-card img {
+            width: 100%;
+            display: block;
+            max-height: 340px;
+            object-fit: cover;
+        }
+
+        .article-footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--line);
+            color: #4d6376;
+            font-size: 0.94rem;
+        }
+
+        .article-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: #0b627d;
+            font-weight: 700;
+        }
+
+        .sidebar-card {
+            padding: 1.1rem;
+            position: sticky;
+            top: 108px;
+        }
+
+        .author-box {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .author-box img {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #fff;
+            box-shadow: 0 10px 24px rgba(17, 34, 51, 0.12);
+        }
+
+        .author-name {
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .author-sub {
+            margin: 0.2rem 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .side-section {
+            padding: 1rem 0 0;
+        }
+
+        .side-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            background: var(--accent-soft);
+            border-radius: 999px;
+            padding: 0.45rem 0.75rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .side-text {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        .comment-actions {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .action-link {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.85rem 1rem;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.18s ease;
+        }
+
+        .action-link:hover {
+            transform: translateY(-1px);
+        }
+
+        .primary-action {
+            background: linear-gradient(135deg, var(--accent), #42a9c5);
+            color: #fff;
+        }
+
+        .ghost-action {
+            background: #eef3f8;
+            color: #24384a;
+        }
+
+        .form-card,
+        .comments-card {
+            padding: 1.2rem;
+            margin-top: 1.3rem;
+        }
+
+        .section-title {
+            margin: 0 0 0.9rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.45rem;
+        }
+
+        .comment-form input,
+        .comment-form textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.9rem 1rem;
+            border-radius: 16px;
+            border: 1px solid #cfdbe6;
+            background: #fff;
+            font-family: inherit;
+            font-size: 0.96rem;
+            color: var(--ink);
+            outline: none;
+        }
+
+        .comment-form textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .comment-form input:focus,
+        .comment-form textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(15, 127, 159, 0.12);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.95rem 1rem;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #172433, #30485d);
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 14px 26px rgba(17, 34, 51, 0.16);
+        }
+
+        .comment-list {
+            display: grid;
+            gap: 0.85rem;
+        }
+
+        .comment-item {
+            padding: 1rem;
+            border-radius: 18px;
+            background: #f9fbfd;
+            border: 1px solid #e1e9f1;
+        }
+
+        .comment-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.8rem;
+            align-items: flex-start;
+            margin-bottom: 0.6rem;
+        }
+
+        .comment-name {
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .comment-date {
+            color: var(--muted);
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        .comment-body {
+            margin: 0;
+            color: #33485b;
+            line-height: 1.75;
+            white-space: pre-line;
+        }
+
+        .empty-comments {
+            padding: 1rem;
+            border-radius: 16px;
+            background: #f4f8fb;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media (max-width: 980px) {
+            .hero-grid,
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-card {
+                position: static;
+                top: auto;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .blog-shell {
+                padding-top: 2.6rem;
+            }
+
+            .hero-card,
+            .article-card,
+            .sidebar-card,
+            .comments-card,
+            .form-card {
+                border-radius: 20px;
+            }
+
+            .hero-image-card img,
+            .article-image {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
     {% include 'navbar.html' %}
-    <div class="knsl-app">
-        <div class="">
-            <!-- Banner Section -->
-            <section class="knsl-banner-simple knsl-transition-bottom">
-                <noscript>
-                    <img src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg" class="knsl-deco-left" alt="palm" />
-                </noscript>
-                <img src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg" data-src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg" class="knsl-deco-left lazyloaded" alt="palm">
-                <noscript>
-                    <img src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg" class="knsl-deco-right" alt="palm" />
-                </noscript>
-                <img src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg" data-src="https://kinsley.bslthemes.com/wp-content/themes/kinsley/assets/img/palm.svg" class="knsl-deco-right lazyloaded" alt="palm">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="knsl-center knsl-title-frame">
-                                <h1 class="knsl-mb-20 knsl-h1-inner">{{ blog.title }}</h1> <br>
-                                <ul class="knsl-breadcrumbs">
-                                    <li><a href="{% url 'home' %}" title="Kinsley - Hotel &amp; Resort WordPress Theme">Home</a></li>
-                                    <li><a href="{% url 'blog:blog_list' %}">Blog</a></li>
-                                    <li class="tst-active"><a>{{ blog.title }}</a></li>
-                                </ul>
-                            </div>
-                        </div>
+
+    <main class="blog-shell">
+        <section class="hero-card">
+            <div class="hero-grid">
+                <div>
+                    <div class="breadcrumbs">
+                        <a href="{% url 'home' %}">Home</a>
+                        <span>/</span>
+                        <a href="{% url 'blog:blog_list' %}">Blog</a>
+                        <span>/</span>
+                        <span>{{ blog.title }}</span>
+                    </div>
+                    <h1 class="blog-title">{{ blog.title }}</h1>
+                    <p class="blog-lead">{{ blog.description|truncatechars:220 }}</p>
+                    <div class="meta-row">
+                        <span class="meta-pill"><i class="fa fa-user"></i> {{ blog.author.get_full_name|default:blog.author.username }}</span>
+                        <span class="meta-pill"><i class="fa fa-calendar"></i> {{ blog.created_at|date:"F d, Y" }}</span>
+                        <span class="meta-pill"><i class="fa fa-location-dot"></i> {{ blog.country }}</span>
+                        <span class="meta-pill"><i class="fa fa-tag"></i> {{ blog.category.name }}</span>
                     </div>
                 </div>
-            </section>
-            <!-- Banner Section End -->
 
-            <!-- Blog Content -->
-            <div class="knsl-p-0-100">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-8">
-                            {% if blog.image1 %}
-                                <img src="{{ blog.image1.url }}" alt="{{ blog.title }}" class="knsl-default-img knsl-mb-30 lazyloaded">
-                            {% endif %}
-                            <div class="knsl-room-features-lg knsl-mb-30">
-                                <div class="knsl-feature">
-                                    <div class="knsl-icon-frame knsl-icon-author">
-                                        {% if blog.author.profile.profile_picture %}
-                                            <img src="{{ blog.author.profile.profile_picture.url }}" alt="{{ blog.author.get_full_name }}">
-                                        {% else %}
-                                            <img src="https://secure.gravatar.com/avatar/?d=mm" alt="{{ blog.author.get_full_name }}">
-                                        {% endif %}
-                                    </div>
-                                    <span>{{ blog.author.get_full_name }}</span>
-                                </div>
-                                <div class="knsl-feature">
-                                    <div class="knsl-icon-frame">
-                                        <span class="img-svg img-svg-time"></span>
-                                    </div>
-                                    <span>{{ blog.created_at|date:"F d, Y" }}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="knsl-blog-post knsl-mb-60">
-                                <div id="post-270" class="post-270 post type-post status-publish format-standard has-post-thumbnail hentry">
-                                    <div class="single-post-text">
-                                        <p>{{ blog.description }}</p>
-                                        {% if blog.image2 %}
-                                            <figure class="wp-block-gallery columns-2 is-cropped wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex">
-                                                <figure>
-                                                    <img decoding="async" width="1200" height="927" src="{{ blog.image2.url }}" alt="Additional image" data-sizes="(max-width: 1200px) 100vw, 1200px" sizes="(max-width: 1200px) 100vw, 1200px">
-                                                </figure>
-                                            </figure>
-                                        {% endif %}
-                                    </div>
-                                    <div class="post-text-bottom"> 
-                                        <span class="cat-links">Country: <a href="#" rel="category tag"><strong>{{ blog.country }}</strong></a></span>
-                                        <span class="tags-links">Category: <a href="#" rel="tag">{{ blog.category.name }}</a></span>
-                                    </div>
-                                </div>
-                              </div>
-
-                             <!-- Comment Form -->
-                             <h3 class="knsl-mb-40">Write a comment</h3>
-                             <form method="POST">
-                                 {% csrf_token %}
-                                 {% if not request.user.is_authenticated %}
-                                     <div style="margin-bottom: 15px;">
-                                         <input type="text" name="name" required id="id_name" placeholder="Your Name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; outline: none;">
-                                     </div>
-                                 {% endif %}
-                                 <div style="margin-bottom: 15px;">
-                                     <textarea name="comment" required id="id_comment" placeholder="Your Comment" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; outline: none; resize: vertical; height: 100px;"></textarea>
-                                 </div>
-                                 <button type="submit" style="width: 100%; padding: 12px; background-color: #3498db; color: #fff; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Submit</button>
-                             </form> 
-                             <br> <br>
-                             
-
-                             <!-- Comments Section -->
-                             <div id="comments" class="post-comments">
-                                <h3 class="knsl-mb-40">Comments</h3>
-                                {% for comment in comments %}
-                                    <div class="comment" style="margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <span style="text-align: left; font-weight: bold;">
-                                                {% if comment.user %}{{ comment.user.get_full_name }}{% else %}{{ comment.name }}{% endif %}
-                                            </span>
-                                            <span style="text-align: right; color: #666; font-size: 0.7em;">
-                                                {{ comment.created_at|date:"F d, Y" }}
-                                            </span>
-                                        </div>
-                                        <p style="margin-top: 10px; text-align: left;">{{ comment.comment }}</p>
-                                    </div>
-                                {% empty %}
-                                    <p>No comments yet.</p>
-                                {% endfor %}
-
-                               
-                            </div>
-                            <!-- End Comments Section -->
-                        </div>
-                    </div>
+                <div class="hero-image-card">
+                    {% if blog.image1 %}
+                        <img src="{{ blog.image1.url }}" alt="{{ blog.title }}">
+                    {% else %}
+                        <img src="{% static 'images/profile_placeholder.jpg' %}" alt="{{ blog.title }}">
+                    {% endif %}
+                    <div class="hero-image-caption">Bài viết từ {{ blog.country }} thuộc chuyên mục {{ blog.category.name }}.</div>
                 </div>
             </div>
-            <!-- Blog Content End -->
-        </div>
-    </div>
-    {% include 'footer.html' %}
-   
+        </section>
 
+        <section class="content-grid">
+            <article>
+                <div class="article-card">
+                    <h2 class="section-title">Nội dung bài viết</h2>
+                    <div class="article-text">{{ blog.description }}</div>
+
+                    {% if blog.image2 %}
+                    <div class="gallery-card">
+                        <img src="{{ blog.image2.url }}" alt="Additional image">
+                    </div>
+                    {% endif %}
+
+                    <div class="article-footer">
+                        <span class="article-tag"><i class="fa fa-globe"></i> Country: {{ blog.country }}</span>
+                        <span class="article-tag"><i class="fa fa-folder"></i> Category: {{ blog.category.name }}</span>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <h3 class="section-title">Viết bình luận</h3>
+                    <form method="POST" class="comment-form">
+                        {% csrf_token %}
+                        {% if not request.user.is_authenticated %}
+                            <div style="margin-bottom: 0.9rem;">
+                                <input type="text" name="name" required id="id_name" placeholder="Tên của bạn">
+                            </div>
+                        {% endif %}
+                        <div style="margin-bottom: 0.9rem;">
+                            <textarea name="comment" required id="id_comment" placeholder="Chia sẻ cảm nghĩ của bạn..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Gửi bình luận</button>
+                    </form>
+                </div>
+            </article>
+
+            <aside>
+                <div class="sidebar-card">
+                    <div class="author-box">
+                        {% if blog.author.profile.profile_picture %}
+                            <img src="{{ blog.author.profile.profile_picture.url }}" alt="{{ blog.author.get_full_name }}">
+                        {% else %}
+                            <img src="https://secure.gravatar.com/avatar/?d=mm" alt="{{ blog.author.get_full_name }}">
+                        {% endif %}
+                        <div>
+                            <p class="author-name">{{ blog.author.get_full_name|default:blog.author.username }}</p>
+                            <p class="author-sub">Tác giả bài viết</p>
+                        </div>
+                    </div>
+
+                    <div class="side-section">
+                        <div class="side-label"><i class="fa fa-circle-info"></i> Thông tin</div>
+                        <p class="side-text">Bài viết này chia sẻ nội dung liên quan tới {{ blog.category.name }} tại {{ blog.country }}. Bạn có thể đọc, thảo luận và để lại bình luận bên dưới.</p>
+                        <div class="comment-actions">
+                            <a href="{% url 'blog:blog_list' %}" class="action-link ghost-action"><i class="fa fa-arrow-left"></i> Quay lại blog</a>
+                            <a href="{% url 'home' %}" class="action-link primary-action"><i class="fa fa-house"></i> Về trang chủ</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comments-card">
+                    <h3 class="section-title">Bình luận</h3>
+                    <div class="comment-list">
+                        {% for comment in comments %}
+                            <div class="comment-item">
+                                <div class="comment-top">
+                                    <p class="comment-name">{% if comment.user %}{{ comment.user.get_full_name|default:comment.user.username }}{% else %}{{ comment.name }}{% endif %}</p>
+                                    <span class="comment-date">{{ comment.created_at|date:"F d, Y" }}</span>
+                                </div>
+                                <p class="comment-body">{{ comment.comment }}</p>
+                            </div>
+                        {% empty %}
+                            <div class="empty-comments">Chưa có bình luận nào. Hãy là người đầu tiên!</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    {% include 'footer.html' %}
 </body>
 </html>

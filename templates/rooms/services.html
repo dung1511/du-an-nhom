@@ -334,7 +334,13 @@
                 <article class="service-card">
                     <div class="service-image-wrap">
                         <a href="{% url 'rooms:service_detail' service.slug %}">
-                            <img src="{{ service.image_url }}" alt="{{ service.name }}">
+                            {% if service.image %}
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                            {% elif service.image_url %}
+                                <img src="{{ service.image_url }}" alt="{{ service.name }}">
+                            {% else %}
+                                <div style="height:210px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#eef6fb,#f7f3ea);color:#7a8797;font-weight:700;">No image</div>
+                            {% endif %}
                         </a>
                         <div class="price-badge">₹{{ service.price }}</div>
                     </div>

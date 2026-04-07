@@ -478,13 +478,15 @@
 
                     <div class="booking-row">
                         <label for="check_in">Ngày nhận phòng</label>
-                        <input type="date" id="check_in" name="check_in" required>
+                        <input type="date" id="check_in" name="check_in" required min="{% now "Y-m-d" %}">
                     </div>
 
                     <div class="booking-row">
                         <label for="check_out">Ngày trả phòng</label>
-                        <input type="date" id="check_out" name="check_out" required>
+                        <input type="date" id="check_out" name="check_out" required min="{% now "Y-m-d" %}">
                     </div>
+
+                    <div id="booking-form-notice" class="status-box" style="margin-top: 12px;">Chọn ngày nhận phòng từ hôm nay trở đi để kiểm tra phòng trống.</div>
 
                     <!-- Adults and Children Selectors -->
                     <div class="guests-grid">
@@ -573,30 +575,63 @@
             const cin = document.getElementById('check_in').value;
             const cout = document.getElementById('check_out').value;
             const roomId = "{{ room.id }}";
+            const btn = document.getElementById('book-now-btn');
+            const statusText = document.getElementById('booking-form-notice');
+            const today = new Date().toISOString().slice(0, 10);
 
-            if (cin && cout) {
-                const response = await fetch(`/api/check-room/?id=${roomId}&in=${cin}&out=${cout}`);
-                const data = await response.json();
+            if (!cin || !cout) {
+                btn.disabled = true;
+                statusText.textContent = 'Chọn đủ ngày nhận và ngày trả để kiểm tra phòng trống.';
+                statusText.style.background = 'rgba(15, 127, 159, 0.12)';
+                statusText.style.color = '#0b627d';
+                return;
+            }
 
-                const btn = document.getElementById('book-now-btn');
-                const statusText = document.getElementById('room-status-alert');
+            if (cin < today) {
+                btn.disabled = true;
+                statusText.textContent = 'Ngày nhận phòng không được nhỏ hơn hôm nay.';
+                statusText.style.background = 'rgba(230, 77, 94, 0.14)';
+                statusText.style.color = '#8e2131';
+                return;
+            }
 
-                if (data.is_available) {
-                    btn.disabled = false;
-                    statusText.textContent = 'Phong con trong cho ngay ban chon.';
-                    statusText.style.background = 'rgba(29, 190, 107, 0.14)';
-                    statusText.style.color = '#0f6b3d';
-                } else {
-                    btn.disabled = true;
-                    statusText.textContent = 'Phong da co khach dat trong khoang ngay nay.';
-                    statusText.style.background = 'rgba(230, 77, 94, 0.14)';
-                    statusText.style.color = '#8e2131';
-                }
+            if (cout <= cin) {
+                btn.disabled = true;
+                statusText.textContent = 'Ngày trả phòng phải sau ngày nhận phòng.';
+                statusText.style.background = 'rgba(230, 77, 94, 0.14)';
+                statusText.style.color = '#8e2131';
+                return;
+            }
+
+            const response = await fetch(`/api/check-room/?id=${roomId}&in=${cin}&out=${cout}`);
+            const data = await response.json();
+
+            if (data.is_available) {
+                btn.disabled = false;
+                statusText.textContent = 'Phòng còn trống cho ngày bạn chọn.';
+                statusText.style.background = 'rgba(29, 190, 107, 0.14)';
+                statusText.style.color = '#0f6b3d';
+            } else {
+                btn.disabled = true;
+                statusText.textContent = 'Phòng đã có khách đặt trong khoảng ngày này.';
+                statusText.style.background = 'rgba(230, 77, 94, 0.14)';
+                statusText.style.color = '#8e2131';
             }
         }
 
-        document.getElementById('check_in').addEventListener('change', checkAvailability);
+        const checkInInput = document.getElementById('check_in');
+        const checkOutInput = document.getElementById('check_out');
+
+        checkInInput.addEventListener('change', () => {
+            checkOutInput.min = checkInInput.value || checkInInput.min;
+            if (checkOutInput.value && checkOutInput.value < checkOutInput.min) {
+                checkOutInput.value = '';
+            }
+            checkAvailability();
+        });
+
         document.getElementById('check_out').addEventListener('change', checkAvailability);
+        checkAvailability();
     </script>
 </body>
 </html>
