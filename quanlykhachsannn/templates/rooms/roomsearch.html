@@ -223,7 +223,7 @@
                                                     <strong style="color: black;">{{ check_in }}</strong> - 
                                                     <strong style="color: black;">{{ check_out }}</strong>
                                                 </p>
-                                                <h2 class="mphb-recommendation-title">This Room Recommended for {{ selected_room.capacity }} Lodger</h2>
+                                                <h2 class="mphb-recommendation-title">This Room Recommended for {{ selected_room.total_capacity }} Lodger</h2>
 
                                                 <!-- reserve room that you select to booking section starts -->
                                                 <div
@@ -242,7 +242,7 @@
                                                     <h2 class="mphb-room-type-title entry-title" style="display: flex; justify-content: space-between; align-items: center;">
                                                         <a class="mphb-room-type-title" href="">{{ selected_room.name }}</a>
                                                         <div style="font-size: 16px; font-weight: normal; color: #2f2f2f;">
-                                                            <span>guests: {{ selected_room.capacity }}</span> | 
+                                                            <span>guests: {{ selected_room.total_capacity }}</span> | 
                                                             <span>Size: {{ selected_room.get_size_display }}</span>
                                                         </div>
                                                     </h2>
@@ -280,7 +280,7 @@
                                                                     <span
                                                                         class="mphb-recommendation-item-guests-label">Max occupancy: </span>
                                                                     <span
-                                                                        class="mphb-recommendation-item-adults mphb-adults-4">{{ selected_room.capacity }} guests </span>
+                                                                        class="mphb-recommendation-item-adults mphb-adults-4">{{ selected_room.total_capacity }} guests </span>
                                                                 </small>
                                                             </div>
                                                         </li>
@@ -298,7 +298,7 @@
                                                         class="button mphb-button mphb-recommendation-reserve-button">Reserve</button>
                                                     {% else %}
                                                     {% if capacity_exceeded %}
-                                                   <br> <p style="font-size: 1.5em; font-weight: bold;">Room allowance occupancy is {{ selected_room.capacity }} you selected  {{ adults }} adult{{ adults|pluralize }}. Please check other rooms.</p>
+                                                   <br> <p style="font-size: 1.5em; font-weight: bold;">{{ capacity_error_detail|default:'Sức chứa phòng không đủ cho số khách bạn đã chọn. Vui lòng chọn phòng khác.' }}</p>
                                                     {% else %}
                                                     <p style="font-size: 1.5em; font-weight: bold;" >Sorry, the {{ selected_room.name }} is already reserved. Please check other rooms.</p>
                                                     {% endif %}
@@ -325,7 +325,7 @@
                                                     <h2 class="mphb-room-type-title entry-title" style="display: flex; justify-content: space-between; align-items: center;">
                                                         <a class="mphb-room-type-title" href="{% url 'rooms:room_detail' room.id %}">{{ room.name }}</a>
                                                         <div style="font-size: 16px; font-weight: normal; color: #2f2f2f;">
-                                                            <span>guests: {{ room.capacity }}</span> | 
+                                                            <span>guests: {{ room.total_capacity }}</span> | 
                                                             <span>Size: {{ room.get_size_display }}</span>
                                                         </div>
                                                     </h2>

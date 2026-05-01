@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -74,6 +75,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'admin_dashboard_stats': 'rooms.templatetags.admin_dashboard_stats',
+            },
         },
     },
 ]
@@ -150,3 +154,6 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+MOMO_RECEIVER_NAME = os.getenv('MOMO_RECEIVER_NAME', 'Paradise Hotel')
+MOMO_RECEIVER_PHONE = os.getenv('MOMO_RECEIVER_PHONE', '')

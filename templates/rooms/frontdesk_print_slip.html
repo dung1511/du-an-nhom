@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu lễ tân | Paradise Hotel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --ink: #182228;
+            --muted: #63707a;
+            --line: #dde5ea;
+            --accent: #0f7f6e;
+            --accent-soft: #def4ef;
+            --paper: #ffffff;
+            --shell: #f5f7fa;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: radial-gradient(circle at top left, rgba(15, 127, 110, 0.08), transparent 35%), var(--shell);
+            color: var(--ink);
+            font-family: Arial, sans-serif;
+        }
+        .print-shell {
+            width: min(1100px, 94vw);
+            margin: 2rem auto 3rem;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .toolbar h1 {
+            margin: 0;
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            font-weight: 900;
+        }
+        .toolbar p {
+            margin: 0.25rem 0 0;
+            color: var(--muted);
+        }
+        .print-card {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            box-shadow: 0 18px 44px rgba(24, 34, 40, 0.09);
+            overflow: hidden;
+        }
+        .top-band {
+            background: linear-gradient(135deg, #0f7f6e 0%, #27ae60 100%);
+            color: #fff;
+            padding: 1.45rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .top-band h2 {
+            margin: 0;
+            font-size: 1.7rem;
+            font-weight: 900;
+        }
+        .top-band .sub {
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+        .badge-soft {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 0.4rem 0.75rem;
+            background: rgba(255,255,255,0.18);
+            font-weight: 800;
+        }
+        .body-pad { padding: 1.35rem; }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        .kpi {
+            border: 1px solid var(--line);
+            background: #fbfdfe;
+            border-radius: 18px;
+            padding: 0.95rem;
+        }
+        .kpi .k { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 800; }
+        .kpi .v { margin-top: 0.3rem; font-size: 1.02rem; font-weight: 900; color: var(--ink); }
+        .section-title { margin: 0 0 0.85rem; font-size: 1.05rem; font-weight: 900; }
+        .two-col {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 1rem;
+            background: #fff;
+        }
+        .info-list { display: grid; gap: 0.7rem; }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            border-bottom: 1px dashed #edf1f4;
+            padding-bottom: 0.55rem;
+        }
+        .info-row:last-child { border-bottom: 0; padding-bottom: 0; }
+        .label { color: var(--muted); font-size: 0.88rem; font-weight: 700; }
+        .value { font-weight: 900; text-align: right; }
+        .line-items {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        .line-items th, .line-items td {
+            border-bottom: 1px solid #e9eef2;
+            padding: 0.85rem 0.9rem;
+            vertical-align: top;
+        }
+        .line-items thead th {
+            background: #f3f6f8;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #42515a;
+        }
+        .line-items tfoot td {
+            border-bottom: 0;
+            font-weight: 900;
+            font-size: 1.05rem;
+            background: #fbfdfe;
+        }
+        .total-strong { color: var(--accent); }
+        .note-box {
+            margin-top: 1rem;
+            border: 1px solid #d7eee8;
+            background: var(--accent-soft);
+            border-radius: 16px;
+            padding: 0.95rem 1rem;
+            color: #12493f;
+        }
+        .footer-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+        .actions { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+        .btn-print {
+            border-radius: 999px;
+            padding: 0.68rem 1rem;
+            font-weight: 800;
+        }
+        .btn-primary-print {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+        @media print {
+            body { background: #fff; }
+            .toolbar, .actions { display: none !important; }
+            .print-shell { width: 100%; margin: 0; }
+            .print-card { border: 0; box-shadow: none; border-radius: 0; }
+        }
+        @media (max-width: 768px) {
+            .two-col { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <main class="print-shell">
+        <div class="toolbar">
+            <div>
+                <h1>Phiếu lễ tân</h1>
+                <p>Phiếu xử lý check-in/check-out và ghi nhận tình trạng phòng cho ca trực.</p>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary-print btn-print" onclick="window.print()"><i class="fas fa-print me-2"></i>In phiếu</button>
+                <a class="btn btn-outline-dark btn-print" href="{% url 'rooms:frontdesk_dashboard' %}?booking_code={{ booking_code }}">Quay lại quầy</a>
+            </div>
+        </div>
+
+        <section class="print-card">
+            <div class="top-band">
+                <div>
+                    <h2>{{ reservation.room.name }}</h2>
+                    <div class="sub">{{ reservation.first_name }} {{ reservation.last_name }} - {{ reservation.booking_code }}</div>
+                </div>
+                <div class="badge-soft">{{ reservation.room.category.name }}</div>
+            </div>
+
+            <div class="body-pad">
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="k">Trạng thái</div>
+                        <div class="v">{% if reservation.is_checked_out %}Đã check-out{% elif reservation.is_checked_in %}Đang lưu trú{% else %}Chờ nhận phòng{% endif %}</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="k">Số khách thực tế</div>
+                        <div class="v">{{ actual_guest_count }} người</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="k">Tiền cọc</div>
+                        <div class="v">₹{{ deposit_amount }}</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="k">Còn lại tại quầy</div>
+                        <div class="v">₹{{ balance_due }}</div>
+                    </div>
+                </div>
+
+                <div class="panel mb-3">
+                    <h3 class="section-title">Thanh toán và hóa đơn</h3>
+                    {% if payment_method == 'momo_qr' %}
+                        <div class="row g-4 align-items-center">
+                            <div class="col-md-5 text-center">
+                                {% if momo_qr_url %}
+                                    <img src="{{ momo_qr_url }}" alt="QR MoMo" class="img-fluid rounded-4 border" style="max-width: 260px;">
+                                {% else %}
+                                    <div class="alert alert-warning mb-0">Chưa cấu hình số MoMo để tạo QR.</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-7">
+                                <div class="info-list">
+                                    <div class="info-row"><span class="label">Phương thức</span><span class="value">QR MoMo</span></div>
+                                    <div class="info-row"><span class="label">Người nhận</span><span class="value">{{ momo_receiver_name }}</span></div>
+                                    <div class="info-row"><span class="label">Số MoMo</span><span class="value">{{ momo_receiver_phone|default:'Chưa cấu hình' }}</span></div>
+                                    <div class="info-row"><span class="label">Số tiền hiện tại</span><span class="value">₹{{ final_total }}</span></div>
+                                    <div class="info-row"><span class="label">Nội dung chuyển khoản</span><span class="value">{{ booking_code }}</span></div>
+                                </div>
+                                <div class="note-box mt-3">
+                                    Nếu lễ tân cập nhật hư hỏng sau check-in, hãy in lại phiếu này để mã QR đổi theo tổng tiền mới.
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="info-list">
+                            <div class="info-row"><span class="label">Phương thức</span><span class="value">Tiền mặt</span></div>
+                            <div class="info-row"><span class="label">Tổng hiện tại</span><span class="value">₹{{ final_total }}</span></div>
+                            <div class="info-row"><span class="label">Trạng thái thanh toán</span><span class="value">{{ reservation.get_payment_status_display }}</span></div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="two-col mb-3">
+                    <div class="panel">
+                        <h3 class="section-title">Thông tin lưu trú</h3>
+                        <div class="info-list">
+                            <div class="info-row"><span class="label">Mã booking</span><span class="value">{{ booking_code }}</span></div>
+                            <div class="info-row"><span class="label">Khách hàng</span><span class="value">{{ reservation.first_name }} {{ reservation.last_name }}</span></div>
+                            <div class="info-row"><span class="label">Số điện thoại</span><span class="value">{{ reservation.phone }}</span></div>
+                            <div class="info-row"><span class="label">Ngày nhận phòng</span><span class="value">{{ check_in_display }}</span></div>
+                            <div class="info-row"><span class="label">Ngày trả phòng</span><span class="value">{{ check_out_display }}</span></div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <h3 class="section-title">Xử lý tại lễ tân</h3>
+                        <div class="info-list">
+                            <div class="info-row"><span class="label">Check-in thực tế</span><span class="value">{{ check_in_time }}</span></div>
+                            <div class="info-row"><span class="label">Check-out thực tế</span><span class="value">{{ check_out_time }}</span></div>
+                            <div class="info-row"><span class="label">Ghi nhận hư hỏng</span><span class="value">{% if has_damage %}Có{% else %}Không{% endif %}</span></div>
+                            <div class="info-row"><span class="label">Phụ phí hư hỏng</span><span class="value">₹{{ damage_fee }}</span></div>
+                            <div class="info-row"><span class="label">Cập nhật cuối</span><span class="value">{{ printed_at|date:"d/m/Y H:i" }}</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel mb-3">
+                    <h3 class="section-title">Bảng tính hóa đơn</h3>
+                    <table class="line-items">
+                        <thead>
+                            <tr>
+                                <th>Dòng tiền</th>
+                                <th class="text-end">Số tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Tiền phòng ({{ reservation.room.name }})<br><small class="text-muted">₹{{ reservation.room.price }} × {{ num_nights }} đêm</small></td>
+                                <td class="text-end">₹{% widthratio reservation.room.price 1 num_nights %}</td>
+                            </tr>
+                            <tr>
+                                <td>Thuế phí GST</td>
+                                <td class="text-end">₹{{ reservation.gst }}</td>
+                            </tr>
+                            {% if reservation.service_total > 0 %}
+                            <tr>
+                                <td>Dịch vụ đi kèm</td>
+                                <td class="text-end">₹{{ reservation.service_total }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if reservation.discount_applied > 0 %}
+                            <tr>
+                                <td>Giảm giá đã áp dụng</td>
+                                <td class="text-end">-₹{{ reservation.discount_applied }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <td>Tiền cọc</td>
+                                <td class="text-end">₹{{ deposit_amount }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tiền còn lại thu tại quầy</td>
+                                <td class="text-end">₹{{ balance_due }}</td>
+                            </tr>
+                            {% if has_damage %}
+                            <tr>
+                                <td>Phụ phí hư hỏng</td>
+                                <td class="text-end">₹{{ damage_fee }}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>Tổng cuối cùng</td>
+                                <td class="text-end total-strong">₹{{ final_total }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                {% if has_damage %}
+                <div class="note-box">
+                    <strong>Ghi chú hư hỏng:</strong> {{ damage_notes|default:"Không có ghi chú chi tiết." }}
+                </div>
+                {% endif %}
+
+                <div class="footer-line">
+                    <div>Phiếu này được tạo để dùng cho quầy lễ tân và lưu trữ nội bộ.</div>
+                    <div>In lúc: {{ printed_at|date:"d/m/Y H:i" }}</div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
