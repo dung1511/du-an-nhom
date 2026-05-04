@@ -706,13 +706,24 @@
 
                         <div class="payment-methods">
                             <label class="payment-method">
-                                <input type="radio" name="mphb_gateway_id" value="pay_on_arrival" checked>
+                                <input type="radio" name="mphb_gateway_id" value="cash" checked>
                                 <div class="payment-info">
-                                    <div class="payment-title">Pay on Arrival</div>
-                                    <div class="payment-description">Pay securely with cash when you arrive</div>
+                                    <div class="payment-title">Tiền mặt</div>
+                                    <div class="payment-description">Thanh toán tiền mặt khi đến nhận phòng</div>
                                 </div>
                                 <div class="payment-icon">
                                     <i class="fas fa-hand-holding-usd"></i>
+                                </div>
+                            </label>
+
+                            <label class="payment-method">
+                                <input type="radio" name="mphb_gateway_id" value="momo_qr">
+                                <div class="payment-info">
+                                    <div class="payment-title">QR MoMo</div>
+                                    <div class="payment-description">Quét mã QR để thanh toán qua ví MoMo</div>
+                                </div>
+                                <div class="payment-icon">
+                                    <i class="fas fa-qrcode"></i>
                                 </div>
                             </label>
 
