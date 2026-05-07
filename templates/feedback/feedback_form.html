@@ -1,0 +1,216 @@
+{% extends 'navbar.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="margin-top: 40px; margin-bottom: 40px;">
+    <div class="feedback-header">
+        <h2>Đánh giá phòng của bạn</h2>
+        <p class="feedback-quote">Chia sẻ trải nghiệm của bạn giúp chúng tôi phục vụ tốt hơn 🌟</p>
+    </div>
+
+    {% if messages %}
+        <div class="alert alert-messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="feedback-info" style="background: #e8f4f8; padding: 15px; border-radius: 5px; margin-bottom: 30px; border-left: 4px solid #17a2b8;">
+        <p><strong>Phòng:</strong> {{ room.name }}</p>
+        <p><strong>Mã đặt phòng:</strong> {{ reservation.booking_code }}</p>
+        <p><strong>Ngày nhận phòng:</strong> {{ reservation.check_in_date }}</p>
+        <p><strong>Ngày trả phòng:</strong> {{ reservation.check_out_date }}</p>
+    </div>
+
+    <form method="post" class="feedback-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            {{ form.name }}
+            {% if form.name.errors %}
+                <small class="error-text">{{ form.name.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.email }}
+            {% if form.email.errors %}
+                <small class="error-text">{{ form.email.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.country }}
+            {% if form.country.errors %}
+                <small class="error-text">{{ form.country.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Đánh giá sao</label>
+            <div class="star-rating">
+                <div class="stars">
+                    {% for value, label in form.rating.field.choices %}
+                        <input type="radio" id="star{{ value }}" name="rating" value="{{ value }}" required>
+                        <label for="star{{ value }}">★</label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% if form.rating.errors %}
+                <small class="error-text">{{ form.rating.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.comment }}
+            {% if form.comment.errors %}
+                <small class="error-text">{{ form.comment.errors }}</small>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg btn-block">
+            Gửi đánh giá
+        </button>
+    </form>
+</div>
+
+<style>
+    .container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 30px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .feedback-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .feedback-header h2 {
+        font-size: 28px;
+        color: #333;
+    }
+
+    .feedback-quote {
+        font-style: italic;
+        color: #555;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    textarea:focus {
+        border-color: #17a2b8;
+        outline: none;
+        box-shadow: 0 0 5px rgba(23, 162, 184, 0.3);
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        color: #fff;
+        background: #17a2b8;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .btn:hover {
+        background: #138496;
+    }
+
+    .star-rating {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .stars {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .stars input[type="radio"] {
+        display: none;
+    }
+
+    .stars label {
+        font-size: 40px;
+        cursor: pointer;
+        transition: transform 0.2s;
+        color: #ccc;
+    }
+
+    .stars input[type="radio"]:checked ~ label,
+    .stars label:hover,
+    .stars label:hover ~ label {
+        color: #ffc107;
+        transform: scale(1.2);
+    }
+
+    .error-text {
+        color: #dc3545;
+        font-size: 12px;
+    }
+
+    .feedback-info {
+        background: #e8f4f8;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 30px;
+        border-left: 4px solid #17a2b8;
+    }
+
+    .feedback-info p {
+        margin: 8px 0;
+        color: #333;
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            padding: 20px;
+        }
+
+        .feedback-header h2 {
+            font-size: 22px;
+        }
+
+        .stars label {
+            font-size: 30px;
+        }
+    }
+</style>
+
+{% endblock %}

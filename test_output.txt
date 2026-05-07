@@ -1,0 +1,192 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-9.0.2, pluggy-1.6.0
+django: version: 6.0.3, settings: quanlykhachsannn.settings (from ini)
+rootdir: C:\Users\ASUS\Downloads\du-an-nhom-feature-admin-room (2)\du-an-nhom-feature-admin-room\du-an-nhom-feature-admin-room
+configfile: pytest.ini
+plugins: anyio-4.13.0, Faker-40.13.0, cov-7.1.0, django-4.12.0
+collected 1 item
+
+rooms\tests\test_views.py F
+ERROR: Coverage failure: total of 36 is less than fail-under=70
+                                                                         [100%]
+
+================================== FAILURES ===================================
+___ TestReservationListCreateAPIView.test_create_reservation_authenticated ____
+
+self = <rooms.tests.test_views.TestReservationListCreateAPIView object at 0x00000260BED7F110>
+authenticated_client = <rest_framework.test.APIClient object at 0x00000260BEFA38C0>
+user = <User: testuser>
+
+    def test_create_reservation_authenticated(self, authenticated_client, user):
+        """Test creating reservation when authenticated."""
+        room = RoomFactory()
+    
+>       url = reverse('reservation-list')
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+rooms\tests\test_views.py:170: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\urls\base.py:98: in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <URLResolver 'quanlykhachsannn.urls' (None:None) '^/'>
+lookup_view = 'reservation-list', _prefix = '/', args = (), kwargs = {}
+possibilities = []
+
+    def _reverse_with_prefix(self, lookup_view, _prefix, *args, **kwargs):
+        if args and kwargs:
+            raise ValueError("Don't mix *args and **kwargs in call to reverse()!")
+    
+        if not self._populated:
+            self._populate()
+    
+        possibilities = self.reverse_dict.getlist(lookup_view)
+    
+        for possibility, pattern, defaults, converters in possibilities:
+            for result, params in possibility:
+                if args:
+                    if len(args) != len(params):
+                        continue
+                    candidate_subs = dict(zip(params, args))
+                else:
+                    if set(kwargs).symmetric_difference(params).difference(defaults):
+                        continue
+                    matches = True
+                    for k, v in defaults.items():
+                        if k in params:
+                            continue
+                        if kwargs.get(k, v) != v:
+                            matches = False
+                            break
+                    if not matches:
+                        continue
+                    candidate_subs = kwargs
+                # Convert the candidate subs to text using Converter.to_url().
+                text_candidate_subs = {}
+                match = True
+                for k, v in candidate_subs.items():
+                    if k in converters:
+                        try:
+                            text_candidate_subs[k] = converters[k].to_url(v)
+                        except ValueError:
+                            match = False
+                            break
+                    else:
+                        text_candidate_subs[k] = str(v)
+                if not match:
+                    continue
+                # WSGI provides decoded URLs, without %xx escapes, and the URL
+                # resolver operates on such URLs. First substitute arguments
+                # without quoting to build a decoded URL and look for a match.
+                # Then, if we have a match, redo the substitution with quoted
+                # arguments in order to return a properly encoded URL.
+                candidate_pat = _prefix.replace("%", "%%") + result
+                if re.search(
+                    "^%s%s" % (re.escape(_prefix), pattern),
+                    candidate_pat % text_candidate_subs,
+                ):
+                    # safe characters from `pchar` definition of RFC 3986
+                    url = quote(
+                        candidate_pat % text_candidate_subs,
+                        safe=RFC3986_SUBDELIMS + "/~:@",
+                    )
+                    # Don't allow construction of scheme relative urls.
+                    return escape_leading_slashes(url)
+        # lookup_view can be URL name or callable, but callables are not
+        # friendly in error messages.
+        m = getattr(lookup_view, "__module__", None)
+        n = getattr(lookup_view, "__name__", None)
+        if m is not None and n is not None:
+            lookup_view_s = "%s.%s" % (m, n)
+        else:
+            lookup_view_s = lookup_view
+    
+        patterns = [pattern for (_, pattern, _, _) in possibilities]
+        if patterns:
+            if args:
+                arg_msg = "arguments '%s'" % (args,)
+            elif kwargs:
+                arg_msg = "keyword arguments '%s'" % kwargs
+            else:
+                arg_msg = "no arguments"
+            msg = "Reverse for '%s' with %s not found. %d pattern(s) tried: %s" % (
+                lookup_view_s,
+                arg_msg,
+                len(patterns),
+                patterns,
+            )
+        else:
+            msg = (
+                "Reverse for '%(view)s' not found. '%(view)s' is not "
+                "a valid view function or pattern name." % {"view": lookup_view_s}
+            )
+>       raise NoReverseMatch(msg)
+E       django.urls.exceptions.NoReverseMatch: Reverse for 'reservation-list' not found. 'reservation-list' is not a valid view function or pattern name.
+
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\urls\resolvers.py:842: NoReverseMatch
+============================== warnings summary ===============================
+rooms/tests/test_views.py::TestReservationListCreateAPIView::test_create_reservation_authenticated
+  C:\Users\ASUS\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:182: DeprecationWarning: UserFactory._after_postgeneration will stop saving the instance after postgeneration hooks in the next major release.
+  If the save call is extraneous, set skip_postgeneration_save=True in the UserFactory.Meta.
+  To keep saving the instance, move the save call to your postgeneration hooks or override _after_postgeneration.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.3-final-0 _______________
+
+Name                                                                            Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------------------------------------------------
+accounts\__init__.py                                                                0      0   100%
+accounts\admin.py                                                                  21      4    81%   19-22
+accounts\apps.py                                                                    4      0   100%
+accounts\context_processors.py                                                     15     15     0%   1-23
+accounts\forms.py                                                                  27     14    48%   16-20, 23-31
+accounts\migrations\0001_initial.py                                                 7      0   100%
+accounts\migrations\0002_profile_role.py                                            7      0   100%
+accounts\migrations\__init__.py                                                     0      0   100%
+accounts\models.py                                                                 35      7    80%   10-11, 30-31, 33-34, 43
+accounts\serializers.py                                                            59     25    58%   14, 27-29, 40-51, 60-62, 65-68, 91-92, 95-96
+accounts\tests.py                                                                   1      1     0%   1
+accounts\urls.py                                                                    5      0   100%
+accounts\views.py                                                                 175    113    35%   29-30, 47-85, 90-107, 112-113, 119-128, 133-150, 158-165, 172-173, 176-177, 180, 183, 186-190, 201-225, 238-248, 255-256, 265
+rooms\__init__.py                                                                   0      0   100%
+rooms\admin.py                                                                     58     13    78%   8, 11, 14, 17, 20, 70-81
+rooms\apps.py                                                                       4      0   100%
+rooms\context_processors.py                                                         6      6     0%   1-8
+rooms\forms.py                                                                     28     17    39%   22-40, 43-44
+rooms\migrations\0001_initial.py                                                    7      0   100%
+rooms\migrations\0002_reservation_children_alter_reservation_adults.py              4      0   100%
+rooms\migrations\0003_alter_reservation_check_in_date_and_more.py                   4      0   100%
+rooms\migrations\0004_room_capacity_adults_room_capacity_children_and_more.py       4      0   100%
+rooms\migrations\0005_alter_room_total_capacity.py                                  4      0   100%
+rooms\migrations\0006_reservation_is_checked_out.py                                 4      0   100%
+rooms\migrations\0007_reservation_payment_status.py                                 4      0   100%
+rooms\migrations\0008_service_reservation_services_and_totals.py                   13      2    85%   54-55
+rooms\migrations\0009_service_image.py                                              4      0   100%
+rooms\migrations\0010_reservation_checkout_at.py                                    4      0   100%
+rooms\migrations\0011_reservation_deposit_and_damage_fields.py                     17      9    47%   12-20
+rooms\migrations\0012_reservation_checkin_fields.py                                 4      0   100%
+rooms\migrations\0013_reservation_invoice_notified_at.py                            4      0   100%
+rooms\migrations\__init__.py                                                        0      0   100%
+rooms\models.py                                                                   208     91    56%   14-15, 19-20, 24-25, 30-36, 53-78, 82-136, 143, 168, 171-173, 181-195, 200-207, 214, 225, 239-241, 244, 314-316, 319, 322, 325, 328, 331-334, 338-340, 344-356
+rooms\permissions.py                                                                4      1    75%   6
+rooms\serializers.py                                                              205    121    41%   81-137, 140-164, 173-204, 268-288, 347-349, 405-409, 419, 422-424, 427, 454, 457, 508-534
+rooms\tests.py                                                                      1      1     0%   1
+rooms\tests\__init__.py                                                             0      0   100%
+rooms\tests\conftest.py                                                            23      3    87%   62, 79, 92
+rooms\tests\factories.py                                                           78      1    99%   35
+rooms\tests\test_models.py                                                        153    153     0%   4-263
+rooms\tests\test_views.py                                                         196    140    29%   34-42, 46-52, 56-62, 66-69, 79-100, 104-112, 116-127, 131-141, 146-159, 171-194, 198-209, 214-221, 225-229, 233-252, 256-264, 273-279, 283-290, 294-297, 306-314, 318-326, 330-337, 346-356, 360-372, 376-388, 398-407, 416-420, 424-433, 443-449
+rooms\upload_security.py                                                           32     23    28%   23-50, 54-55
+rooms\urls.py                                                                       4      0   100%
+rooms\views.py                                                                    870    708    19%   53, 57-60, 64-65, 72-94, 118-122, 152-153, 173, 176-177, 180-189, 198, 201-206, 209-227, 243-265, 283-451, 483, 491, 499-502, 511-552, 561, 569, 576-637, 662, 665-673, 687-696, 716, 725-732, 741, 749-779, 790-841, 846-932, 941-945, 954, 958-964, 968-979, 989-996, 1008-1011, 1023-1024, 1028-1030, 1035-1058, 1076-1109, 1126-1164, 1183-1258, 1263-1349, 1375-1381, 1386-1400, 1405-1411, 1415-1419, 1432, 1437-1513, 1534-1544, 1547-1614, 1619-1624, 1628-1629
+-------------------------------------------------------------------------------------------------------------
+TOTAL                                                                            2303   1468    36%
+Coverage HTML written to dir htmlcov
+FAIL Required test coverage of 70% not reached. Total coverage: 36.26%
+=========================== short test summary info ===========================
+FAILED rooms/tests/test_views.py::TestReservationListCreateAPIView::test_create_reservation_authenticated
+======================== 1 failed, 1 warning in 9.34s =========================

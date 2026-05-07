@@ -83,10 +83,10 @@ class Reservation(models.Model):
     # Payment and billing fields
     payment_method = models.CharField(
         max_length=20,
-        choices=[('pay_on_arrival', 'Pay on Arrival'), ('upi', 'UPI'), ('cards', 'Cards')],
+        choices=[('cash', 'Tiền mặt'), ('momo_qr', 'Chuyển khoản MoMo'), ('cards', 'Quẹt thẻ')],
         null=False,  # Optional for now
         blank=False,
-        default='pay_on_arrival',
+        default='cash',
     )
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     gst = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)

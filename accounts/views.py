@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Profile
 from .forms import ProfileForm  
 from rest_framework import generics, status
@@ -41,6 +42,7 @@ class AdminResultsSetPagination(PageNumberPagination):
         )
 
 # views.py
+@ensure_csrf_cookie
 def sign_up(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -67,6 +69,9 @@ def sign_up(request):
         try:
             user = User.objects.create_user(first_name=first_name, username=username, email=email, password=password)
             user.save()
+            profile, _ = Profile.objects.get_or_create(user=user)
+            profile.role = Profile.ROLE_CUSTOMER
+            profile.save()
         except IntegrityError:
             messages.error(request, 'Username already exists', extra_tags='danger')
             return redirect('accounts:sign_up')
@@ -80,6 +85,7 @@ def sign_up(request):
     return render(request, 'accounts_templates/signup.html')
 
 # Login view 
+@ensure_csrf_cookie
 def login_page(request):
     if request.method == 'POST':
         username = request.POST.get('username') 
@@ -88,7 +94,12 @@ def login_page(request):
         existing_user = authenticate(username=username, password=password)
         if existing_user is not None:
             login(request, existing_user)
-            return redirect('home')  # Redirect to phomw page
+            profile = getattr(existing_user, 'profile', None)
+            if existing_user.is_superuser:
+                return redirect('/admin/')
+            if existing_user.is_staff or (profile and profile.role == Profile.ROLE_RECEPTIONIST):
+                return redirect('rooms:frontdesk_dashboard')
+            return redirect('home')
         else:
             messages.error(request, 'Invalid Username or Password', extra_tags='danger')
             return redirect('accounts:login_page')
@@ -129,7 +140,7 @@ def edit_profile(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Profile updated successfully', extra_tags='success')
-            return redirect('accounts:profile')
+            return redirect('home')
     else:
         form = ProfileForm(instance=profile)
 

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Màn hình lễ tân | Paradise Hotel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #f7fbff 0%, #f8f5ef 100%); font-family: 'Inter', sans-serif; }
+        .desk-shell { width: min(1200px, 94vw); margin: 2.2rem auto 4rem; }
+        .desk-card { border: 0; border-radius: 22px; box-shadow: 0 14px 40px rgba(16, 24, 40, 0.08); overflow: hidden; }
+        .desk-header { background: linear-gradient(135deg, #0f7f6e 0%, #27ae60 100%); color: #fff; padding: 1.6rem; }
+        .desk-header h1 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 800; }
+        .desk-body { padding: 1.5rem; }
+        .panel { background: #fff; border: 1px solid #e6eaef; border-radius: 18px; padding: 1rem; height: 100%; }
+        .panel-title { font-size: 1rem; font-weight: 800; color: #111827; margin-bottom: 1rem; }
+        .field-label { font-weight: 700; color: #374151; margin-bottom: 0.35rem; }
+        .soft-input, .soft-textarea { width: 100%; border: 1px solid #d8e1e8; border-radius: 12px; padding: 0.72rem 0.85rem; background: #fbfcfd; }
+        .soft-textarea { min-height: 100px; resize: vertical; }
+        .soft-input:focus, .soft-textarea:focus { outline: none; border-color: #0f7f6e; box-shadow: 0 0 0 3px rgba(15, 127, 110, 0.12); }
+        .btn-frontdesk { border-radius: 12px; padding: 0.75rem 1rem; font-weight: 700; }
+        .meta-grid { display: grid; gap: 0.7rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .meta { border: 1px solid #e5e7eb; border-radius: 14px; padding: 0.8rem; background: #fbfcfd; }
+        .meta span { display: block; }
+        .meta .k { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: #6b7280; font-weight: 800; }
+        .meta .v { margin-top: 0.2rem; font-size: 0.98rem; font-weight: 800; color: #111827; }
+        .status-pill { display: inline-flex; border-radius: 999px; padding: 0.25rem 0.65rem; font-size: 0.76rem; font-weight: 800; }
+        .pill-wait { background: #fff6db; color: #8b5e00; }
+        .pill-ok { background: #e6f7ee; color: #0f7f6e; }
+        .pill-bad { background: #fde8e8; color: #b91c1c; }
+        .note-box { border: 1px dashed #d8e1e8; border-radius: 14px; padding: 0.9rem; background: #fcfdff; }
+        .small-muted { color: #6b7280; font-size: 0.9rem; }
+        .result-list { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.45rem; }
+        .result-item { color: #1f2937; font-size: 0.95rem; }
+        .hotel-match { border-radius: 12px; padding: 0.6rem 0.75rem; font-weight: 700; }
+        .hotel-match.ok { background: #e8f8f1; color: #0f7f6e; border: 1px solid #bfe8d9; }
+        .hotel-match.no { background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; }
+        @media (max-width: 768px) { .desk-body { padding: 1rem; } }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <main class="desk-shell">
+        <section class="desk-card">
+            <div class="desk-header">
+                <h1>Màn hình lễ tân</h1>
+                <div class="small opacity-75 mt-2">Nhập mã booking để check-in, check-out và ghi nhận hư hỏng trên một trang duy nhất.</div>
+            </div>
+            <div class="desk-body">
+                {% if reservation %}
+                <div class="panel mb-4">
+                    <div class="panel-title">Thông tin booking</div>
+                    {% if checkin_warning %}
+                    <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert" style="background-color: #fff3cd; border-color: #ffc107; color: #856404; margin: 0.5rem 0;">
+                        <strong>⚠️ Cảnh báo:</strong> {{ checkin_warning }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+                    <div class="meta-grid">
+                        <div class="meta">
+                            <span class="k">Mã booking</span>
+                            <span class="v">{{ reservation.booking_code }}</span>
+                        </div>
+                        <div class="meta">
+                            <span class="k">Khách hàng</span>
+                            <span class="v">{{ reservation.first_name }} {{ reservation.last_name }}</span>
+                        </div>
+                        <div class="meta">
+                            <span class="k">Phòng</span>
+                            <span class="v">{{ reservation.room.name }}</span>
+                        </div>
+                        <div class="meta">
+                            <span class="k">Số khách đã đặt</span>
+                            <span class="v">{{ reservation.adults }} lớn{% if reservation.children > 0 %}, {{ reservation.children }} trẻ em{% endif %}</span>
+                        </div>
+                        <div class="meta">
+                            <span class="k">Check-in dự kiến</span>
+                            <span class="v">{{ reservation.check_in_date|date:"d/m/Y" }} {{ default_check_in_time }}</span>
+                        </div>
+                        <div class="meta">
+                            <span class="k">Check-out dự kiến</span>
+                            <span class="v">{{ reservation.check_out_date|date:"d/m/Y" }} {{ default_check_out_time }}</span>
+                        </div>
+                        <div class="meta">
+                            <span class="k">Check-in thực tế</span>
+                            <span class="v">
+                                {% if reservation.checked_in_at %}
+                                    {{ reservation.checked_in_at|date:"d/m/Y H:i" }}
+                                {% else %}
+                                    Chưa check-in
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="meta">
+                            <span class="k">Check-out thực tế</span>
+                            <span class="v">
+                                {% if reservation.checkout_at %}
+                                    {{ reservation.checkout_at|date:"d/m/Y H:i" }}
+                                {% else %}
+                                    Chưa check-out
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="meta">
+                            <span class="k">Trạng thái</span>
+                            <span class="v">
+                                {% if reservation.is_checked_out %}
+                                    <span class="status-pill pill-bad">Đã check-out</span>
+                                {% elif reservation.is_checked_in %}
+                                    <span class="status-pill pill-ok">Đã check-in</span>
+                                {% else %}
+                                    <span class="status-pill pill-wait">Chưa check-in</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="meta">
+                            <span class="k">Phụ phí hư hỏng</span>
+                            <span class="v">₹{{ reservation.damage_fee }}</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 d-flex flex-wrap gap-2">
+                        <a class="btn btn-outline-dark btn-frontdesk" href="{% url 'rooms:frontdesk_print_slip' reservation.booking_code %}" target="_blank" rel="noopener">In phiếu lễ tân</a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row g-3">
+                    <div class="col-lg-4">
+                        <div class="panel">
+                            <div class="panel-title">Tra booking</div>
+                            <form method="get">
+                                <label class="field-label" for="booking_code_lookup">Mã booking</label>
+                                <input class="soft-input mb-3" id="booking_code_lookup" name="booking_code" value="{{ booking_code }}" placeholder="BK000077">
+                                <button class="btn btn-dark btn-frontdesk w-100" type="submit">Tìm booking</button>
+                            </form>
+                            <div class="note-box mt-3">
+                                <div class="small-muted">Khách chỉ cần đưa mã booking cho lễ tân. Giờ mặc định: check-in {{ default_check_in_time }} ngày nhận phòng, check-out {{ default_check_out_time }} ngày trả phòng.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="panel h-100">
+                            <div class="panel-title">Hóa đơn và thanh toán</div>
+                            {% if reservation %}
+                                <div class="meta-grid" style="grid-template-columns: 1fr;">
+                                    <div class="meta">
+                                        <span class="k">Phương thức</span>
+                                        <span class="v">{{ reservation.get_payment_method_display }}</span>
+                                    </div>
+                                    <div class="meta">
+                                        <span class="k">Trạng thái</span>
+                                        <span class="v">
+                                            {% if reservation.payment_status == 'paid' %}
+                                                <span class="status-pill pill-ok">Đã thanh toán</span>
+                                            {% elif reservation.payment_status == 'pending' %}
+                                                <span class="status-pill pill-wait">Chờ thanh toán</span>
+                                            {% else %}
+                                                {{ reservation.get_payment_status_display }}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Breakdown -->
+                                <div class="note-box mt-3" style="border-left: 4px solid #27ae60; background: #f0fdf4;">
+                                    <div class="small mb-2" style="font-weight: 700; color: #111827;">💰 Chi tiết thanh toán:</div>
+                                    <div class="small mb-2">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Giá phòng cơ bản:</span>
+                                            <strong>₹{{ reservation.total }}</strong>
+                                        </div>
+                                        {% if reservation.early_checkin_fee > 0 %}
+                                        <div class="d-flex justify-content-between text-success">
+                                            <span>+ Phí check-in sớm ({{ reservation.early_checkin_days }} ngày):</span>
+                                            <strong>+₹{{ reservation.early_checkin_fee }}</strong>
+                                        </div>
+                                        {% endif %}
+                                        {% if reservation.early_checkout_refund > 0 %}
+                                        <div class="d-flex justify-content-between text-info">
+                                            <span>- Hoàn tiền checkout sớm ({{ reservation.early_checkout_days }} ngày):</span>
+                                            <strong>-₹{{ reservation.early_checkout_refund }}</strong>
+                                        </div>
+                                        {% endif %}
+                                        {% if reservation.damage_fee > 0 %}
+                                        <div class="d-flex justify-content-between text-danger">
+                                            <span>+ Phí hư hỏng (10%):</span>
+                                            <strong>+₹{{ reservation.damage_fee }}</strong>
+                                        </div>
+                                        {% endif %}
+                                        <div class="border-top pt-2 mt-2 d-flex justify-content-between fw-bold">
+                                            <span>Tổng cộng:</span>
+                                            <span style="color: #27ae60; font-size: 1.1rem;">₹{{ reservation.final_total }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Hybrid Payment Details -->
+                                <div class="note-box mt-3" style="border-left: 4px solid #3b82f6; background: #f0f9ff;">
+                                    <div class="small mb-2" style="font-weight: 700; color: #111827;">💳 Hình thức thanh toán:</div>
+                                    <div class="small">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Deposit (30%):</span>
+                                            <strong>₹{{ reservation.deposit_amount }}</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Tiền còn lại:</span>
+                                            <strong>₹{{ reservation.balance_due }}</strong>
+                                        </div>
+                                        {% if reservation.deposit_paid_via_qr > 0 %}
+                                        <div class="d-flex justify-content-between text-success mt-2 border-top pt-2">
+                                            <span>✓ Đã thanh toán qua QR:</span>
+                                            <strong>₹{{ reservation.deposit_paid_via_qr }}</strong>
+                                        </div>
+                                        {% endif %}
+                                        <div class="d-flex justify-content-between text-warning mt-1 border-top pt-2">
+                                            <span>📋 Thu tại check-in:</span>
+                                            <strong>₹{{ reservation.balance_due }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3 d-flex flex-wrap gap-2">
+                                    <a class="btn btn-outline-dark btn-frontdesk" href="{% url 'rooms:frontdesk_print_slip' reservation.booking_code %}" target="_blank" rel="noopener">Xem/In hóa đơn</a>
+                                </div>
+                            {% else %}
+                                <div class="small-muted">Tra booking trước để xem hóa đơn và trạng thái thanh toán.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="panel h-100">
+                            <div class="panel-title">Check-in</div>
+                            {% if reservation %}
+                            <form method="post" class="d-grid gap-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="booking_code" value="{{ booking_code }}">
+                                <input type="hidden" name="action" value="checkin">
+                                <div>
+                                    <label class="field-label">Số người lớn thực tế</label>
+                                    <input class="soft-input" type="number" min="1" name="checked_in_adults" value="{{ reservation.checked_in_adults|default:reservation.adults }}">
+                                </div>
+                                <div>
+                                    <label class="field-label">Số trẻ em thực tế</label>
+                                    <input class="soft-input" type="number" min="0" name="checked_in_children" value="{{ reservation.checked_in_children|default:reservation.children }}">
+                                </div>
+                                <div>
+                                    <label class="field-label">Ngày check-in thực tế <span class="text-muted">(để trống = ngày dự kiến)</span></label>
+                                    <input class="soft-input" type="date" name="actual_check_in_date" value="{{ reservation.actual_check_in_date|date:'Y-m-d'|default:'' }}">
+                                    <div class="small-muted">Để nhập ngày check-in sớm. Sớm hơn 7 ngày sẽ tính phí thêm.</div>
+                                </div>
+                                <button class="btn btn-success btn-frontdesk" type="submit" {% if reservation.is_checked_in or reservation.is_checked_out or checkin_warning %}disabled{% endif %}>Xác nhận check-in</button>
+                                <div class="small-muted">Lễ tân kiểm tra mã booking và số khách thực tế trước khi nhận phòng.</div>
+                            </form>
+                            {% else %}
+                                <div class="small-muted">Tra booking trước để bật form check-in.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="panel h-100">
+                            <div class="panel-title">Check-out & hư hỏng</div>
+                            {% if reservation %}
+                            <form method="post" class="d-grid gap-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="booking_code" value="{{ booking_code }}">
+                                <input type="hidden" name="action" value="checkout">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="damage_reported_frontdesk" name="damage_reported" value="1" {% if reservation.damage_reported %}checked{% endif %}>
+                                    <label class="form-check-label fw-semibold" for="damage_reported_frontdesk">Có hư hỏng phòng / đồ đạc</label>
+                                </div>
+                                <div>
+                                    <label class="field-label">Ghi chú hư hỏng</label>
+                                    <textarea class="soft-textarea" name="damage_notes" placeholder="Mô tả hư hỏng nếu có">{{ reservation.damage_notes }}</textarea>
+                                </div>
+                                <div>
+                                    <label class="field-label">Ngày check-out thực tế <span class="text-muted">(để trống = ngày dự kiến)</span></label>
+                                    <input class="soft-input" type="date" name="actual_check_out_date" value="{{ reservation.actual_check_out_date|date:'Y-m-d'|default:'' }}">
+                                    <div class="small-muted">Để nhập ngày check-out sớm. Hoàn lại 50% giá phòng cho mỗi ngày sớm.</div>
+                                </div>
+                                <button class="btn btn-danger btn-frontdesk" type="submit" {% if reservation.is_checked_out or not reservation.is_checked_in %}disabled{% endif %}>Xác nhận check-out</button>
+                                <div class="small-muted">Nếu có hư hỏng, hệ thống sẽ cộng thêm 10% bill và hiển thị trong hóa đơn của khách.</div>
+                            </form>
+                            {% else %}
+                                <div class="small-muted">Tra booking trước để bật form check-out.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-1">
+                    <div class="col-lg-6">
+                        <div class="panel h-100">
+                            <div class="panel-title">Phòng còn trống (Read-only)</div>
+                            <form method="get" class="d-grid gap-2">
+                                <label class="field-label" for="available_check_in">Check-in</label>
+                                <input class="soft-input" type="date" id="available_check_in" name="available_check_in" value="{{ available_check_in|date:'Y-m-d' }}">
+                                <label class="field-label" for="available_check_out">Check-out</label>
+                                <input class="soft-input" type="date" id="available_check_out" name="available_check_out" value="{{ available_check_out|date:'Y-m-d' }}">
+                                <label class="field-label" for="available_adults">Số người lớn</label>
+                                <input class="soft-input" type="number" min="1" id="available_adults" name="available_adults" value="{{ available_adults }}">
+                                <label class="field-label" for="room_query">Tên phòng / loại phòng</label>
+                                <input class="soft-input" id="room_query" name="room_query" value="{{ room_query }}" placeholder="Room 101 hoặc Deluxe">
+                                {% if booking_code %}<input type="hidden" name="booking_code" value="{{ booking_code }}">{% endif %}
+                                <button class="btn btn-success btn-frontdesk" type="submit">Tìm phòng trống</button>
+                            </form>
+                            {% if availability_error %}
+                                <div class="small text-danger mt-2">{{ availability_error }}</div>
+                            {% endif %}
+                            <ul class="result-list mt-3">
+                                {% for room in available_rooms|slice:":8" %}
+                                    <li class="result-item">{{ room.name }}{% if room.category %} - {{ room.category.name }}{% endif %} ({{ room.total_capacity }} khách, ₹{{ room.price }}/đêm)</li>
+                                {% empty %}
+                                    <li class="result-item">Không có phòng trống theo điều kiện đã nhập.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="panel h-100">
+                            <div class="panel-title">Dịch vụ khách sạn (Read-only)</div>
+                            <form method="get" class="d-grid gap-2">
+                                <label class="field-label" for="service_query">Tên dịch vụ / mô tả</label>
+                                <input class="soft-input" id="service_query" name="service_query" value="{{ service_query }}" placeholder="Ăn sáng, đưa đón, giặt ủi...">
+                                {% if booking_code %}<input type="hidden" name="booking_code" value="{{ booking_code }}">{% endif %}
+                                <button class="btn btn-primary btn-frontdesk" type="submit">Tìm dịch vụ</button>
+                            </form>
+                            <ul class="result-list mt-3">
+                                {% for service in services|slice:":10" %}
+                                    <li class="result-item">{{ service.name }} - ₹{{ service.price }}</li>
+                                {% empty %}
+                                    <li class="result-item">Không tìm thấy dịch vụ phù hợp.</li>
+                                {% endfor %}
+                            </ul>
+                            <div class="small-muted mt-2">Danh sách dịch vụ đang hoạt động, chỉ để tra cứu cho khách.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    {% include 'footer.html' %}
+</body>
+</html>

@@ -1,0 +1,70 @@
+...
+ERROR: Coverage failure: total of 35 is less than fail-under=70
+                                                                         [100%]
+============================== warnings summary ===============================
+rooms/tests/test_views.py::TestReservationCheckoutAPIView::test_checkout_valid_reservation
+rooms/tests/test_views.py::TestReservationCheckoutAPIView::test_checkout_already_checked_out
+rooms/tests/test_views.py::TestReservationCheckoutAPIView::test_checkout_without_authentication
+  C:\Users\ASUS\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:182: DeprecationWarning: UserFactory._after_postgeneration will stop saving the instance after postgeneration hooks in the next major release.
+  If the save call is extraneous, set skip_postgeneration_save=True in the UserFactory.Meta.
+  To keep saving the instance, move the save call to your postgeneration hooks or override _after_postgeneration.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.3-final-0 _______________
+
+Name                                                                            Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------------------------------------------------
+accounts\__init__.py                                                                0      0   100%
+accounts\admin.py                                                                  21      4    81%   19-22
+accounts\apps.py                                                                    4      0   100%
+accounts\context_processors.py                                                     15     15     0%   1-23
+accounts\forms.py                                                                  27     14    48%   16-20, 23-31
+accounts\migrations\0001_initial.py                                                 7      0   100%
+accounts\migrations\0002_profile_role.py                                            7      0   100%
+accounts\migrations\__init__.py                                                     0      0   100%
+accounts\models.py                                                                 35      7    80%   10-11, 30-31, 33-34, 43
+accounts\serializers.py                                                            59     25    58%   14, 27-29, 40-51, 60-62, 65-68, 91-92, 95-96
+accounts\tests.py                                                                   1      1     0%   1
+accounts\urls.py                                                                    5      0   100%
+accounts\views.py                                                                 175    113    35%   29-30, 47-85, 90-107, 112-113, 119-128, 133-150, 158-165, 172-173, 176-177, 180, 183, 186-190, 201-225, 238-248, 255-256, 265
+rooms\__init__.py                                                                   0      0   100%
+rooms\admin.py                                                                     58     13    78%   8, 11, 14, 17, 20, 70-81
+rooms\apps.py                                                                       4      0   100%
+rooms\context_processors.py                                                         6      6     0%   1-8
+rooms\forms.py                                                                     28     17    39%   22-40, 43-44
+rooms\migrations\0001_initial.py                                                    7      0   100%
+rooms\migrations\0002_reservation_children_alter_reservation_adults.py              4      0   100%
+rooms\migrations\0003_alter_reservation_check_in_date_and_more.py                   4      0   100%
+rooms\migrations\0004_room_capacity_adults_room_capacity_children_and_more.py       4      0   100%
+rooms\migrations\0005_alter_room_total_capacity.py                                  4      0   100%
+rooms\migrations\0006_reservation_is_checked_out.py                                 4      0   100%
+rooms\migrations\0007_reservation_payment_status.py                                 4      0   100%
+rooms\migrations\0008_service_reservation_services_and_totals.py                   13      2    85%   54-55
+rooms\migrations\0009_service_image.py                                              4      0   100%
+rooms\migrations\0010_reservation_checkout_at.py                                    4      0   100%
+rooms\migrations\0011_reservation_deposit_and_damage_fields.py                     17      9    47%   12-20
+rooms\migrations\0012_reservation_checkin_fields.py                                 4      0   100%
+rooms\migrations\0013_reservation_invoice_notified_at.py                            4      0   100%
+rooms\migrations\__init__.py                                                        0      0   100%
+rooms\models.py                                                                   220    102    54%   14-15, 19-20, 24-25, 30-36, 53-78, 82-136, 143, 168, 172-180, 189-191, 199-213, 218-225, 232, 243, 257-259, 262, 332-339, 342, 345, 348, 351, 354-357, 361-363, 367-379
+rooms\permissions.py                                                                4      1    75%   6
+rooms\serializers.py                                                              205    110    46%   81-140, 143-167, 176-210, 353-355, 411-415, 425, 428-430, 433, 460, 463, 514-540
+rooms\templatetags\__init__.py                                                      0      0   100%
+rooms\templatetags\admin_dashboard_stats.py                                        91     91     0%   1-170
+rooms\tests.py                                                                      1      1     0%   1
+rooms\tests\__init__.py                                                             0      0   100%
+rooms\tests\conftest.py                                                            23      3    87%   62, 79, 92
+rooms\tests\factories.py                                                           78      0   100%
+rooms\tests\test_capacity_limits.py                                                19     19     0%   1-39
+rooms\tests\test_models.py                                                        153    153     0%   4-263
+rooms\tests\test_views.py                                                         200    126    37%   34-42, 46-52, 56-62, 66-69, 79-100, 104-112, 116-127, 131-141, 146-159, 168-194, 198-209, 214-221, 225-229, 233-252, 256-264, 273-279, 283-290, 294-297, 350-360, 364-376, 380-392, 402-411, 420-424, 428-437, 447-453
+rooms\upload_security.py                                                           32     23    28%   23-50, 54-55
+rooms\urls.py                                                                       4      0   100%
+rooms\views.py                                                                    946    764    19%   57-60, 64-65, 72-94, 118-122, 152-153, 173, 176-177, 180-189, 203-205, 215, 243-265, 283-471, 503, 511, 519-522, 531-572, 581, 589, 596-657, 682, 685-693, 707-716, 736, 745-752, 761, 769-799, 810-861, 866-952, 961-965, 974, 978-984, 988-999, 1009-1034, 1041-1048, 1060-1063, 1075-1076, 1080-1082, 1087-1115, 1133-1166, 1183-1221, 1240-1318, 1323-1416, 1442-1448, 1453-1467, 1472-1478, 1483-1531, 1535-1539, 1552, 1557-1638, 1659-1669, 1672-1739, 1744-1749, 1753-1754
+-------------------------------------------------------------------------------------------------------------
+TOTAL                                                                            2505   1619    35%
+Coverage HTML written to dir htmlcov
+FAIL Required test coverage of 70% not reached. Total coverage: 35.37%
+3 passed, 3 warnings in 8.00s

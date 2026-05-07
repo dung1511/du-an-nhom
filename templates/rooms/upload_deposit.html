@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Upload biên lai deposit cho {{ reservation.booking_code }}</h2>
+<p>Phòng: {{ reservation.room.name }} | Ngày: {{ reservation.check_in_date }} - {{ reservation.check_out_date }}</p>
+<img src="{{ qr_image_url }}" alt="QR to upload" />
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="hidden" name="booking_code" value="{{ reservation.booking_code }}" />
+  <div>
+    <label for="id_deposit_receipt">Chọn ảnh biên lai:</label>
+    <input type="file" name="deposit_receipt" id="id_deposit_receipt" accept="image/*" required />
+  </div>
+  <button type="submit">Tải lên</button>
+</form>
+{% endblock %}

@@ -1,5 +1,7 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 from decimal import Decimal
+
+from django.contrib.auth.models import User
 
 from rest_framework import serializers
 
@@ -16,6 +18,8 @@ class ReservationCreateSerializer(serializers.ModelSerializer):
     room_id = serializers.PrimaryKeyRelatedField(
         queryset=Room.objects.all(), source="room", write_only=True
     )
+    user_id = serializers.IntegerField(required=False, write_only=True)
+    email = serializers.EmailField(required=True)
     coupon_code = serializers.CharField(required=False, allow_blank=True, write_only=True)
 
     class Meta:
@@ -23,6 +27,7 @@ class ReservationCreateSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "room_id",
+            "user_id",
             "room",
             "check_in_date",
             "check_out_date",
@@ -43,21 +48,33 @@ class ReservationCreateSerializer(serializers.ModelSerializer):
             "coupon_code",
             "subtotal",
             "gst",
+            "deposit_percentage",
+            "deposit_amount",
+            "balance_due",
             "discount_applied",
             "service_total",
             "total",
+            "damage_fee",
+            "final_total",
             "created_at",
+            "checkout_at",
         ]
         read_only_fields = [
             "id",
             "room",
             "subtotal",
             "gst",
+            "deposit_percentage",
+            "deposit_amount",
+            "balance_due",
             "discount_applied",
             "service_total",
             "total",
+            "damage_fee",
+            "final_total",
             "payment_status",
             "created_at",
+            "checkout_at",
         ]
 
     def validate(self, attrs):
@@ -82,13 +99,29 @@ class ReservationCreateSerializer(serializers.ModelSerializer):
         if children < 0:
             raise serializers.ValidationError("So tre em khong hop le.")
 
-        if adults + children > room.capacity:
+        if not room.can_accommodate(adults=adults, children=children):
             raise serializers.ValidationError(
-                f"Phong chi cho toi da {room.capacity} khach."
+                (
+                    f"Phong chi cho toi da {room.total_capacity} khach "
+                    f"({room.capacity_adults} nguoi lon, {room.capacity_children} tre em)."
+                )
             )
 
         if not room.is_available(check_in, check_out):
             raise serializers.ValidationError("Phong da duoc dat trong khoang thoi gian nay.")
+
+        request = self.context.get("request")
+        actor = getattr(request, "user", None)
+        user_id = attrs.pop("user_id", None)
+        if user_id is not None:
+            if not actor or not actor.is_authenticated or not (actor.is_staff or actor.is_superuser):
+                raise serializers.ValidationError("Chi staff/admin moi co the gan booking cho nguoi dung khac.")
+            try:
+                attrs["user"] = User.objects.get(pk=user_id)
+            except User.DoesNotExist as exc:
+                raise serializers.ValidationError("Nguoi dung khong ton tai.") from exc
+        elif actor and actor.is_authenticated and not (actor.is_staff or actor.is_superuser):
+            attrs["user"] = actor
 
         coupon_code = attrs.pop("coupon_code", "").strip()
         coupon = None
@@ -128,17 +161,81 @@ class ReservationCreateSerializer(serializers.ModelSerializer):
         validated_data["total"] = total
         validated_data["coupon"] = coupon
 
-        request = self.context.get("request")
-        if request and request.user.is_authenticated:
-            validated_data["user"] = request.user
+        reservation = Reservation(**validated_data)
+        reservation.sync_financial_fields()
+        reservation.save()
+        return reservation
 
-        return Reservation.objects.create(**validated_data)
+
+class ReservationCheckInSerializer(serializers.Serializer):
+    booking_code = serializers.CharField(required=True)
+    checked_in_adults = serializers.IntegerField(min_value=1)
+    checked_in_children = serializers.IntegerField(min_value=0, required=False, default=0)
+    actual_check_in_date = serializers.DateField(required=False, allow_null=True)  # Ngày check-in thực tế (có thể sớm)
+
+    def validate(self, attrs):
+        try:
+            reservation_id = Reservation.get_reservation_id_from_booking_code(attrs['booking_code'])
+        except ValueError as exc:
+            raise serializers.ValidationError({'booking_code': str(exc)}) from exc
+
+        try:
+            reservation = Reservation.objects.select_related('room').get(id=reservation_id)
+        except Reservation.DoesNotExist as exc:
+            raise serializers.ValidationError({'booking_code': 'Không tìm thấy booking tương ứng.'}) from exc
+
+        if reservation.is_checked_out:
+            raise serializers.ValidationError('Booking này đã check-out.')
+
+        if reservation.is_checked_in:
+            raise serializers.ValidationError('Booking này đã check-in trước đó.')
+
+        actual_check_in_date = attrs.get('actual_check_in_date')
+        if actual_check_in_date:
+            # Cho phép check-in từ 7 ngày trước ngày đặt phòng
+            min_early_checkin = reservation.check_in_date - timedelta(days=7)
+            if actual_check_in_date < min_early_checkin:
+                raise serializers.ValidationError(
+                    f'Chỉ có thể check-in sớm tối đa 7 ngày (từ {min_early_checkin})'
+                )
+            # Không thể check-in sau ngày dự kiến
+            if actual_check_in_date > reservation.check_in_date:
+                raise serializers.ValidationError(
+                    'Ngày check-in thực tế không được muộn hơn ngày check-in dự kiến'
+                )
+        else:
+            # Nếu không cung cấp, dùng ngày check-in dự kiến
+            if date.today() < reservation.check_in_date:
+                raise serializers.ValidationError('Chưa tới ngày check-in của booking.')
+            actual_check_in_date = reservation.check_in_date
+
+        checked_in_adults = attrs.get('checked_in_adults', 0)
+        checked_in_children = attrs.get('checked_in_children', 0)
+        checked_in_total = checked_in_adults + checked_in_children
+        booked_total = (reservation.adults or 0) + (reservation.children or 0)
+
+        if checked_in_total > booked_total:
+            raise serializers.ValidationError('Số khách đến check-in vượt quá số khách đã đặt.')
+
+        if not reservation.room.can_accommodate(
+            adults=checked_in_adults,
+            children=checked_in_children,
+        ):
+            raise serializers.ValidationError('Số khách đến check-in vượt quá sức chứa của phòng.')
+
+        attrs['reservation'] = reservation
+        attrs['actual_check_in_date'] = actual_check_in_date
+        return attrs
+
 
 
 class ReservationCheckoutSerializer(serializers.ModelSerializer):
     """Serializer để xử lý trả phòng (checkout)"""
     room_name = serializers.CharField(source='room.name', read_only=True)
     checkout_date = serializers.DateField(source='check_out_date', read_only=True)
+    checkout_at = serializers.DateTimeField(read_only=True)
+    damage_reported = serializers.BooleanField(required=False, default=False)
+    damage_notes = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     
     class Meta:
         model = Reservation
@@ -148,14 +245,25 @@ class ReservationCheckoutSerializer(serializers.ModelSerializer):
             'check_in_date',
             'check_out_date',
             'checkout_date',
+            'is_checked_in',
+            'checked_in_at',
+            'checked_in_adults',
+            'checked_in_children',
             'user',
             'first_name',
             'last_name',
             'email',
             'phone',
             'total',
+            'deposit_amount',
+            'balance_due',
+            'damage_reported',
+            'damage_notes',
+            'damage_fee',
+            'final_total',
             'payment_status',
             'is_checked_out',
+            'checkout_at',
         ]
         read_only_fields = [
             'id',
@@ -163,18 +271,45 @@ class ReservationCheckoutSerializer(serializers.ModelSerializer):
             'check_in_date',
             'check_out_date',
             'checkout_date',
+            'is_checked_in',
+            'checked_in_at',
+            'checked_in_adults',
+            'checked_in_children',
             'user',
             'first_name',
             'last_name',
             'email',
             'phone',
             'total',
+            'deposit_amount',
+            'balance_due',
+            'damage_fee',
+            'final_total',
             'payment_status',
+            'checkout_at',
         ]
 
     def update(self, instance, validated_data):
+        damage_reported = validated_data.pop('damage_reported', False)
+        damage_notes = validated_data.pop('damage_notes', '') or ''
+
         instance.is_checked_out = True
-        instance.save()
+        if not instance.checkout_at:
+            instance.checkout_at = datetime.now()
+        instance.damage_reported = bool(damage_reported)
+        instance.damage_notes = damage_notes
+        instance.damage_fee = instance.calculate_damage_fee() if instance.damage_reported else Decimal('0.00')
+        instance.final_total = instance.total + instance.damage_fee
+        instance.save(
+            update_fields=[
+                'is_checked_out',
+                'checkout_at',
+                'damage_reported',
+                'damage_notes',
+                'damage_fee',
+                'final_total',
+            ]
+        )
         return instance
 
 
@@ -198,6 +333,10 @@ class ReservationDetailSerializer(serializers.ModelSerializer):
             'room_price',
             'check_in_date',
             'check_out_date',
+            'is_checked_in',
+            'checked_in_at',
+            'checked_in_adults',
+            'checked_in_children',
             'num_nights',
             'adults',
             'children',
@@ -211,14 +350,26 @@ class ReservationDetailSerializer(serializers.ModelSerializer):
             'postcode',
             'subtotal',
             'gst',
+            'deposit_percentage',
+            'deposit_amount',
+            'balance_due',
             'discount_applied',
             'service_total',
             'selected_services',
             'total',
+            'damage_reported',
+            'damage_notes',
+            'damage_fee',
+            'final_total',
             'payment_method',
             'payment_status',
             'is_checked_out',
             'created_at',
+            'checkout_at',
+            'deposit_receipt',
+            'deposit_receipt_uploaded_at',
+            'deposit_confirmed',
+            'deposit_confirmed_at',
         ]
     
     def get_num_nights(self, obj):
@@ -243,6 +394,10 @@ class ReturnedReservationSerializer(serializers.ModelSerializer):
             'coupon_code',
             'check_in_date',
             'check_out_date',
+            'is_checked_in',
+            'checked_in_at',
+            'checked_in_adults',
+            'checked_in_children',
             'num_nights',
             'adults',
             'children',
@@ -259,12 +414,20 @@ class ReturnedReservationSerializer(serializers.ModelSerializer):
             'note',
             'subtotal',
             'gst',
+            'deposit_percentage',
+            'deposit_amount',
+            'balance_due',
             'discount_applied',
             'total',
+            'damage_reported',
+            'damage_notes',
+            'damage_fee',
+            'final_total',
             'payment_method',
             'payment_status',
             'is_checked_out',
             'created_at',
+            'checkout_at',
         ]
 
     def get_user(self, obj):
@@ -331,6 +494,8 @@ class RoomCategorySerializer(serializers.ModelSerializer):
 
 class ReservationPaymentSerializer(serializers.ModelSerializer):
     room_name = serializers.CharField(source='room.name', read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+    checkout_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Reservation
@@ -339,12 +504,36 @@ class ReservationPaymentSerializer(serializers.ModelSerializer):
             'room_name',
             'payment_method',
             'payment_status',
+            'is_checked_in',
+            'checked_in_at',
+            'checked_in_adults',
+            'checked_in_children',
             'subtotal',
             'gst',
+            'deposit_percentage',
+            'deposit_amount',
+            'balance_due',
             'discount_applied',
             'total',
+            'damage_reported',
+            'damage_notes',
+            'damage_fee',
+            'final_total',
             'created_at',
+            'checkout_at',
+            'deposit_receipt',
+            'deposit_receipt_uploaded_at',
+            'deposit_confirmed',
         ]
+
+
+class UploadDepositReceiptSerializer(serializers.ModelSerializer):
+    # Use FileField to accept uploads even when Pillow is not available in test env
+    deposit_receipt = serializers.FileField(required=True)
+
+    class Meta:
+        model = Reservation
+        fields = ['deposit_receipt']
 
 
 class RoomSearchSerializer(serializers.Serializer):
