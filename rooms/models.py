@@ -1284,3 +1284,16 @@ class Reservation(models.Model):
             return False, "Booking chưa được xác nhận"
         
         return True, "Có thể check-in"
+
+    def can_check_out(self):
+        """Kiểm tra xem booking có thể checkout được không"""
+        # Phải check-in rồi mới checkout
+        if not self.is_checked_in:
+            return False, "Chưa check-in, không thể checkout"
+        
+        # Không được checkout trước ngày
+        today = timezone.now().date()
+        if today < self.check_out_date:
+            return False, f"Chưa tới ngày checkout, checkout vào {self.check_out_date}"
+        
+        return True, "Có thể checkout"
