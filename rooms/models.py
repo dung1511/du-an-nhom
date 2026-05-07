@@ -1342,3 +1342,15 @@ class Reservation(models.Model):
             code = str(self.booking_code).upper()
             return f"{code[:4]}-{code[4:8]}-{code[8:]}"
         return "N/A"
+
+    def is_payment_pending(self):
+        """Kiểm tra xem booking có đang chờ thanh toán không"""
+        return self.status == 'pending' and not self.is_paid
+
+    def is_cancelled(self):
+        """Kiểm tra xem booking đã hủy chưa"""
+        return self.status == 'cancelled'
+
+    def is_completed(self):
+        """Kiểm tra xem booking đã hoàn thành chưa"""
+        return self.status == 'checked_out' and self.is_checked_in
