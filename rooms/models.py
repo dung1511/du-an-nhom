@@ -1334,3 +1334,11 @@ class Reservation(models.Model):
                 elif days_until_checkin >= 7:
                     return self.deposit_paid * Decimal('0.50')
         return Decimal('0.00')
+
+    def get_booking_code_display(self):
+        """Lấy booking code định dạng hiển thị"""
+        if self.booking_code:
+            # Format: XXXX-XXXX-XXXX
+            code = str(self.booking_code).upper()
+            return f"{code[:4]}-{code[4:8]}-{code[8:]}"
+        return "N/A"
