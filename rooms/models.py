@@ -1382,3 +1382,7 @@ class Reservation(models.Model):
         ).exclude(id=self.id)
         
         return not conflicting.exists()
+
+    def __str__(self):
+        """String representation của Reservation"""
+        return f"Booking {self.get_booking_code_display()} - {self.room} ({self.check_in_date} to {self.check_out_date})"
