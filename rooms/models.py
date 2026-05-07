@@ -877,6 +877,13 @@ class Reservation(models.Model):
     # Thời gian tạo booking
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # Mã booking duy nhất
+    booking_code = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True
+    )
+
     # Người dùng đặt phòng
     user = models.ForeignKey(
 
@@ -1240,3 +1247,23 @@ class Reservation(models.Model):
 
         related_name='confirmed_deposits'
     )
+
+    def calculate_early_checkin_fee(self):
+        """Tính phí check-in sớm"""
+        if not self.early_checkin_days or self.early_checkin_days <= 0:
+            return Decimal('0.00')
+        
+        daily_rate = self.room.price
+        early_fee = (daily_rate * Decimal('0.50')) * Decimal(self.early_checkin_days)
+        return early_fee
+
+    def sync_financial_fields(self):
+        """Đồng bộ các trường tài chính"""
+        self.early_checkin_fee = self.calculate_early_checkin_fee()
+        self.final_total = self.total + self.damage_fee + self.early_checkin_fee
+
+    def save(self, *args, **kwargs):
+        """Tạo booking code tự động nếu chưa có"""
+        if not self.booking_code:
+            self.booking_code = str(uuid.uuid4())[:12].upper()
+        super().save(*args, **kwargs)
