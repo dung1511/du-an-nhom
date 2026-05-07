@@ -1297,3 +1297,21 @@ class Reservation(models.Model):
             return False, f"Chưa tới ngày checkout, checkout vào {self.check_out_date}"
         
         return True, "Có thể checkout"
+
+    def calculate_final_total(self):
+        """Tính tổng tiền cuối cùng"""
+        total = self.total
+        
+        # Thêm phí damage nếu có
+        if self.damage_fee:
+            total += self.damage_fee
+        
+        # Thêm phí early check-in nếu có
+        if self.early_checkin_fee:
+            total += self.early_checkin_fee
+        
+        # Trừ coupon discount nếu có
+        if self.coupon_discount:
+            total -= self.coupon_discount
+        
+        return total
