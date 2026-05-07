@@ -1315,3 +1315,10 @@ class Reservation(models.Model):
             total -= self.coupon_discount
         
         return total
+
+    def get_number_of_nights(self):
+        """Lấy số đêm ở lại"""
+        if self.check_in_date and self.check_out_date:
+            nights = (self.check_out_date - self.check_in_date).days
+            return max(nights, 1)  # Tối thiểu 1 đêm
+        return 0
