@@ -805,7 +805,34 @@ class Service(models.Model):
 
 # ===== MODEL ĐẶT PHÒNG =====
 class Reservation(models.Model):
-
+    """
+    Model quản lý đặt phòng (Reservation/Booking)
+    
+    Chức năng chính:
+    - Lưu thông tin chi tiết về các booking của khách hàng
+    - Theo dõi trạng thái từ pending -> confirmed -> checked-in -> checked-out
+    - Quản lý thanh toán (pending -> paid), đặt cọc (deposit)
+    - Hỗ trợ check-in sớm, hủy booking, hoàn tiền
+    - Tự động sinh mã booking code (booking_code) duy nhất
+    
+    Các trạng thái chính:
+    - pending: Chờ xác nhận từ quản lý
+    - confirmed: Xác nhận, có thể check-in
+    - deposits_confirmed: Đã thanh toán cọc
+    - checked_in: Đã check-in vào phòng
+    - checked_out: Đã check-out, hoàn thành booking
+    - cancelled: Đã hủy booking
+    
+    Các field quan trọng:
+    - booking_code: Mã booking duy nhất (tự động sinh)
+    - room: Phòng được đặt
+    - user: Khách hàng đặt phòng
+    - check_in_date/check_out_date: Ngày check-in/checkout
+    - total: Tổng tiền (chưa bao gồm phí)
+    - deposit_paid: Tiền cọc đã thanh toán
+    - damage_fee: Phí hư hỏng (nếu có)
+    - early_checkin_fee: Phí check-in sớm
+    """
 
     # ===== TRẠNG THÁI THANH TOÁN =====
     PAYMENT_STATUS_CHOICES = (
