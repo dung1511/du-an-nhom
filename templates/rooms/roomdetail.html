@@ -443,7 +443,7 @@
                 <div class="room-content">
                     <p class="room-lead">{{ room.description }}</p>
                     <div class="feature-chips">
-                        <span class="chip"><i class="fas fa-user-friends"></i> {{ room.capacity }} khách</span>
+                        <span class="chip"><i class="fas fa-user-friends"></i> {{ room.total_capacity }} khách</span>
                         <span class="chip"><i class="fas fa-ruler-combined"></i> {{ room.get_size_display }}</span>
                         <span class="chip"><i class="fas fa-concierge-bell"></i> Có thể thêm dịch vụ</span>
                     </div>
@@ -529,17 +529,47 @@
         // Guest count management
         let adultsCount = 1;
         let childrenCount = 0;
-        const maxGuests = 10;
+        const maxGuests = Number("{{ room.total_capacity }}");
+        const maxAdults = Number("{{ room.capacity_adults }}");
+        const maxChildren = Number("{{ room.capacity_children }}");
+        const limitNotice = document.getElementById('room-status-alert');
+
+        function showLimitNotice(message) {
+            if (!limitNotice) {
+                return;
+            }
+            limitNotice.textContent = message;
+            limitNotice.style.background = 'rgba(230, 77, 94, 0.14)';
+            limitNotice.style.color = '#8e2131';
+        }
+
+        function showDefaultNotice() {
+            if (!limitNotice) {
+                return;
+            }
+            limitNotice.textContent = `Sức chứa phòng: tối đa ${maxGuests} khách (${maxAdults} người lớn, ${maxChildren} trẻ em).`;
+            limitNotice.style.background = 'rgba(15, 127, 159, 0.12)';
+            limitNotice.style.color = '#0b627d';
+        }
 
         function updateGuestDisplay() {
             document.getElementById('adults-count').textContent = adultsCount;
             document.getElementById('children-count').textContent = childrenCount;
             document.getElementById('hidden_adults').value = adultsCount;
             document.getElementById('hidden_children').value = childrenCount;
+            showDefaultNotice();
         }
 
         document.getElementById('adults-plus').addEventListener('click', (e) => {
             e.preventDefault();
+            if (adultsCount >= maxAdults) {
+                showLimitNotice(`Không thể vượt quá ${maxAdults} người lớn cho phòng này.`);
+                return;
+            }
+            if (adultsCount + childrenCount >= maxGuests) {
+                showLimitNotice(`Không thể vượt quá tổng ${maxGuests} khách cho phòng này.`);
+                return;
+            }
             if (adultsCount + childrenCount < maxGuests) {
                 adultsCount++;
                 updateGuestDisplay();
@@ -556,6 +586,14 @@
 
         document.getElementById('children-plus').addEventListener('click', (e) => {
             e.preventDefault();
+            if (childrenCount >= maxChildren) {
+                showLimitNotice(`Không thể vượt quá ${maxChildren} trẻ em cho phòng này.`);
+                return;
+            }
+            if (adultsCount + childrenCount >= maxGuests) {
+                showLimitNotice(`Không thể vượt quá tổng ${maxGuests} khách cho phòng này.`);
+                return;
+            }
             if (adultsCount + childrenCount < maxGuests) {
                 childrenCount++;
                 updateGuestDisplay();
@@ -631,6 +669,7 @@
         });
 
         document.getElementById('check_out').addEventListener('change', checkAvailability);
+        updateGuestDisplay();
         checkAvailability();
     </script>
 </body>

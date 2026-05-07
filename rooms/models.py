@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 from datetime import date, timedelta
 from django.core.exceptions import ValidationError
 from datetime import date, timedelta
+from django.utils import timezone
 from django.utils.text import slugify
+from decimal import Decimal
 import os
 import uuid
 from itertools import combinations
@@ -166,6 +168,24 @@ class Room(models.Model):
     def __str__(self):
         return self.name
 
+    def can_accommodate(self, adults, children=0):
+        """Return True when the room can host the given adults/children split."""
+        adults = adults or 0
+        children = children or 0
+        total_guests = adults + children
+
+        total_capacity = self.total_capacity or self.capacity or (self.capacity_adults + self.capacity_children)
+        adults_capacity = self.capacity_adults or self.capacity or total_capacity
+        children_capacity = self.capacity_children if self.capacity_children is not None else total_capacity
+
+        return (
+            adults >= 1
+            and children >= 0
+            and total_guests <= total_capacity
+            and adults <= adults_capacity
+            and children <= children_capacity
+        )
+
     def availability_status(self):
         today = date.today()
         tomorrow = today + timedelta(days=1)
@@ -251,6 +271,15 @@ class Reservation(models.Model):
         ('refunded', 'Refunded'),
     )
 
+    PAYMENT_METHOD_CHOICES = (
+        ('cash', 'Tiền mặt'),
+        ('momo_qr', 'Chuyển khoản MoMo'),
+        ('cards', 'Quẹt thẻ'),
+    )
+
+    DEFAULT_DEPOSIT_PERCENTAGE = Decimal('30.00')
+    DAMAGE_FEE_PERCENTAGE = Decimal('10.00')
+
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     check_in_date = models.DateField(null=True, blank=True)
     check_out_date = models.DateField(null=True, blank=True)
@@ -269,15 +298,15 @@ class Reservation(models.Model):
     postcode = models.CharField(max_length=20, null=True, blank=True)
     adhar_id = models.CharField(max_length=20, null=True, blank=True)
     note = models.TextField(blank=True)
+    is_checked_in = models.BooleanField(default=False)
+    checked_in_at = models.DateTimeField(null=True, blank=True)
+    checked_in_adults = models.PositiveIntegerField(default=0)
+    checked_in_children = models.PositiveIntegerField(default=0)
     is_checked_out = models.BooleanField(default=False) # Thêm trường này
     payment_method = models.CharField(
         max_length=20,
-        choices=[
-            ('pay_on_arrival', 'Pay on Arrival'),
-            ('upi', 'UPI'),
-            ('cards', 'Cards')
-        ],
-        default='pay_on_arrival',
+        choices=PAYMENT_METHOD_CHOICES,
+        default='cash',
     )
     payment_status = models.CharField(
         max_length=20,
@@ -288,17 +317,124 @@ class Reservation(models.Model):
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     gst = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    deposit_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('30.00'))
+    deposit_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    balance_due = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     discount_applied = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     service_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     selected_services = models.ManyToManyField(Service, blank=True, related_name='reservations')
-
+    damage_reported = models.BooleanField(default=False)
+    damage_notes = models.TextField(blank=True)
+    damage_fee = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    final_total = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    checkout_at = models.DateTimeField(null=True, blank=True)
+    invoice_notified_at = models.DateTimeField(null=True, blank=True)
+    # Early check-in fields
+    actual_check_in_date = models.DateField(null=True, blank=True)  # Ngày check-in thực tế nếu sớm hơn
+    early_checkin_days = models.PositiveIntegerField(default=0)  # Số ngày check-in sớm
+    early_checkin_fee = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))  # Phí check-in sớm
+    # Early check-out fields
+    actual_check_out_date = models.DateField(null=True, blank=True)  # Ngày check-out thực tế nếu sớm hơn
+    early_checkout_days = models.PositiveIntegerField(default=0)  # Số ngày check-out sớm
+    early_checkout_refund = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))  # Hoàn tiền checkout sớm
+    # Hybrid payment
+    deposit_paid_via_qr = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))  # Số tiền deposit thanh toán qua QR
+    balance_paid_at_checkin = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))  # Số tiền còn lại thanh toán tại check-in
+    # Biên lai chuyển khoản do khách upload (QR -> upload biên lai)
+    deposit_receipt = models.ImageField(upload_to='uploads/deposit_receipts/', null=True, blank=True)
+    deposit_receipt_uploaded_at = models.DateTimeField(null=True, blank=True)
+    deposit_confirmed = models.BooleanField(default=False)
+    deposit_confirmed_at = models.DateTimeField(null=True, blank=True)
+    deposit_confirmed_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='confirmed_deposits')
     def clean(self):
         if self.check_in_date and self.check_out_date:
             if self.check_out_date <= self.check_in_date:
                 raise ValidationError("Check-out date must be after check-in date.")
 
+        adults = self.adults or 0
+        children = self.children or 0
+        if self.room_id and not self.room.can_accommodate(adults=adults, children=children):
+            raise ValidationError("Số lượng khách vượt quá sức chứa của phòng.")
+
     def __str__(self):
         return f"Reservation for {self.room.name} from {self.check_in_date} to {self.check_out_date}"
+
+    def calculate_deposit_amount(self):
+        return (self.total * self.deposit_percentage) / Decimal('100')
+
+    def calculate_balance_due(self):
+        return self.total - self.calculate_deposit_amount()
+
+    def calculate_damage_fee(self):
+        return (self.total * self.DAMAGE_FEE_PERCENTAGE) / Decimal('100')
+
+    def calculate_early_checkin_fee(self):
+        """Tính phí check-in sớm: 50% giá phòng cho mỗi ngày"""
+        if not self.actual_check_in_date or not self.check_in_date or self.actual_check_in_date >= self.check_in_date:
+            return Decimal('0.00')
+        
+        days_early = (self.check_in_date - self.actual_check_in_date).days
+        if days_early <= 0:
+            return Decimal('0.00')
+        
+        # Tính phí: 50% giá phòng cho mỗi ngày check-in sớm
+        daily_rate = self.room.price if self.room else Decimal('0.00')
+        early_fee = (daily_rate * Decimal('0.50')) * Decimal(days_early)
+        return early_fee
+
+    def calculate_early_checkout_refund(self):
+        """Tính tiền hoàn lại nếu check-out sớm: 50% giá phòng cho mỗi ngày"""
+        if not self.actual_check_out_date or not self.check_out_date or self.actual_check_out_date >= self.check_out_date:
+            return Decimal('0.00')
+        
+        days_early = (self.check_out_date - self.actual_check_out_date).days
+        if days_early <= 0:
+            return Decimal('0.00')
+        
+        # Hoàn lại: 50% giá phòng cho mỗi ngày check-out sớm
+        daily_rate = self.room.price if self.room else Decimal('0.00')
+        refund = (daily_rate * Decimal('0.50')) * Decimal(days_early)
+        return refund
+
+    def sync_financial_fields(self):
+        self.deposit_amount = self.calculate_deposit_amount()
+        self.balance_due = self.calculate_balance_due()
+        self.damage_fee = self.calculate_damage_fee() if self.damage_reported else Decimal('0.00')
+        self.early_checkin_fee = self.calculate_early_checkin_fee()
+        self.early_checkout_refund = self.calculate_early_checkout_refund()
+        self.final_total = self.total + self.damage_fee + self.early_checkin_fee - self.early_checkout_refund
+
+    @property
+    def booking_code(self):
+        if not self.pk:
+            return ''
+        return f"BK{self.pk:06d}"
+
+    @property
+    def can_cancel_online(self):
+        if self.is_checked_in or self.is_checked_out:
+            return False
+
+        if not self.check_in_date:
+            return True
+
+        return timezone.now().date() <= self.check_in_date
+
+    @classmethod
+    def get_reservation_id_from_booking_code(cls, booking_code):
+        if not booking_code:
+            raise ValueError('Mã booking không hợp lệ.')
+
+        normalized = booking_code.strip().upper()
+        if normalized.startswith('#'):
+            normalized = normalized[1:]
+        if normalized.startswith('BK'):
+            normalized = normalized[2:]
+
+        if not normalized.isdigit():
+            raise ValueError('Mã booking không hợp lệ.')
+
+        return int(normalized)
     
     

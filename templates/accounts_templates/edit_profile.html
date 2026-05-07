@@ -2,224 +2,336 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
+    <!-- Responsive cho điện thoại và tablet -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Edit Profile</title>
+
     {% load static %}
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
           integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+
     <style>
-        /* Ensure full height and width */
+
+        /* Thiết lập toàn màn hình và font mặc định */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            overflow: hidden; /* Prevents scrollbars */
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
-        /* Background animation */
         @keyframes slowZoom {
-            0%, 100% { background-size: 100%; }
-            50% { background-size: 105%; }
+            0%, 100% {
+                background-size: 100%;
+            }
+
+            50% {
+                background-size: 105%;
+            }
         }
 
-        /* Background container */
+        /* Khung chứa ảnh nền fullscreen */
         .background-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: url("/static/images/pool-with-palm-trees-sides_1203-2070.jpg") no-repeat center center/cover;
+
+            background: url("/static/images/pool-with-palm-trees-sides_1203-2070.jpg")
+            no-repeat center center/cover;
+
             animation: slowZoom 10s infinite ease-in-out;
+
             z-index: -1;
         }
 
-        /* Dark overlay for readability */
+        /* Lớp phủ tối giúp nội dung dễ đọc hơn */
         .background-container::before {
             content: "";
+
             position: absolute;
             top: 0;
             left: 0;
+
             width: 100%;
             height: 100%;
+
             background-color: rgba(0, 0, 0, 0.5);
         }
 
-        /* Centering the edit profile form */
+        /* Canh giữa form chỉnh sửa profile */
         .edit-container {
-            height: 100vh;
+            min-height: 100vh;
+
             display: flex;
             justify-content: center;
             align-items: center;
-            padding-top: 80px; /* Adds padding above the container */
+
+            padding: 100px 16px 32px;
         }
 
+        /* Card chứa form chỉnh sửa */
         .card {
             width: 100%;
-            max-width: 500px; /* Reduced width for a smaller form */
+            max-width: 500px;
+
             background: rgba(255, 255, 255, 0.1);
+
             backdrop-filter: blur(10px);
+
             color: white;
+
             border: none;
             border-radius: 10px;
-            padding: 20px; /* Reduced padding */
+
+            padding: 20px;
         }
 
+        /* Tiêu đề form */
         .card h1 {
             color: white;
             text-align: center;
             margin-bottom: 20px;
         }
 
+        /* Style input */
         .form-control {
             background: rgba(255, 255, 255, 0.2);
+
             color: white;
+
             border: none;
             border-radius: 5px;
         }
 
+        /* Placeholder trong input */
         .form-control::placeholder {
             color: rgba(255, 255, 255, 0.7);
         }
 
+        /* Label của form */
         .form-label {
             color: white;
             font-weight: bold;
         }
 
+        /* Nút submit */
         .btn-success {
             background-color: #28a745;
             border: none;
+
             transition: background-color 0.3s ease;
         }
 
+        /* Hover nút submit */
         .btn-success:hover {
             background-color: #218838;
         }
 
+        /* Khung hiển thị message */
         .alert {
             background: rgba(255, 255, 255, 0.2);
+
             color: white;
+
             border: none;
             border-radius: 5px;
         }
 
+        /* Đường kẻ ngang */
         hr {
             border-color: rgba(255, 255, 255, 0.5);
         }
 
-        
-        /* Navbar */
+        /* Thanh điều hướng */
         .navbar {
             position: absolute;
             top: 0;
+
             width: 100%;
-            background: rgb(255, 255, 255); /* Semi-transparent */
+
+            background: rgb(255, 255, 255);
+
             padding: 15px 30px;
+
             display: flex;
             justify-content: space-between;
             align-items: center;
+
             z-index: 3;
+
             transition: background 0.3s ease;
         }
 
-       
-
+        /* Link trong navbar */
         .navbar a {
             color: #000000;
+
             font-size: 18px;
+
             text-decoration: none;
+
             font-weight: 600;
+
             font-family: 'Poppins', sans-serif;
+
             transition: color 0.3s ease;
         }
 
+        /* Hover link navbar */
         .navbar a:hover {
-            color: #007bff; /* Blue hover effect */
+            color: #007bff;
         }
 
+        /* Khu vực chứa các nút */
         .navbar-right {
             display: flex;
-            gap: 10px; /* Space between buttons */
+
+            gap: 10px;
         }
 
-        /* Buttons */
+        /* Nút chính */
         .btn-primary {
-            background: linear-gradient(135deg, #007bff, #0056b3); /* Gradient */
+            background: linear-gradient(135deg, #007bff, #0056b3);
+
             border: none;
+
             padding: 10px 20px;
-            border-radius: 25px; /* Rounded */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-        }
 
-        .btn-primary:hover {
-            transform: translateY(-2px); /* Lift effect */
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5); /* Glow */
-        }
-
-        .btn-logout {
-            background: linear-gradient(135deg, #ff4d4d, #cc0000); /* Gradient */
-            color: white;
-            padding: 6px 12px; /* Smaller padding */
-            font-size: 14px; /* Smaller font size */
             border-radius: 25px;
-            text-decoration: none;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+            transition: transform 0.3s ease,
+                        box-shadow 0.3s ease;
+
             font-family: 'Poppins', sans-serif;
+
             font-weight: 600;
         }
 
+        /* Hover nút chính */
+        .btn-primary:hover {
+            transform: translateY(-2px);
+
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Nút logout */
+        .btn-logout {
+            background: linear-gradient(135deg, #ff4d4d, #cc0000);
+
+            color: white;
+
+            padding: 6px 12px;
+
+            font-size: 14px;
+
+            border-radius: 25px;
+
+            text-decoration: none;
+
+            transition: transform 0.3s ease,
+                        box-shadow 0.3s ease;
+
+            font-family: 'Poppins', sans-serif;
+
+            font-weight: 600;
+        }
+
+        /* Hover nút logout */
         .btn-logout:hover {
             background: linear-gradient(135deg, #ff6666, #e60000);
+
             transform: translateY(-2px);
+
             box-shadow: 0 5px 15px rgba(255, 0, 0, 0.5);
         }
 
+        /* Nút đăng ký */
         .btn-signup {
-            background: linear-gradient(135deg, #28a745, #218838); /* Green gradient */
+            background: linear-gradient(135deg, #28a745, #218838);
+
             color: white;
-            padding: 6px 12px; /* Smaller padding */
-            font-size: 14px; /* Smaller font size */
+
+            padding: 6px 12px;
+
+            font-size: 14px;
+
             border-radius: 25px;
+
             text-decoration: none;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+            transition: transform 0.3s ease,
+                        box-shadow 0.3s ease;
+
             font-family: 'Poppins', sans-serif;
+
             font-weight: 500;
         }
 
+        /* Hover nút đăng ký */
         .btn-signup:hover {
             background: linear-gradient(135deg, #34d058, #28a745);
+
             transform: translateY(-2px);
+
             box-shadow: 0 5px 15px rgba(40, 167, 69, 0.5);
         }
+
     </style>
 </head>
+
 <body>
-    <!-- Background -->
+
     <div class="background-container"></div>
 
-    
+    <!-- Thanh điều hướng -->
     <nav class="navbar">
-        <a href="{% url 'home' %}"> Paradise</a>
+
+        <a href="{% url 'home' %}">Paradise</a>
+
+        <!-- Nhóm nút bên phải -->
         <div class="navbar-right">
-            <a href="{% url 'accounts:sign_up' %}" class="btn-signup" style="font-size: 12px; color: white;">Create Account</a>
-            <a href="{% url 'accounts:logout_user' %}" class="btn-logout" style="font-size: 12px;color: white;">Logout</a>
+
+            <a href="{% url 'accounts:sign_up' %}"
+               class="btn-signup"
+               style="font-size: 12px; color: white;">
+                Create Account
+            </a>
+
+            <a href="{% url 'accounts:logout_user' %}"
+               class="btn-logout"
+               style="font-size: 12px; color: white;">
+                Logout
+            </a>
+
         </div>
     </nav>
 
-    <!-- Edit Profile Form -->
+    <!-- Nội dung chính -->
     {% block content %}
+
     <div class="edit-container">
         <div class="card shadow-lg">
+
             <h2>Edit Profile</h2>
+
             <hr>
+
+            <!-- Hiển thị message từ Django -->
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags }}" role="alert">
@@ -227,152 +339,339 @@
                     </div>
                 {% endfor %}
             {% endif %}
+
+            <!-- Form cập nhật thông tin -->
             <form method="POST" enctype="multipart/form-data">
+
+                <!-- CSRF token bảo mật -->
                 {% csrf_token %}
+
                 <div class="mb-3">
-                    <label for="first_name" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="first_name" name="first_name" value="{{ form.first_name.value|default_if_none:'' }}" required>
+                    <label for="first_name" class="form-label">
+                        First Name
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           id="first_name"
+                           name="first_name"
+                           value="{{ form.first_name.value|default_if_none:'' }}"
+                           required>
                 </div>
+
                 <div class="mb-3">
-                    <label for="last_name" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ form.last_name.value|default_if_none:'' }}" required>
+                    <label for="last_name" class="form-label">
+                        Last Name
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           id="last_name"
+                           name="last_name"
+                           value="{{ form.last_name.value|default_if_none:'' }}"
+                           required>
                 </div>
+
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" value="{{ form.username.value|default_if_none:'' }}" required>
+                    <label for="username" class="form-label">
+                        Username
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           id="username"
+                           name="username"
+                           value="{{ form.username.value|default_if_none:'' }}"
+                           required>
                 </div>
+
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ form.email.value|default_if_none:'' }}" required>
+                    <label for="email" class="form-label">
+                        Email
+                    </label>
+
+                    <input type="email"
+                           class="form-control"
+                           id="email"
+                           name="email"
+                           value="{{ form.email.value|default_if_none:'' }}"
+                           required>
                 </div>
+
                 <div class="mb-3">
-                    <label for="phone_number" class="form-label">Phone Number</label>
-                    <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ form.phone_number.value|default_if_none:'' }}">
+                    <label for="phone_number" class="form-label">
+                        Phone Number
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           id="phone_number"
+                           name="phone_number"
+                           value="{{ form.phone_number.value|default_if_none:'' }}">
                 </div>
+
+                <!-- Upload avatar -->
                 <div class="mb-3">
-                    <label for="profile_picture" class="form-label">Profile Picture</label>
-                    <div id="avatar-drop-zone" class="border rounded p-3 text-center mb-2" style="cursor: pointer; background: rgba(255,255,255,0.12);">
+
+                    <label for="profile_picture" class="form-label">
+                        Profile Picture
+                    </label>
+
+                    <div id="avatar-drop-zone"
+                         class="border rounded p-3 text-center mb-2"
+                         style="cursor: pointer; background: rgba(255,255,255,0.12);">
+
                         Kéo & thả ảnh vào đây hoặc bấm để chọn ảnh
+
                     </div>
-                    <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/jpeg,image/png,image/webp" hidden>
+
+                    <!-- Input file upload -->
+                    <input type="file"
+                           class="form-control"
+                           id="profile_picture"
+                           name="profile_picture"
+                           accept="image/jpeg,image/png,image/webp"
+                           hidden>
+
+                    <!-- hiển thị  -->
                     <div class="mt-2 d-flex justify-content-center">
+
                         <img
                             id="avatar-preview"
+
                             src="{% if form.instance.profile_picture %}{{ form.instance.profile_picture.url }}{% endif %}"
+
                             alt="Avatar preview"
-                            style="max-width: 140px; max-height: 140px; border-radius: 10px; object-fit: cover; display: {% if form.instance.profile_picture %}block{% else %}none{% endif %};"
-                        >
+
+                            style="
+                                max-width: 140px;
+                                max-height: 140px;
+                                border-radius: 10px;
+                                object-fit: cover;
+
+                                display:
+                                {% if form.instance.profile_picture %}
+                                    block
+                                {% else %}
+                                    none
+                                {% endif %};
+                            ">
                     </div>
+
+                    <!-- Thanh tiến trình upload -->
                     <div class="progress mt-2" style="height: 20px;">
-                        <div id="avatar-upload-progress" class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+                        <div id="avatar-upload-progress"
+                             class="progress-bar"
+                             role="progressbar"
+                             style="width: 0%;">
+
+                            0%
+
+                        </div>
                     </div>
-                    <button type="button" id="upload-avatar-btn" class="btn btn-primary w-100 mt-2">Upload Avatar Qua API</button>
+
+                    <button type="button"
+                            id="upload-avatar-btn"
+                            class="btn btn-primary w-100 mt-2">
+
+                        Upload Avatar Qua API
+
+                    </button>
                 </div>
-                <button type="submit" class="btn btn-success w-100">Save Changes</button>
+
+                <button type="submit"
+                        class="btn btn-success w-100">
+
+                    Lưu thay đổi rồi về trang chủ
+
+                </button>
+
             </form>
         </div>
     </div>
+
     {% endblock %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Axios dùng để gọi API -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <script>
+
+        // Lấy CSRF token từ cookie Django
         function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
+
+            const value = `; ${document.cookie}`; //đọc cookie và thêm dấu chấm phẩy để dễ tách
+
+            const parts = value.split(`; ${name}=`); 
+
             if (parts.length === 2) {
                 return parts.pop().split(';').shift();
             }
+
             return '';
         }
 
+        // Lấy các phần tử HTML cần thao tác
         const avatarInput = document.getElementById('profile_picture');
+
         const preview = document.getElementById('avatar-preview');
+
         const dropZone = document.getElementById('avatar-drop-zone');
+
         const uploadBtn = document.getElementById('upload-avatar-btn');
+
         const progressBar = document.getElementById('avatar-upload-progress');
 
+        // Hiển thị ảnh preview trước khi upload
         function showPreview(file) {
+
             if (!file) {
                 return;
             }
 
             const objectUrl = URL.createObjectURL(file);
+
             preview.src = objectUrl;
+
             preview.style.display = 'block';
+
             preview.onload = () => URL.revokeObjectURL(objectUrl);
         }
 
+        // Gán file kéo thả vào input file
         function assignFile(file) {
+
             const transfer = new DataTransfer();
+
             transfer.items.add(file);
+
             avatarInput.files = transfer.files;
+
             showPreview(file);
         }
 
+        // Khi chọn ảnh từ máy
         avatarInput.addEventListener('change', (event) => {
+
             const file = event.target.files?.[0];
+
             if (file) {
                 showPreview(file);
             }
         });
 
+        // Click vào vùng upload để mở file explorer
         dropZone.addEventListener('click', () => avatarInput.click());
+
+        // Xử lý kéo file vào vùng upload
         dropZone.addEventListener('dragover', (event) => {
+
             event.preventDefault();
+
             dropZone.classList.add('border-info');
         });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-info'));
-        dropZone.addEventListener('drop', (event) => {
-            event.preventDefault();
+
+        // Khi kéo file ra khỏi vùng upload
+        dropZone.addEventListener('dragleave', () => {
+
             dropZone.classList.remove('border-info');
+        });
+
+        // Xử lý thả file vào vùng upload
+        dropZone.addEventListener('drop', (event) => {
+
+            event.preventDefault();
+
+            dropZone.classList.remove('border-info');
+
             const file = event.dataTransfer.files?.[0];
+
             if (file) {
                 assignFile(file);
             }
         });
 
+        // Upload avatar qua API bằng Axios
         uploadBtn.addEventListener('click', async () => {
+
             const file = avatarInput.files?.[0];
+
+            // Kiểm tra đã chọn file chưa
             if (!file) {
+
                 alert('Vui lòng chọn ảnh trước khi upload.');
+
                 return;
             }
 
+            // Tạo FormData để gửi file
             const formData = new FormData();
+
             formData.append('avatar', file);
 
             try {
+
+                // Reset progress bar
                 progressBar.style.width = '0%';
+
                 progressBar.textContent = '0%';
 
-                const response = await axios.post('{% url "accounts:api_profile_avatar_upload" %}', formData, {
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken'),
-                        'Content-Type': 'multipart/form-data',
-                    },
-                    onUploadProgress: (progressEvent) => {
-                        if (!progressEvent.total) {
-                            return;
-                        }
-                        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                        progressBar.style.width = `${percent}%`;
-                        progressBar.textContent = `${percent}%`;
-                    },
-                });
+                // Gửi request upload avatar
+                const response = await axios.post(
+                    '{% url "accounts:api_profile_avatar_upload" %}',
+                    formData,
+                    {
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'Content-Type': 'multipart/form-data',
+                        },
 
+                        // Cập nhật tiến trình upload realtime
+                        onUploadProgress: (progressEvent) => {
+
+                            if (!progressEvent.total) {
+                                return;
+                            }
+
+                            const percent = Math.round(
+                                (progressEvent.loaded * 100)
+                                / progressEvent.total
+                            );
+
+                            progressBar.style.width = `${percent}%`;
+
+                            progressBar.textContent = `${percent}%`;
+                        },
+                    }
+                );
+
+                // Hiển thị avatar mới sau upload
                 if (response?.data?.profile_picture) {
+
                     preview.src = response.data.profile_picture;
+
                     preview.style.display = 'block';
                 }
+
                 alert('Upload avatar thành công.');
+
             } catch (error) {
-                const message = error?.response?.data?.error || 'Upload thất bại.';
+
+                const message =
+                    error?.response?.data?.error
+                    || 'Upload thất bại.';
+
                 alert(message);
+
                 progressBar.style.width = '0%';
+
                 progressBar.textContent = '0%';
             }
         });
+
     </script>
+
 </body>
 </html>

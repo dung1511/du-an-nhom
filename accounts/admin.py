@@ -7,10 +7,21 @@ from .models import Profile
 class ProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
+    fields = ('role', 'phone_number', 'profile_picture')
 
 # Customize User admin
 class CustomUserAdmin(UserAdmin):
     inlines = [ProfileInline]
+    list_display = ('username', 'email', 'get_role', 'is_staff', 'is_superuser', 'is_active')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'profile__role')
+
+    def get_role(self, obj):
+        profile = getattr(obj, 'profile', None)
+        if not profile:
+            return 'customer'
+        return profile.get_role_display()
+
+    get_role.short_description = 'Vai trò'
 
 # Unregister and re-register User with custom admin
 admin.site.unregister(User)

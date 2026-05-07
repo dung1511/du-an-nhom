@@ -255,10 +255,10 @@
                                                     <!-- Next Steps -->
                                                     <section id="mphb-next-steps" class="mphb-checkout-section">
                                                         <h3 class="mphb-next-steps-title">What’s Next?</h3>
-                                                        {% if reservation.payment_method == 'pay_on_arrival' %}
+                                                        {% if reservation.payment_method == 'cash' or reservation.payment_method == 'pay_on_arrival' %}
                                                             <p>Please have <span class="mphb-price"><span class="mphb-currency">₹</span>{{ reservation.total }}</span> ready in cash upon arrival. See you soon!</p>
-                                                        {% elif reservation.payment_method == 'upi' %}
-                                                            <p>A UPI payment link has been sent to <strong style="color: rgb(55, 55, 55);">{{ reservation.email }}</strong>. Please complete the payment of <span class="mphb-price"><span class="mphb-currency">₹</span>{{ reservation.total }}</span> within 24 hours to secure your booking.</p>
+                                                        {% elif reservation.payment_method == 'momo_qr' %}
+                                                            <p>Please scan the MoMo QR code and transfer <span class="mphb-price"><span class="mphb-currency">₹</span>{{ reservation.total }}</span> to secure your booking.</p>
                                                         {% elif reservation.payment_method == 'cards' %}
                                                             <p>A payment link for <span class="mphb-price"><span class="mphb-currency">₹</span>{{ reservation.total }}</span> has been sent to <strong style="color: rgb(55, 55, 55);">{{ reservation.email }}</strong>. Complete it with your card details soon!</p>
                                                         {% endif %}

@@ -1,0 +1,11 @@
+{% if user.is_authenticated %}
+    {% if user.is_superuser %}
+        {% include 'navbar_admin_fixed.html' %}
+    {% elif user.is_staff or user_role_type == 'receptionist' %}
+        {% include 'navbar_receptionist_fixed.html' %}
+    {% else %}
+        {% include 'navbar_customer.html' %}
+    {% endif %}
+{% else %}
+    {% include 'navbar_guest.html' %}
+{% endif %}

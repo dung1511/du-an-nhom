@@ -321,7 +321,7 @@
                                     <div class="room-info">
                                         <h4 class="room-name"><a href="{% url 'rooms:room_detail' room.id %}">{{ room.name }}</a></h4>
                                         <div class="room-facts">
-                                            <span><i class="fa fa-users"></i> Sức chứa: {{ room.capacity }} người</span>
+                                            <span><i class="fa fa-users"></i> Sức chứa: {{ room.total_capacity }} người</span>
                                             <span><i class="fa fa-layer-group"></i> {{ room.get_size_display }}</span>
                                         </div>
                                         <span class="room-status-badge {% if room.availability_status == 'Phòng trống' %}available{% else %}booked{% endif %}">{{ room.availability_status }}</span>

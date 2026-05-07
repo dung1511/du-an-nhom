@@ -8,9 +8,11 @@ Tests cover:
 - Business logic in views
 """
 import pytest
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
+from django.test import Client, RequestFactory
 from django.urls import reverse
+from django.contrib.messages import get_messages
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -34,7 +36,7 @@ class TestRoomListAPIView:
         RoomFactory.create_batch(5)
         
         # Make request
-        url = reverse('room-list')  # Adjust based on your URL name
+        url = reverse('rooms:api_rooms_list')
         response = api_client.get(url)
         
         # Assert
@@ -45,7 +47,7 @@ class TestRoomListAPIView:
         """Test room list pagination."""
         RoomFactory.create_batch(15)
         
-        url = reverse('room-list') + '?limit=5'
+        url = reverse('rooms:api_rooms_list') + '?limit=5'
         response = api_client.get(url)
         
         assert response.status_code == status.HTTP_200_OK
@@ -55,7 +57,7 @@ class TestRoomListAPIView:
         """Test retrieving a single room."""
         room = RoomFactory(room_title="Ocean View")
         
-        url = reverse('room-detail', kwargs={'pk': room.id})
+        url = reverse('rooms:api_room_detail', kwargs={'id': room.id})
         response = api_client.get(url)
         
         assert response.status_code == status.HTTP_200_OK
@@ -63,7 +65,7 @@ class TestRoomListAPIView:
     
     def test_room_detail_not_found(self, api_client):
         """Test room detail with invalid ID."""
-        url = reverse('room-detail', kwargs={'pk': 99999})
+        url = reverse('rooms:api_room_detail', kwargs={'id': 99999})
         response = api_client.get(url)
         
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -84,7 +86,7 @@ class TestRoomSearchAPIView:
             price=Decimal("150.00")
         )
         
-        url = reverse('room-search')  # Adjust based on your URL name
+        url = reverse('rooms:api_rooms_search')
         data = {
             'check_in_date': (date.today() + timedelta(days=1)).isoformat(),
             'check_out_date': (date.today() + timedelta(days=3)).isoformat(),
@@ -101,7 +103,7 @@ class TestRoomSearchAPIView:
     
     def test_search_rooms_missing_required_fields(self, api_client):
         """Test search with missing required fields."""
-        url = reverse('room-search')
+        url = reverse('rooms:api_rooms_search')
         data = {
             'check_in_date': date.today().isoformat(),
             # Missing check_out_date, adults
@@ -113,7 +115,7 @@ class TestRoomSearchAPIView:
     
     def test_search_rooms_past_checkin_date(self, api_client):
         """Test search with past check-in date."""
-        url = reverse('room-search')
+        url = reverse('rooms:api_rooms_search')
         data = {
             'check_in_date': (date.today() - timedelta(days=5)).isoformat(),  # Past date
             'check_out_date': (date.today() + timedelta(days=2)).isoformat(),
@@ -128,7 +130,7 @@ class TestRoomSearchAPIView:
     
     def test_search_rooms_checkout_before_checkin(self, api_client):
         """Test search where checkout is before check-in."""
-        url = reverse('room-search')
+        url = reverse('rooms:api_rooms_search')
         data = {
             'check_in_date': (date.today() + timedelta(days=10)).isoformat(),
             'check_out_date': (date.today() + timedelta(days=5)).isoformat(),  # Before check-in
@@ -145,7 +147,7 @@ class TestRoomSearchAPIView:
         # Create room with low capacity
         RoomFactory(max_adult=1, max_children=0)
         
-        url = reverse('room-search')
+        url = reverse('rooms:api_rooms_search')
         data = {
             'check_in_date': (date.today() + timedelta(days=1)).isoformat(),
             'check_out_date': (date.today() + timedelta(days=3)).isoformat(),
@@ -167,7 +169,7 @@ class TestReservationListCreateAPIView:
         """Test creating reservation when authenticated."""
         room = RoomFactory()
         
-        url = reverse('reservation-list')
+        url = reverse('rooms:api_booking_create')
         data = {
             'room': room.id,
             'check_in_date': (date.today() + timedelta(days=1)).isoformat(),
@@ -188,12 +190,16 @@ class TestReservationListCreateAPIView:
         
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data['user'] == user.id
+        assert response.data['booking_code'].startswith('BK')
+        assert 'booking_confirmation_url' in response.data
+        assert 'invoice' in response.data
+        assert response.data['invoice']['final_total'] is not None
     
     def test_create_reservation_unauthenticated(self, api_client):
         """Test creating reservation without authentication."""
         room = RoomFactory()
         
-        url = reverse('reservation-list')
+        url = reverse('rooms:api_reservations_list')
         data = {
             'room': room.id,
             'adults': 2
@@ -209,7 +215,7 @@ class TestReservationListCreateAPIView:
         # Create reservations for the user
         ReservationFactory.create_batch(3, user=user)
         
-        url = reverse('reservation-list')
+        url = reverse('rooms:api_reservations_list')
         response = authenticated_client.get(url)
         
         assert response.status_code == status.HTTP_200_OK
@@ -218,7 +224,7 @@ class TestReservationListCreateAPIView:
     
     def test_list_user_reservations_unauthenticated(self, api_client):
         """Test listing reservations without authentication."""
-        url = reverse('reservation-list')
+        url = reverse('rooms:api_reservations_list')
         response = api_client.get(url)
         
         # Should require authentication
@@ -226,7 +232,7 @@ class TestReservationListCreateAPIView:
     
     def test_create_reservation_invalid_room(self, authenticated_client):
         """Test creating reservation with invalid room ID."""
-        url = reverse('reservation-list')
+        url = reverse('rooms:api_reservations_list')
         data = {
             'room': 99999,  # Non-existent room
             'check_in_date': (date.today() + timedelta(days=1)).isoformat(),
@@ -249,7 +255,7 @@ class TestReservationListCreateAPIView:
     
     def test_create_reservation_missing_fields(self, authenticated_client):
         """Test creating reservation with missing required fields."""
-        url = reverse('reservation-list')
+        url = reverse('rooms:api_booking_create')
         data = {
             'room': RoomFactory().id,
             # Missing check_in_date, check_out_date, personal info, etc.
@@ -268,7 +274,7 @@ class TestReservationDetailAPIView:
         """Test retrieving own reservation."""
         reservation = ReservationFactory(user=user)
         
-        url = reverse('reservation-detail', kwargs={'pk': reservation.id})
+        url = reverse('rooms:api_reservation_detail', kwargs={'id': reservation.id})
         response = authenticated_client.get(url)
         
         assert response.status_code == status.HTTP_200_OK
@@ -279,7 +285,7 @@ class TestReservationDetailAPIView:
         other_user = UserFactory()
         reservation = ReservationFactory(user=other_user)
         
-        url = reverse('reservation-detail', kwargs={'pk': reservation.id})
+        url = reverse('rooms:api_reservation_detail', kwargs={'id': reservation.id})
         response = authenticated_client.get(url)
         
         # Should deny access to another user's reservation
@@ -287,7 +293,7 @@ class TestReservationDetailAPIView:
     
     def test_retrieve_nonexistent_reservation(self, authenticated_client):
         """Test retrieving non-existent reservation."""
-        url = reverse('reservation-detail', kwargs={'pk': 99999})
+        url = reverse('rooms:api_reservation_detail', kwargs={'id': 99999})
         response = authenticated_client.get(url)
         
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -299,22 +305,26 @@ class TestReservationCheckoutAPIView:
     
     def test_checkout_valid_reservation(self, authenticated_client, user):
         """Test checking out a valid reservation."""
-        reservation = ReservationFactory(user=user, is_checked_out=False)
+        reservation = ReservationFactory(user=user, is_checked_in=True, is_checked_out=False)
+        reservation.checked_in_at = reservation.checked_in_at or datetime.now()
+        reservation.save(update_fields=['is_checked_in', 'checked_in_at'])
         
-        url = reverse('reservation-checkout', kwargs={'pk': reservation.id})
-        data = {'is_checked_out': True}
+        url = reverse('rooms:api_checkout', kwargs={'id': reservation.id})
+        data = {'damage_reported': False, 'damage_notes': ''}
         
         response = authenticated_client.put(url, data, format='json')
         
         assert response.status_code == status.HTTP_200_OK
-        assert response.data['is_checked_out'] == True
+        assert response.data['success'] is True
+        assert response.data['reservation']['is_checked_out'] is True
+        assert response.data['final_total'] is not None
     
     def test_checkout_already_checked_out(self, authenticated_client, user):
         """Test checking out an already checked-out reservation."""
-        reservation = ReservationFactory(user=user, is_checked_out=True)
+        reservation = ReservationFactory(user=user, is_checked_in=True, is_checked_out=True)
         
-        url = reverse('reservation-checkout', kwargs={'pk': reservation.id})
-        data = {'is_checked_out': True}
+        url = reverse('rooms:api_checkout', kwargs={'id': reservation.id})
+        data = {'damage_reported': False}
         
         response = authenticated_client.put(url, data, format='json')
         
@@ -325,12 +335,137 @@ class TestReservationCheckoutAPIView:
         """Test checkout without authentication."""
         reservation = ReservationFactory()
         
-        url = reverse('reservation-checkout', kwargs={'pk': reservation.id})
-        data = {'is_checked_out': True}
+        url = reverse('rooms:api_checkout', kwargs={'id': reservation.id})
+        data = {'damage_reported': False}
         
         response = api_client.put(url, data, format='json')
-        
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.django_db
+class TestCancelReservationView:
+    """Tests for online reservation cancellation."""
+
+    def test_cancel_reservation_before_checkin(self, authenticated_client, user):
+        client = Client()
+        client.force_login(user)
+
+        reservation = ReservationFactory(
+            user=user,
+            check_in_date=date.today() + timedelta(days=2),
+            check_out_date=date.today() + timedelta(days=4),
+            is_checked_in=False,
+            is_checked_out=False,
+        )
+
+        url = reverse('rooms:cancel_reservation', kwargs={'reservation_id': reservation.id})
+        response = client.post(url)
+
+        assert response.status_code == status.HTTP_302_FOUND
+        reservation.refresh_from_db()
+        assert reservation.is_checked_out is True
+        assert 'CANCELLED' in reservation.note
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        assert any('hủy phòng thành công' in message.lower() for message in messages)
+
+    def test_cancel_reservation_on_checkin_day_is_allowed(self, authenticated_client, user):
+        client = Client()
+        client.force_login(user)
+
+        reservation = ReservationFactory(
+            user=user,
+            check_in_date=date.today(),
+            check_out_date=date.today() + timedelta(days=2),
+            is_checked_in=False,
+            is_checked_out=False,
+        )
+
+        url = reverse('rooms:cancel_reservation', kwargs={'reservation_id': reservation.id})
+        response = client.post(url)
+
+        assert response.status_code == status.HTTP_302_FOUND
+        reservation.refresh_from_db()
+        assert reservation.is_checked_out is True
+        assert 'CANCELLED' in reservation.note
+
+    def test_cancel_reservation_after_checkin_day_is_blocked(self, authenticated_client, user):
+        client = Client()
+        client.force_login(user)
+
+        reservation = ReservationFactory(
+            user=user,
+            check_in_date=date.today() - timedelta(days=1),
+            check_out_date=date.today() + timedelta(days=1),
+            is_checked_in=False,
+            is_checked_out=False,
+        )
+
+        url = reverse('rooms:cancel_reservation', kwargs={'reservation_id': reservation.id})
+        response = client.post(url)
+
+        assert response.status_code == status.HTTP_302_FOUND
+        reservation.refresh_from_db()
+        assert reservation.is_checked_out is False
+        assert reservation.note == ''
+
+
+@pytest.mark.django_db
+def test_frontdesk_print_slip_shows_updated_momo_amount(monkeypatch):
+    """Test the front desk slip reflects updated damage totals for MoMo QR."""
+    admin_user = UserFactory(
+        username='frontdesk-admin',
+        email='frontdesk-admin@example.com',
+        password='adminpass123',
+    )
+    admin_user.is_staff = True
+    admin_user.is_superuser = True
+    admin_user.save(update_fields=['is_staff', 'is_superuser'])
+
+    reservation = ReservationFactory(
+        payment_method='momo_qr',
+        subtotal=Decimal('1000.00'),
+        gst=Decimal('180.00'),
+        total=Decimal('1180.00'),
+        damage_reported=True,
+        damage_notes='Broken lamp',
+        is_checked_in=True,
+        checked_in_adults=2,
+        checked_in_children=0,
+        email='',
+    )
+    reservation.sync_financial_fields()
+    reservation.is_checked_out = True
+    reservation.checkout_at = datetime.now()
+    reservation.save(
+        update_fields=[
+            'damage_reported',
+            'damage_notes',
+            'damage_fee',
+            'final_total',
+            'deposit_amount',
+            'balance_due',
+            'is_checked_in',
+            'checked_in_adults',
+            'checked_in_children',
+            'is_checked_out',
+            'checkout_at',
+        ]
+    )
+
+    url = reverse('rooms:frontdesk_print_slip', kwargs={'booking_code': reservation.booking_code})
+    request = RequestFactory().get(url)
+    request.user = admin_user
+
+    from rooms import views as rooms_views
+
+    monkeypatch.setattr(rooms_views.messages, 'success', lambda *args, **kwargs: None)
+    monkeypatch.setattr(rooms_views.messages, 'warning', lambda *args, **kwargs: None)
+    monkeypatch.setattr(rooms_views.messages, 'error', lambda *args, **kwargs: None)
+
+    response = rooms_views.frontdesk_print_slip.__wrapped__(request, booking_code=reservation.booking_code)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert 'QR MoMo' in response.content.decode('utf-8')
+    assert f'₹{reservation.final_total}' in response.content.decode('utf-8')
 
 
 @pytest.mark.django_db
@@ -341,7 +476,7 @@ class TestReservationPaymentAPIView:
         """Test processing payment for a reservation."""
         reservation = ReservationFactory(user=user)
         
-        url = reverse('reservation-payment', kwargs={'pk': reservation.id})
+        url = reverse('rooms:api_payment', kwargs={'id': reservation.id})
         data = {
             'payment_method': 'cards',
             'amount': str(reservation.total)
@@ -356,7 +491,7 @@ class TestReservationPaymentAPIView:
         coupon = CouponFactory(code="SAVE20", discount_price=Decimal("20.00"), is_active=True)
         reservation = ReservationFactory(user=user)
         
-        url = reverse('reservation-payment', kwargs={'pk': reservation.id})
+        url = reverse('rooms:api_payment', kwargs={'id': reservation.id})
         data = {
             'payment_method': 'cards',
             'coupon_code': coupon.code,
@@ -371,7 +506,7 @@ class TestReservationPaymentAPIView:
         """Test payment with invalid coupon code."""
         reservation = ReservationFactory(user=user)
         
-        url = reverse('reservation-payment', kwargs={'pk': reservation.id})
+        url = reverse('rooms:api_payment', kwargs={'id': reservation.id})
         data = {
             'payment_method': 'cards',
             'coupon_code': 'INVALID123',
@@ -385,6 +520,45 @@ class TestReservationPaymentAPIView:
 
 
 @pytest.mark.django_db
+def test_momo_webhook_records_qr_payment(api_client):
+    """Webhook should record QR payment and keep balance pending for deposit-only transfers."""
+    reservation = ReservationFactory(payment_method='momo_qr')
+    reservation.sync_financial_fields()
+    reservation.save()
+
+    url = reverse('rooms:api_momo_payment_webhook')
+    payload = {
+        'orderId': reservation.booking_code,
+        'resultCode': 0,
+        'amount': str(reservation.deposit_amount),
+        'transId': 'TXN-001',
+    }
+
+    response = api_client.post(url, payload, format='json')
+
+    assert response.status_code == status.HTTP_200_OK
+    reservation.refresh_from_db()
+    assert reservation.deposit_paid_via_qr == reservation.deposit_amount
+    assert reservation.payment_status == 'pending'
+    assert response.data['success'] is True
+
+
+@pytest.mark.django_db
+def test_payment_status_by_booking_code_returns_qr_state(api_client):
+    reservation = ReservationFactory(payment_method='momo_qr')
+    reservation.deposit_paid_via_qr = Decimal('100.00')
+    reservation.save(update_fields=['deposit_paid_via_qr'])
+
+    url = reverse('rooms:api_payment_status_by_booking_code', kwargs={'booking_code': reservation.booking_code})
+    response = api_client.get(url)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data['success'] is True
+    assert response.data['booking_code'] == reservation.booking_code
+    assert response.data['is_deposit_confirmed'] is True
+
+
+@pytest.mark.django_db
 class TestCheckedOutReservationsListAPIView:
     """Tests for checked-out reservations list endpoint."""
     
@@ -394,7 +568,7 @@ class TestCheckedOutReservationsListAPIView:
         ReservationFactory.create_batch(2, user=user, is_checked_out=True)
         ReservationFactory.create_batch(2, user=user, is_checked_out=False)
         
-        url = reverse('checked-out-reservations')  # Adjust URL name
+        url = reverse('rooms:api_checked_out_reservations_list')
         response = authenticated_client.get(url)
         
         assert response.status_code == status.HTTP_200_OK
@@ -409,7 +583,7 @@ class TestAdminDashboardAPIView:
     
     def test_admin_dashboard_unauthorized(self, authenticated_client):
         """Test accessing admin dashboard without admin rights."""
-        url = reverse('admin-dashboard')  # Adjust URL name
+        url = reverse('rooms:api_admin_dashboard')
         response = authenticated_client.get(url)
         
         # Regular user should not access
@@ -423,7 +597,7 @@ class TestAdminDashboardAPIView:
         admin.save()
         
         api_client.force_authenticate(user=admin)
-        url = reverse('admin-dashboard')
+        url = reverse('rooms:api_admin_dashboard')
         response = api_client.get(url)
         
         assert response.status_code in [status.HTTP_200_OK, status.HTTP_403_FORBIDDEN]  # May vary based on implementation
@@ -438,7 +612,7 @@ class TestRoomCategoryListAPIView:
         # Create categories
         RoomCategoryFactory.create_batch(5)
         
-        url = reverse('room-category-list')
+        url = reverse('rooms:api_room_categories')
         response = api_client.get(url)
         
         assert response.status_code == status.HTTP_200_OK

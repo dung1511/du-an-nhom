@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -74,6 +75,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'admin_dashboard_stats': 'rooms.templatetags.admin_dashboard_stats',
+            },
         },
     },
 ]
@@ -150,3 +154,22 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+MOMO_RECEIVER_NAME = os.getenv('MOMO_RECEIVER_NAME') or 'Paradise Hotel'
+MOMO_RECEIVER_PHONE = os.getenv('MOMO_RECEIVER_PHONE') or '2251220038'
+
+# Email (Gmail SMTP)
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'true').lower() in {'1', 'true', 'yes', 'on'}
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'no-reply@gmail.com')
+
+admins_env = os.getenv('ADMINS_EMAILS', '')
+ADMINS = [
+    (email.split('@')[0], email.strip())
+    for email in admins_env.split(',')
+    if email.strip()
+]
