@@ -1322,3 +1322,15 @@ class Reservation(models.Model):
             nights = (self.check_out_date - self.check_in_date).days
             return max(nights, 1)  # Tối thiểu 1 đêm
         return 0
+
+    def calculate_refund_amount(self):
+        """Tính số tiền hoàn lại"""
+        if self.status == 'cancelled':
+            # Hoàn lại 80% tiền deposit nếu hủy trước ngày check-in 2 tuần
+            if self.check_in_date:
+                days_until_checkin = (self.check_in_date - timezone.now().date()).days
+                if days_until_checkin >= 14:
+                    return self.deposit_paid * Decimal('0.80')
+                elif days_until_checkin >= 7:
+                    return self.deposit_paid * Decimal('0.50')
+        return Decimal('0.00')
