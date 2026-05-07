@@ -1267,3 +1267,20 @@ class Reservation(models.Model):
         if not self.booking_code:
             self.booking_code = str(uuid.uuid4())[:12].upper()
         super().save(*args, **kwargs)
+
+    def can_check_in(self):
+        """Kiểm tra xem booking có thể check-in được không"""
+        # Kiểm tra booking đã check-in chưa
+        if self.is_checked_in:
+            return False, "Booking này đã check-in rồi"
+        
+        # Kiểm tra ngày check-in
+        today = timezone.now().date()
+        if self.check_in_date > today:
+            return False, f"Check-in sớm, vui lòng quay lại vào {self.check_in_date}"
+        
+        # Kiểm tra status
+        if self.status not in ['confirmed', 'deposits_confirmed']:
+            return False, "Booking chưa được xác nhận"
+        
+        return True, "Có thể check-in"
