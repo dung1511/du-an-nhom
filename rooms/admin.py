@@ -50,7 +50,12 @@ class ReservationAdmin(ReadOnlyForStaffAdminMixin, admin.ModelAdmin):
     
     search_fields = ('first_name', 'last_name', 'email', 'room__name')
     date_hierarchy = 'created_at'
+<<<<<<< HEAD
     actions = ['confirm_deposit_action']
+=======
+    # Add action to confirm uploaded deposit receipts and to mark QR-paid deposits
+    actions = ['confirm_deposit_action', 'mark_qr_deposits_action']
+>>>>>>> b311d48 (update feature admin room)
     readonly_fields = ('deposit_receipt_preview', 'deposit_status_label', 'deposit_receipt_uploaded_at', 'deposit_confirmed', 'deposit_confirmed_at', 'deposit_confirmed_by', 'created_at', 'checkout_at')
     fields = (
         'user', 'room', 'check_in_date', 'check_out_date', 'first_name', 'last_name', 'email', 'phone',
@@ -59,7 +64,12 @@ class ReservationAdmin(ReadOnlyForStaffAdminMixin, admin.ModelAdmin):
     )
 
     def deposit_status_label(self, obj):
+<<<<<<< HEAD
         if obj and obj.deposit_confirmed:
+=======
+        # Consider deposit confirmed if admin explicitly confirmed it or a QR payment amount was recorded
+        if obj and (getattr(obj, 'deposit_confirmed', False) or getattr(obj, 'deposit_paid_via_qr', 0)):
+>>>>>>> b311d48 (update feature admin room)
             return 'Đã chuyển cọc'
         if obj and obj.deposit_receipt:
             return 'Đang chờ duyệt'
@@ -88,6 +98,24 @@ class ReservationAdmin(ReadOnlyForStaffAdminMixin, admin.ModelAdmin):
         self.message_user(request, f"Đã xác nhận biên lai cho {updated} booking(s).")
 
     confirm_deposit_action.short_description = 'Confirm selected deposit receipts'
+<<<<<<< HEAD
+=======
+
+    def mark_qr_deposits_action(self, request, queryset):
+        updated = 0
+        for reservation in queryset:
+            try:
+                if (getattr(reservation, 'deposit_paid_via_qr', 0) and not reservation.deposit_confirmed) and reservation.deposit_paid_via_qr > 0:
+                    reservation.deposit_confirmed = True
+                    reservation.deposit_confirmed_at = timezone.now()
+                    reservation.save(update_fields=['deposit_confirmed', 'deposit_confirmed_at'])
+                    updated += 1
+            except Exception:
+                continue
+        self.message_user(request, f"Đã đánh dấu {updated} booking(s) có QR payment là đã chuyển cọc.")
+
+    mark_qr_deposits_action.short_description = 'Mark selected QR-paid reservations as deposit-confirmed'
+>>>>>>> b311d48 (update feature admin room)
 
 @admin.register(Coupon)
 class CouponAdmin(ReadOnlyForStaffAdminMixin, admin.ModelAdmin):

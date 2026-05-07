@@ -544,7 +544,11 @@ def test_momo_webhook_records_qr_payment(api_client):
 
 
 @pytest.mark.django_db
+<<<<<<< HEAD
 def test_payment_status_by_booking_code_returns_qr_state(api_client):
+=======
+def test_payment_status_by_booking_code_requires_admin_confirmation(api_client):
+>>>>>>> b311d48 (update feature admin room)
     reservation = ReservationFactory(payment_method='momo_qr')
     reservation.deposit_paid_via_qr = Decimal('100.00')
     reservation.save(update_fields=['deposit_paid_via_qr'])
@@ -555,6 +559,15 @@ def test_payment_status_by_booking_code_returns_qr_state(api_client):
     assert response.status_code == status.HTTP_200_OK
     assert response.data['success'] is True
     assert response.data['booking_code'] == reservation.booking_code
+<<<<<<< HEAD
+=======
+    assert response.data['is_deposit_confirmed'] is False
+
+    reservation.deposit_confirmed = True
+    reservation.save(update_fields=['deposit_confirmed'])
+
+    response = api_client.get(url)
+>>>>>>> b311d48 (update feature admin room)
     assert response.data['is_deposit_confirmed'] is True
 
 

@@ -49,15 +49,27 @@ from .upload_security import build_safe_filename, validate_image_file
 
 logger = logging.getLogger(__name__)
 
+<<<<<<< HEAD
+=======
+# Khung giờ mặc định hiển thị trên phiếu/invoice.
+>>>>>>> b311d48 (update feature admin room)
 DEFAULT_CHECK_IN_TIME = '08:00'
 DEFAULT_CHECK_OUT_TIME = '12:00'
 
 
 def _has_admin_booking_access(user):
+<<<<<<< HEAD
+=======
+    """Kiểm tra user có quyền nghiệp vụ booking cấp staff/admin hay không."""
+>>>>>>> b311d48 (update feature admin room)
     return bool(user and user.is_authenticated and (user.is_staff or user.is_superuser))
 
 
 def _reservation_queryset_for_user(user):
+<<<<<<< HEAD
+=======
+    """Trả queryset booking theo quyền: admin thấy tất cả, khách chỉ thấy booking của chính họ."""
+>>>>>>> b311d48 (update feature admin room)
     queryset = Reservation.objects.select_related('room', 'user', 'coupon')
     if _has_admin_booking_access(user):
         return queryset.order_by('-created_at')
@@ -65,6 +77,10 @@ def _reservation_queryset_for_user(user):
 
 
 def _get_reservation_by_booking_code(booking_code):
+<<<<<<< HEAD
+=======
+    """Lấy booking bằng mã BKxxxxxx, đồng thời preload room/user/coupon/services để giảm query N+1."""
+>>>>>>> b311d48 (update feature admin room)
     reservation_id = Reservation.get_reservation_id_from_booking_code(booking_code)
     return get_object_or_404(
         Reservation.objects.select_related('room', 'user', 'coupon').prefetch_related('selected_services'),
@@ -73,6 +89,15 @@ def _get_reservation_by_booking_code(booking_code):
 
 
 def _normalize_payment_method(value):
+<<<<<<< HEAD
+=======
+    """
+    Chuẩn hóa chuỗi cổng thanh toán từ UI/đối tác về enum nội bộ.
+
+    Input có thể đa dạng (`momo`, `momo-qr`, `pay_on_arrival`...),
+    output chỉ còn: `cash`, `momo_qr`, `cards`.
+    """
+>>>>>>> b311d48 (update feature admin room)
     normalized = (value or '').strip().lower()
     if normalized in {'pay_on_arrival', 'cash'}:
         return 'cash'
@@ -84,6 +109,10 @@ def _normalize_payment_method(value):
 
 
 def _build_momo_qr_url(reservation):
+<<<<<<< HEAD
+=======
+    """Sinh URL ảnh QR VietQR dựa trên số tiền cọc và mã booking của reservation."""
+>>>>>>> b311d48 (update feature admin room)
     account_name = 'PHAM MONG KIEU'
     account_number = '1031249010'
     bank_short_name = 'VCB'
@@ -106,6 +135,18 @@ def _build_momo_qr_url(reservation):
 
 
 def _build_reservation_invoice_context(reservation):
+<<<<<<< HEAD
+=======
+    """
+    Tạo context chuẩn cho các template hóa đơn/xác nhận booking.
+
+    Context bao gồm:
+    - thông tin ngày giờ hiển thị thân thiện
+    - số đêm, số khách thực tế
+    - tổng tiền/cọc/số dư
+    - thông tin QR và tài khoản ngân hàng
+    """
+>>>>>>> b311d48 (update feature admin room)
     num_nights = (reservation.check_out_date - reservation.check_in_date).days
     if num_nights <= 0:
         num_nights = 1
@@ -159,6 +200,10 @@ def _build_reservation_invoice_context(reservation):
 
 
 def _build_reservation_invoice_payload(reservation):
+<<<<<<< HEAD
+=======
+    """Tạo payload JSON chi tiết hóa đơn để trả trong API create booking."""
+>>>>>>> b311d48 (update feature admin room)
     guest_name = ' '.join(part for part in [reservation.first_name, reservation.last_name] if part).strip()
     if not guest_name:
         guest_name = 'Khach hang'
@@ -187,6 +232,8 @@ def _build_reservation_invoice_payload(reservation):
 
 
 class StandardResultsSetPagination(PageNumberPagination):
+    """Pagination chuẩn cho toàn bộ API list: trả cả `results` và metadata `pagination`."""
+
     page_size = 10
     page_size_query_param = 'limit'
     page_query_param = 'page'
@@ -210,6 +257,13 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 
 class ReservationListCreateAPIView(generics.ListCreateAPIView):
+    """
+    API danh sách + tạo booking cho user đã đăng nhập.
+
+    - GET: trả danh sách booking của chính user.
+    - POST: tạo booking mới và gửi email xác nhận sau khi transaction commit.
+    """
+
     serializer_class = ReservationCreateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -234,6 +288,14 @@ class ReservationListCreateAPIView(generics.ListCreateAPIView):
 
 
 class ReservationCheckoutAPIView(generics.UpdateAPIView):
+    """
+    API checkout booking.
+
+    Quy tắc:
+    - Không cho checkout khi booking chưa check-in hoặc đã checkout.
+    - Cho phép staff/admin checkout mọi booking; khách chỉ checkout booking của chính họ.
+    """
+
     serializer_class = ReservationCheckoutSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'id'
@@ -281,6 +343,11 @@ class ReservationCheckoutAPIView(generics.UpdateAPIView):
 
 
 class ReservationCheckInAPIView(APIView):
+<<<<<<< HEAD
+=======
+    """API check-in tại quầy dành cho staff/admin, hỗ trợ check-in sớm và tính phí liên quan."""
+
+>>>>>>> b311d48 (update feature admin room)
     permission_classes = [IsStaffOrAdmin]
 
     def post(self, request):
@@ -426,6 +493,15 @@ def upload_deposit_page(request, reservation_id):
 
 
 class AdminConfirmDepositAPIView(APIView):
+<<<<<<< HEAD
+=======
+    """
+    API để admin xác nhận biên lai chuyển khoản cọc.
+
+    Đây là bước xác nhận thủ công quan trọng cho luồng hybrid payment.
+    """
+
+>>>>>>> b311d48 (update feature admin room)
     permission_classes = [IsStaffOrAdmin]
 
     def post(self, request, id):
@@ -447,6 +523,14 @@ class AdminConfirmDepositAPIView(APIView):
 @login_required
 @ensure_csrf_cookie
 def frontdesk_dashboard(request):
+<<<<<<< HEAD
+=======
+    """
+    Màn hình nghiệp vụ lễ tân (web): tra cứu booking, check-in/check-out, xem phòng trống, dịch vụ.
+
+    Đây là view tổng hợp nhiều nghiệp vụ nhất phía frontdesk.
+    """
+>>>>>>> b311d48 (update feature admin room)
     if not _has_admin_booking_access(request.user):
         messages.error(request, 'Bạn không có quyền truy cập màn hình lễ tân.')
         return redirect('home')
@@ -699,6 +783,8 @@ def frontdesk_dashboard(request):
 
 
 class ReservationDetailAPIView(generics.RetrieveAPIView):
+    """API xem chi tiết 1 booking theo quyền hiện tại của user."""
+
     serializer_class = ReservationDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'id'
@@ -708,6 +794,8 @@ class ReservationDetailAPIView(generics.RetrieveAPIView):
 
 
 class ReservationListAPIView(generics.ListAPIView):
+    """API liệt kê booking theo user hiện tại (admin thấy tất cả, khách thấy của mình)."""
+
     serializer_class = ReservationDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -716,6 +804,8 @@ class ReservationListAPIView(generics.ListAPIView):
 
 
 class ReservationCheckedOutListAPIView(generics.ListAPIView):
+    """API liệt kê booking đã checkout."""
+
     serializer_class = ReservationDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -727,6 +817,12 @@ class ReservationCheckedOutListAPIView(generics.ListAPIView):
 
 
 class RoomListAPIView(generics.ListAPIView):
+    """
+    API danh sách phòng có filter linh hoạt.
+
+    Hỗ trợ song song key tiếng Việt và tiếng Anh để tương thích nhiều client.
+    """
+
     serializer_class = RoomSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = StandardResultsSetPagination
@@ -777,6 +873,8 @@ class RoomListAPIView(generics.ListAPIView):
 
 
 class RoomDetailAPIView(generics.RetrieveAPIView):
+    """API chi tiết 1 phòng."""
+
     serializer_class = RoomSerializer
     permission_classes = [permissions.AllowAny]
     lookup_field = 'id'
@@ -786,6 +884,8 @@ class RoomDetailAPIView(generics.RetrieveAPIView):
 
 
 class RoomCategoryListAPIView(generics.ListAPIView):
+    """API danh sách danh mục phòng."""
+
     serializer_class = RoomCategorySerializer
     permission_classes = [permissions.AllowAny]
 
@@ -794,6 +894,14 @@ class RoomCategoryListAPIView(generics.ListAPIView):
 
 
 class RoomSearchAPIView(APIView):
+    """
+    API tìm phòng theo nhu cầu khách.
+
+    Trả về:
+    - danh sách phòng phù hợp trực tiếp
+    - danh sách tổ hợp ghép phòng cho nhóm đông
+    """
+
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -878,6 +986,8 @@ class RoomSearchAPIView(APIView):
 
 
 class ReservationPaymentAPIView(generics.RetrieveUpdateAPIView):
+    """API xem/cập nhật trạng thái thanh toán booking và tự động gửi email khi chuyển `paid`."""
+
     serializer_class = ReservationPaymentSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'id'
@@ -905,6 +1015,11 @@ class ReservationPaymentAPIView(generics.RetrieveUpdateAPIView):
 
 
 class AdminDashboardAPIView(APIView):
+<<<<<<< HEAD
+=======
+    """API thống kê nhanh cho trang dashboard admin."""
+
+>>>>>>> b311d48 (update feature admin room)
     permission_classes = [IsStaffOrAdmin]
 
     def get(self, request):
@@ -932,6 +1047,8 @@ class AdminDashboardAPIView(APIView):
 
 
 class AdminReservationListAPIView(generics.ListAPIView):
+    """API admin: danh sách toàn bộ booking."""
+
     serializer_class = ReservationDetailSerializer
     permission_classes = [IsStaffOrAdmin]
     pagination_class = StandardResultsSetPagination
@@ -941,6 +1058,8 @@ class AdminReservationListAPIView(generics.ListAPIView):
 
 
 class AdminCheckedOutReservationListAPIView(generics.ListAPIView):
+    """API admin: danh sách booking đã checkout, có filter theo phòng/user."""
+
     serializer_class = ReturnedReservationSerializer
     permission_classes = [IsStaffOrAdmin]
     pagination_class = StandardResultsSetPagination
@@ -957,6 +1076,8 @@ class AdminCheckedOutReservationListAPIView(generics.ListAPIView):
 
 
 class AdminRoomListAPIView(generics.ListAPIView):
+    """API admin: danh sách tất cả phòng."""
+
     serializer_class = RoomSerializer
     permission_classes = [IsStaffOrAdmin]
     pagination_class = StandardResultsSetPagination
@@ -966,6 +1087,15 @@ class AdminRoomListAPIView(generics.ListAPIView):
 
 
 class RoomImageUploadAPIView(APIView):
+<<<<<<< HEAD
+=======
+    """
+    API upload nhiều ảnh phòng cho admin.
+
+    Có validate file ảnh và dùng transaction để rollback nếu có lỗi giữa chừng.
+    """
+
+>>>>>>> b311d48 (update feature admin room)
     permission_classes = [IsStaffOrAdmin]
     parser_classes = [MultiPartParser, FormParser]
 
@@ -1011,6 +1141,10 @@ class RoomImageUploadAPIView(APIView):
 
 
 def _send_booking_confirmation_email(reservation, reason='created'):
+<<<<<<< HEAD
+=======
+    """Gửi email xác nhận đặt phòng/thanh toán cho khách."""
+>>>>>>> b311d48 (update feature admin room)
     if not reservation.email:
         return False
 
@@ -1166,6 +1300,10 @@ def _send_invoice_email(reservation):
 
 
 def _send_qr_payment_received_email(reservation, amount_received):
+<<<<<<< HEAD
+=======
+    """Gửi email xác nhận đã ghi nhận thanh toán MoMo/QR."""
+>>>>>>> b311d48 (update feature admin room)
     if not reservation.email:
         return False
 
@@ -1215,6 +1353,14 @@ def _send_qr_payment_received_email(reservation, amount_received):
 
 
 def _extract_momo_booking_code(payload):
+<<<<<<< HEAD
+=======
+    """
+    Trích mã booking từ nhiều field có thể có trong payload webhook MoMo.
+
+    Hàm này giúp hệ thống chịu lỗi tốt hơn khi đối tác thay đổi naming key.
+    """
+>>>>>>> b311d48 (update feature admin room)
     candidates = [
         payload.get('booking_code'),
         payload.get('bookingCode'),
@@ -1244,6 +1390,19 @@ def _extract_momo_booking_code(payload):
 
 
 class MoMoPaymentWebhookAPIView(APIView):
+<<<<<<< HEAD
+=======
+    """
+    Webhook nhận callback thanh toán từ MoMo.
+
+    Nhiệm vụ:
+    - xác định booking
+    - validate kết quả giao dịch
+    - cập nhật số tiền đã nhận qua QR
+    - gửi email xác nhận thanh toán
+    """
+
+>>>>>>> b311d48 (update feature admin room)
     permission_classes = []
     authentication_classes = []
 
@@ -1347,12 +1506,25 @@ class MoMoPaymentWebhookAPIView(APIView):
 
 
 class BankTransferPaymentStatusAPIView(APIView):
+<<<<<<< HEAD
+=======
+    """API cho frontend polling trạng thái thanh toán chuyển khoản theo mã booking."""
+
+>>>>>>> b311d48 (update feature admin room)
     permission_classes = []
     authentication_classes = []
 
     def get(self, request, booking_code):
         reservation = _get_reservation_by_booking_code(booking_code)
         deposit_paid = reservation.deposit_paid_via_qr or Decimal('0.00')
+<<<<<<< HEAD
+=======
+        # Consider deposit confirmed when admin has explicitly confirmed it (deposit_confirmed)
+        # or when a deposit amount was recorded via QR transfer (deposit_paid_via_qr > 0).
+        is_confirmed = bool(reservation.deposit_confirmed or deposit_paid > 0)
+        is_fully_paid = reservation.payment_status == 'paid' or deposit_paid >= reservation.final_total
+
+>>>>>>> b311d48 (update feature admin room)
         return Response(
             {
                 'success': True,
@@ -1361,14 +1533,23 @@ class BankTransferPaymentStatusAPIView(APIView):
                 'final_total': str(reservation.final_total),
                 'balance_due': str(reservation.balance_due),
                 'payment_status': reservation.payment_status,
+<<<<<<< HEAD
                 'is_deposit_confirmed': deposit_paid > 0,
                 'is_fully_paid': reservation.payment_status == 'paid' or deposit_paid >= reservation.final_total,
+=======
+                'is_deposit_confirmed': is_confirmed,
+                'is_fully_paid': is_fully_paid,
+>>>>>>> b311d48 (update feature admin room)
             },
             status=status.HTTP_200_OK,
         )
 
 
 def _send_cancellation_email(reservation):
+<<<<<<< HEAD
+=======
+    """Gửi email xác nhận hủy booking cho khách."""
+>>>>>>> b311d48 (update feature admin room)
     if not reservation.email:
         return False
 
@@ -1397,6 +1578,8 @@ def _send_cancellation_email(reservation):
 
 
 class AdminServiceListCreateAPIView(generics.ListCreateAPIView):
+    """API admin: danh sách/tạo dịch vụ bổ sung."""
+
     serializer_class = ServiceSerializer
     permission_classes = [IsStaffOrAdmin]
     pagination_class = StandardResultsSetPagination
@@ -1410,6 +1593,8 @@ class AdminServiceListCreateAPIView(generics.ListCreateAPIView):
 
 
 class AdminServiceDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """API admin: xem/sửa/xóa một dịch vụ."""
+
     serializer_class = ServiceSerializer
     permission_classes = [IsStaffOrAdmin]
     lookup_field = 'id'
@@ -1419,6 +1604,7 @@ class AdminServiceDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 def _parse_selected_services(request):
+    """Tách danh sách service từ POST và tính tổng tiền dịch vụ."""
     service_ids = request.POST.getlist('service_ids')
     if not service_ids:
         return Service.objects.none(), Decimal('0.00')
@@ -1429,6 +1615,7 @@ def _parse_selected_services(request):
 
 
 def _build_booking_payload(room, check_in, check_out):
+    """Parse + validate ngày booking, đồng thời tính số đêm/subtotal/gst ban đầu."""
     check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
     check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
 
@@ -1450,6 +1637,10 @@ def _build_booking_payload(room, check_in, check_out):
 
 
 def _guest_capacity_error(room, adults, children=0):
+<<<<<<< HEAD
+=======
+    """Trả chuỗi lỗi chi tiết nếu số khách vượt sức chứa phòng theo từng điều kiện."""
+>>>>>>> b311d48 (update feature admin room)
     try:
         adults = int(adults or 0)
     except (TypeError, ValueError):
@@ -1482,6 +1673,7 @@ def _guest_capacity_error(room, adults, children=0):
 
 
 def room_list(request):
+    """Trang danh sách phòng (web), hỗ trợ filter theo category."""
     category_name = request.GET.get('category', 'all').lower()
     categories = RoomCategory.objects.all()
     if category_name == 'all':
@@ -1501,6 +1693,7 @@ def room_list(request):
 
 
 def room_detail(request, room_id):
+    """Trang chi tiết phòng, kèm phòng tương tự và form feedback."""
     room = get_object_or_404(Room, id=room_id)
     similar_rooms = Room.objects.exclude(id=room_id)
     feedback_form = FeedbackForm(user=request.user)
@@ -1516,11 +1709,13 @@ def room_detail(request, room_id):
 
 
 def service_list(request):
+    """Trang danh sách dịch vụ active cho khách."""
     services = Service.objects.filter(active=True).order_by('order', 'name')
     return render(request, 'rooms/services.html', {'services': services, 'page_title': 'Dịch vụ khách sạn'})
 
 
 def service_detail(request, slug):
+    """Trang chi tiết 1 dịch vụ và gợi ý dịch vụ liên quan."""
     service = get_object_or_404(Service, slug=slug, active=True)
     related_services = Service.objects.filter(active=True).exclude(id=service.id).order_by('order', 'name')[:3]
     return render(request, 'rooms/service_detail.html', {'service': service, 'related_services': related_services})
@@ -1528,6 +1723,7 @@ def service_detail(request, slug):
 
 @login_required
 def service_selection(request):
+    """Bước chọn dịch vụ sau khi khách chọn phòng và ngày lưu trú."""
     if request.method != 'POST':
         return redirect('rooms:room_list')
 
@@ -1574,6 +1770,7 @@ def service_selection(request):
 
 
 def room_list_filtered(request):
+    """Trang web hiển thị phòng phù hợp + tổ hợp ghép phòng theo tham số tìm kiếm."""
     check_in = request.GET.get('check_in')
     check_out = request.GET.get('check_out')
     adults = request.GET.get('adults', '1')
@@ -1624,6 +1821,7 @@ def room_list_filtered(request):
 
 
 def room_combo_detail(request):
+    """Trang chi tiết một phương án ghép nhiều phòng."""
     room_ids_raw = request.GET.get('room_ids', '')
     room_ids = []
 
@@ -1681,6 +1879,7 @@ def room_combo_detail(request):
 
 @login_required
 def room_search(request):
+    """Luồng web kiểm tra khả dụng của phòng đã chọn và đề xuất phương án thay thế."""
     if request.method == 'GET':
         room_id = request.GET.get('room_id')
         check_in = request.GET.get('check_in')
@@ -1764,6 +1963,15 @@ def room_search(request):
 
 @login_required
 def room_booking(request):
+    """
+    Luồng web đặt phòng chính.
+
+    Hỗ trợ:
+    - coupon
+    - chọn dịch vụ đi kèm
+    - chọn phương thức thanh toán
+    - tính cọc/số dư và gửi email xác nhận sau commit
+    """
     if request.method != 'POST':
         return redirect('rooms:room_list')
 
@@ -1883,6 +2091,10 @@ def room_booking(request):
 
 @ensure_csrf_cookie
 def booking_confirmation(request, reservation_id):
+<<<<<<< HEAD
+=======
+    """Trang xác nhận booking sau khi đặt thành công."""
+>>>>>>> b311d48 (update feature admin room)
     reservation = get_object_or_404(
         Reservation.objects.select_related('room', 'user', 'coupon').prefetch_related('selected_services'),
         id=reservation_id,
@@ -1894,6 +2106,10 @@ def booking_confirmation(request, reservation_id):
 
 @login_required
 def frontdesk_print_slip(request, booking_code):
+<<<<<<< HEAD
+=======
+    """Trang in phiếu lễ tân cho staff/admin và gửi hóa đơn email cho khách."""
+>>>>>>> b311d48 (update feature admin room)
     if not _has_admin_booking_access(request.user):
         messages.error(request, 'Bạn không có quyền truy cập phiếu in lễ tân.')
         return redirect('home')
@@ -1913,6 +2129,7 @@ def frontdesk_print_slip(request, booking_code):
 
 @login_required
 def my_bookings(request):
+    """Trang danh sách booking của user hiện tại."""
     bookings = (
         Reservation.objects.filter(user=request.user)
         .select_related('room')
@@ -1924,6 +2141,14 @@ def my_bookings(request):
 
 @login_required
 def cancel_reservation(request, reservation_id):
+<<<<<<< HEAD
+=======
+    """
+    Luồng hủy booking online của khách.
+
+    Theo nghiệp vụ hiện tại: khi hủy hợp lệ, booking đóng lại và giữ tiền cọc.
+    """
+>>>>>>> b311d48 (update feature admin room)
     if request.method != 'POST':
         return redirect('rooms:my_bookings')
 
@@ -1979,6 +2204,7 @@ def cancel_reservation(request, reservation_id):
 
 
 def home(request):
+    """Trang chủ: hiển thị phòng, blog, feedback và dịch vụ nổi bật."""
     rooms = Room.objects.all()
     blogs = Blog.objects.all()
     feedbacks = Feedback.objects.all().order_by('created_at')[:3]
@@ -1997,11 +2223,13 @@ def home(request):
 
 
 def about_page(request):
+    """Trang giới thiệu."""
     return render(request, 'about.html')
 
 
 @login_required
 def book_room(request, room_id):
+    """Luồng đặt phòng rút gọn từ trang chi tiết phòng (web)."""
     room = get_object_or_404(Room, id=room_id)
     today = date.today()
     default_check_in = today
@@ -2104,6 +2332,7 @@ def book_room(request, room_id):
 
 
 def check_room_availability_api(request):
+    """API đơn giản kiểm tra phòng có bị trùng lịch đặt hay không."""
     room_id = request.GET.get('id')
     check_in = request.GET.get('in')
     check_out = request.GET.get('out')
@@ -2118,6 +2347,7 @@ def check_room_availability_api(request):
 
 @login_required(login_url='accounts:login_page')
 def checkout_reservation(request, reservation_id):
+    """Luồng web checkout cho khách/staff theo quyền truy cập."""
     if request.method != 'POST':
         return redirect('rooms:room_list')
 
@@ -2198,6 +2428,7 @@ def checkout_reservation(request, reservation_id):
 
 @login_required(login_url='accounts:login_page')
 def admin_room_image_upload_page(request):
+    """Trang admin upload ảnh phòng (web)."""
     if not request.user.is_staff:
         messages.error(request, 'Bạn không có quyền truy cập trang này.')
         return redirect('home')
@@ -2207,5 +2438,6 @@ def admin_room_image_upload_page(request):
 
 
 def room_catalog_page(request):
+    """Trang demo catalog gọi Room API."""
     categories = RoomCategory.objects.all().order_by('name')
     return render(request, 'rooms/room_catalog_api.html', {'categories': categories})
