@@ -78,19 +78,6 @@ class RoomAdmin(ReadOnlyForStaffAdminMixin, admin.ModelAdmin):
 
 
 # Đăng ký model RoomCategory
-@admin.register(Room)
-
-# Tạo class quản lý Room
-class RoomAdmin(ReadOnlyForStaffAdminMixin, admin.ModelAdmin):
-
-    # Các cột hiển thị trong danh sách phòng
-    list_display = ('name', 'category', 'capacity', 'size', 'price')
-
-    # Bộ lọc bên phải admin
-    list_filter = ('category', 'name')
-
-
-# Đăng ký model RoomCategory
 @admin.register(RoomCategory)
 
 # Class quản lý danh mục phòng
