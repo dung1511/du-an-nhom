@@ -183,6 +183,76 @@
             font-size: 0.92rem;
         }
 
+        .card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            align-items: center;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 0.5rem 0.9rem;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 0.85rem;
+            background: #fff;
+        }
+
+        .action-btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .hint-text {
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .damage-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 0.6rem;
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: #fff4e8;
+            color: #9a5a22;
+            border: 1px solid #f1d3b1;
+        }
+
+        .status-stack {
+            display: grid;
+            gap: 0.45rem;
+            margin-top: 0.2rem;
+        }
+
+        .status-line {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            align-items: center;
+        }
+
+        .mini-chip {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 0.22rem 0.55rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: #eef6f4;
+            color: var(--accent);
+        }
+
         .empty-state {
             background: var(--surface);
             border: 1px solid var(--line);
@@ -252,13 +322,15 @@
                     <article class="booking-card">
                         <header class="booking-head">
                             <div>
-                                <h2 class="booking-code">Reservation #{{ booking.id }}</h2>
+                                <h2 class="booking-code">{{ booking.booking_code|default:booking.id }}</h2>
                                 <p class="booking-room">{{ booking.room.name }}</p>
                             </div>
                             {% if booking.is_checked_out %}
                                 <span class="status-badge status-checked-out">Checked Out</span>
-                            {% else %}
+                            {% elif booking.is_checked_in %}
                                 <span class="status-badge status-active">Active Stay</span>
+                            {% else %}
+                                <span class="status-badge" style="background:#e8f4f8;color:#0f7f6e;">Awaiting Check-in</span>
                             {% endif %}
                         </header>
 
@@ -268,12 +340,47 @@
                                 <span class="fact-value">{{ booking.first_name }} {{ booking.last_name }}</span>
                             </div>
                             <div class="fact">
+                                <span class="fact-label">Booked At</span>
+                                <span class="fact-value">{{ booking.created_at|date:"M d, Y H:i" }}</span>
+                            </div>
+                            <div class="fact">
                                 <span class="fact-label">Check In</span>
                                 <span class="fact-value">{{ booking.check_in_date|date:"M d, Y" }}</span>
+                                <div class="status-stack">
+                                    {% if booking.is_checked_in and booking.checked_in_at %}
+                                        <span class="mini-chip">Đã check-in</span>
+                                        <span class="hint-text">{{ booking.checked_in_at|date:"M d, Y H:i" }}</span>
+                                        <span class="hint-text">Khách thực tế: {{ booking.checked_in_adults }} lớn{% if booking.checked_in_children > 0 %}, {{ booking.checked_in_children }} trẻ em{% endif %}</span>
+                                    {% else %}
+                                        <span class="mini-chip" style="background:#fff6db;color:#8b5e00;">Chưa check-in</span>
+                                        <span class="hint-text">Đưa mã booking cho lễ tân khi tới khách sạn.</span>
+                                    {% endif %}
+                                </div>
                             </div>
                             <div class="fact">
                                 <span class="fact-label">Check Out</span>
                                 <span class="fact-value">{{ booking.check_out_date|date:"M d, Y" }}</span>
+                                <div class="status-stack">
+                                    {% if booking.is_checked_out and booking.checkout_at %}
+                                        <span class="mini-chip">Đã check-out</span>
+                                        <span class="hint-text">{{ booking.checkout_at|date:"M d, Y H:i" }}</span>
+                                    {% else %}
+                                        <span class="mini-chip" style="background:#fff6db;color:#8b5e00;">Chưa check-out</span>
+                                        <span class="hint-text">Check-out tại quầy lễ tân, có thể trả sớm nếu khách sắp xếp xong.</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="fact">
+                                <span class="fact-label">Invoice Notification</span>
+                                <span class="fact-value">
+                                    {% if booking.invoice_notified_at %}
+                                        Đã gửi lúc {{ booking.invoice_notified_at|date:"M d, Y H:i" }}
+                                    {% elif booking.is_checked_out %}
+                                        Chưa gửi được (vui lòng kiểm tra email khách)
+                                    {% else %}
+                                        Sẽ gửi tự động sau khi check-out
+                                    {% endif %}
+                                </span>
                             </div>
                             <div class="fact">
                                 <span class="fact-label">Guests</span>
@@ -285,11 +392,21 @@
                             </div>
                             <div class="fact">
                                 <span class="fact-label">Service Total</span>
-                                <span class="fact-value">₹{{ booking.service_total }}</span>
+                                <span class="fact-value">{{ booking.service_total }}</span>
                             </div>
                             <div class="fact">
                                 <span class="fact-label">Total</span>
-                                <span class="fact-value">₹{{ booking.total }}</span>
+                                <span class="fact-value">{{ booking.total }}</span>
+                            </div>
+                            <div class="fact">
+                                <span class="fact-label">Final Total</span>
+                                <span class="fact-value">{{ booking.final_total|default:booking.total }}</span>
+                                {% if booking.damage_reported or booking.damage_fee > 0 %}
+                                    <span class="damage-pill">Damage fee: ₹{{ booking.damage_fee }}</span>
+                                    {% if booking.damage_notes %}
+                                        <span class="hint-text">{{ booking.damage_notes }}</span>
+                                    {% endif %}
+                                {% endif %}
                             </div>
                         </section>
 
@@ -307,6 +424,27 @@
                                 {% endif %}
                             {% endwith %}
                         </section>
+
+                        <div class="card-actions">
+                            <a class="action-btn action-btn-primary" href="{% url 'rooms:booking_confirmation' booking.id %}">Xem chi tiết hóa đơn</a>
+                            {% if booking.is_checked_out %}
+                                {% if booking.note and 'CANCELLED' in booking.note %}
+                                    <span class="hint-text">Booking đã hủy. Tiền cọc không được hoàn lại.</span>
+                                {% else %}
+                                    <span class="hint-text">Booking đã check-out.</span>
+                                {% endif %}
+                            {% elif booking.is_checked_in %}
+                                <span class="hint-text">Để check-out, vui lòng đưa mã booking cho lễ tân.</span>
+                            {% elif booking.can_cancel_online %}
+                                <form method="post" action="{% url 'rooms:cancel_reservation' booking.id %}" onsubmit="return confirm('Bạn chắc chắn muốn hủy phòng? Chỉ được hủy trước ngày check-in. Nếu hủy, tiền cọc sẽ bị giữ lại và không hoàn.');" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="action-btn" style="border-color:#efb2b2;color:#8b2d2d;background:#fff4f4;">Hủy phòng (mất cọc)</button>
+                                </form>
+                                <span class="hint-text">Chỉ được hủy trước ngày check-in. Sau ngày check-in không thể hủy và tiền cọc sẽ bị giữ lại.</span>
+                            {% else %}
+                                <span class="hint-text">Quá ngày check-in nên không thể hủy online. Tiền cọc sẽ bị giữ lại.</span>
+                            {% endif %}
+                        </div>
                     </article>
                 {% endfor %}
             </div>

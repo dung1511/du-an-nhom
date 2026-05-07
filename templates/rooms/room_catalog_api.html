@@ -148,7 +148,8 @@
                         <h5 class="mt-2 mb-1">${room.name}</h5>
                         <div class="muted mb-1">${room.category || 'N/A'}</div>
                         <div class="fw-semibold">Gia: ${room.price}</div>
-                        <div class="small">Suc chua: ${room.capacity}</div>
+                        <div class="small">Suc chua: ${room.total_capacity}</div>
+                        <div class="small">Nguoi lon: ${room.capacity_adults ?? '-'} | Tre em: ${room.capacity_children ?? '-'}</div>
                     </div>
                 </div>`;
             roomList.appendChild(col);

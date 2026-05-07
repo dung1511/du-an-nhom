@@ -18,7 +18,8 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            overflow: hidden; /* Prevents scrollbars */
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         /* Background animation */
@@ -52,11 +53,11 @@
 
         /* Centering the edit profile form */
         .edit-container {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding-top: 80px; /* Adds padding above the container */
+            padding: 100px 16px 32px;
         }
 
         .card {
@@ -268,7 +269,7 @@
                     </div>
                     <button type="button" id="upload-avatar-btn" class="btn btn-primary w-100 mt-2">Upload Avatar Qua API</button>
                 </div>
-                <button type="submit" class="btn btn-success w-100">Save Changes</button>
+                <button type="submit" class="btn btn-success w-100">Lưu thay đổi rồi về trang chủ</button>
             </form>
         </div>
     </div>

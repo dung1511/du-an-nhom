@@ -436,14 +436,14 @@
                     {% endwith %}
                     <div class="price-tag">
                         <small>Giá từ mỗi đêm</small>
-                        <strong>₹{{ room.price }}</strong>
+                        <strong>{{ room.price }}</strong>
                     </div>
                 </div>
 
                 <div class="room-content">
                     <p class="room-lead">{{ room.description }}</p>
                     <div class="feature-chips">
-                        <span class="chip"><i class="fas fa-user-friends"></i> {{ room.capacity }} khách</span>
+                        <span class="chip"><i class="fas fa-user-friends"></i> {{ room.total_capacity }} khách</span>
                         <span class="chip"><i class="fas fa-ruler-combined"></i> {{ room.get_size_display }}</span>
                         <span class="chip"><i class="fas fa-concierge-bell"></i> Có thể thêm dịch vụ</span>
                     </div>
@@ -525,113 +525,388 @@
 
     {% include 'footer.html' %}
 
-    <script>
-        // Guest count management
-        let adultsCount = 1;
-        let childrenCount = 0;
-        const maxGuests = 10;
+     <script>
+    // =========================
+    // QUẢN LÝ SỐ LƯỢNG KHÁCH
+    // =========================
 
-        function updateGuestDisplay() {
-            document.getElementById('adults-count').textContent = adultsCount;
-            document.getElementById('children-count').textContent = childrenCount;
-            document.getElementById('hidden_adults').value = adultsCount;
-            document.getElementById('hidden_children').value = childrenCount;
+    // Số người lớn mặc định
+    let adultsCount = 1;
+
+    // Số trẻ em mặc định
+    let childrenCount = 0;
+
+    // Lấy tổng sức chứa tối đa của phòng từ Django
+    // room.total_capacity được truyền từ backend sang template
+    const maxGuests = Number("{{ room.total_capacity }}");
+
+    // Sức chứa tối đa người lớn
+    const maxAdults = Number("{{ room.capacity_adults }}");
+
+    // Sức chứa tối đa trẻ em
+    const maxChildren = Number("{{ room.capacity_children }}");
+
+    // Lấy thẻ hiển thị thông báo trạng thái phòng
+    const limitNotice = document.getElementById('room-status-alert');
+
+
+    // =========================
+    // HIỂN THỊ THÔNG BÁO LỖI
+    // =========================
+    function showLimitNotice(message) {
+
+        // Nếu không tìm thấy phần tử HTML thì thoát
+        if (!limitNotice) {
+            return;
         }
 
-        document.getElementById('adults-plus').addEventListener('click', (e) => {
-            e.preventDefault();
-            if (adultsCount + childrenCount < maxGuests) {
-                adultsCount++;
-                updateGuestDisplay();
-            }
-        });
+        // Gán nội dung thông báo
+        limitNotice.textContent = message;
 
-        document.getElementById('adults-minus').addEventListener('click', (e) => {
-            e.preventDefault();
-            if (adultsCount > 1) {
-                adultsCount--;
-                updateGuestDisplay();
-            }
-        });
+        // Đổi màu nền cảnh báo
+        limitNotice.style.background = 'rgba(230, 77, 94, 0.14)';
 
-        document.getElementById('children-plus').addEventListener('click', (e) => {
-            e.preventDefault();
-            if (adultsCount + childrenCount < maxGuests) {
-                childrenCount++;
-                updateGuestDisplay();
-            }
-        });
+        // Đổi màu chữ
+        limitNotice.style.color = '#8e2131';
+    }
 
-        document.getElementById('children-minus').addEventListener('click', (e) => {
-            e.preventDefault();
-            if (childrenCount > 0) {
-                childrenCount--;
-                updateGuestDisplay();
-            }
-        });
 
-        // Availability check
-        async function checkAvailability() {
-            const cin = document.getElementById('check_in').value;
-            const cout = document.getElementById('check_out').value;
-            const roomId = "{{ room.id }}";
-            const btn = document.getElementById('book-now-btn');
-            const statusText = document.getElementById('booking-form-notice');
-            const today = new Date().toISOString().slice(0, 10);
+    // =========================
+    // HIỂN THỊ THÔNG TIN MẶC ĐỊNH
+    // =========================
+    function showDefaultNotice() {
 
-            if (!cin || !cout) {
-                btn.disabled = true;
-                statusText.textContent = 'Chọn đủ ngày nhận và ngày trả để kiểm tra phòng trống.';
-                statusText.style.background = 'rgba(15, 127, 159, 0.12)';
-                statusText.style.color = '#0b627d';
-                return;
-            }
-
-            if (cin < today) {
-                btn.disabled = true;
-                statusText.textContent = 'Ngày nhận phòng không được nhỏ hơn hôm nay.';
-                statusText.style.background = 'rgba(230, 77, 94, 0.14)';
-                statusText.style.color = '#8e2131';
-                return;
-            }
-
-            if (cout <= cin) {
-                btn.disabled = true;
-                statusText.textContent = 'Ngày trả phòng phải sau ngày nhận phòng.';
-                statusText.style.background = 'rgba(230, 77, 94, 0.14)';
-                statusText.style.color = '#8e2131';
-                return;
-            }
-
-            const response = await fetch(`/api/check-room/?id=${roomId}&in=${cin}&out=${cout}`);
-            const data = await response.json();
-
-            if (data.is_available) {
-                btn.disabled = false;
-                statusText.textContent = 'Phòng còn trống cho ngày bạn chọn.';
-                statusText.style.background = 'rgba(29, 190, 107, 0.14)';
-                statusText.style.color = '#0f6b3d';
-            } else {
-                btn.disabled = true;
-                statusText.textContent = 'Phòng đã có khách đặt trong khoảng ngày này.';
-                statusText.style.background = 'rgba(230, 77, 94, 0.14)';
-                statusText.style.color = '#8e2131';
-            }
+        // Nếu không tồn tại phần tử HTML
+        if (!limitNotice) {
+            return;
         }
 
-        const checkInInput = document.getElementById('check_in');
-        const checkOutInput = document.getElementById('check_out');
+        // Hiển thị sức chứa phòng
+        limitNotice.textContent =
+            `Sức chứa phòng: tối đa ${maxGuests} khách (${maxAdults} người lớn, ${maxChildren} trẻ em).`;
 
-        checkInInput.addEventListener('change', () => {
-            checkOutInput.min = checkInInput.value || checkInInput.min;
-            if (checkOutInput.value && checkOutInput.value < checkOutInput.min) {
-                checkOutInput.value = '';
-            }
-            checkAvailability();
-        });
+        // Màu nền xanh
+        limitNotice.style.background = 'rgba(15, 127, 159, 0.12)';
 
-        document.getElementById('check_out').addEventListener('change', checkAvailability);
+        // Màu chữ xanh
+        limitNotice.style.color = '#0b627d';
+    }
+
+
+    // =========================
+    // CẬP NHẬT HIỂN THỊ KHÁCH
+    // =========================
+    function updateGuestDisplay() {
+
+        // Hiển thị số người lớn
+        document.getElementById('adults-count').textContent = adultsCount;
+
+        // Hiển thị số trẻ em
+        document.getElementById('children-count').textContent = childrenCount;
+
+        // Gán giá trị hidden input người lớn
+        document.getElementById('hidden_adults').value = adultsCount;
+
+        // Gán giá trị hidden input trẻ em
+        document.getElementById('hidden_children').value = childrenCount;
+
+        // Hiển thị thông tin mặc định
+        showDefaultNotice();
+    }
+
+
+    // =========================
+    // NÚT TĂNG NGƯỜI LỚN
+    // =========================
+    document.getElementById('adults-plus')
+        .addEventListener('click', (e) => {
+
+        // Ngăn reload trang
+        e.preventDefault();
+
+        // Nếu vượt quá số người lớn tối đa
+        if (adultsCount >= maxAdults) {
+
+            showLimitNotice(
+                `Không thể vượt quá ${maxAdults} người lớn cho phòng này.`
+            );
+
+            return;
+        }
+
+        // Nếu vượt quá tổng khách
+        if (adultsCount + childrenCount >= maxGuests) {
+
+            showLimitNotice(
+                `Không thể vượt quá tổng ${maxGuests} khách cho phòng này.`
+            );
+
+            return;
+        }
+
+        // Nếu chưa vượt quá giới hạn
+        if (adultsCount + childrenCount < maxGuests) {
+
+            // Tăng số người lớn
+            adultsCount++;
+
+            // Cập nhật giao diện
+            updateGuestDisplay();
+        }
+    });
+
+
+    // =========================
+    // NÚT GIẢM NGƯỜI LỚN
+    // =========================
+    document.getElementById('adults-minus')
+        .addEventListener('click', (e) => {
+
+        e.preventDefault();
+
+        // Không cho nhỏ hơn 1
+        if (adultsCount > 1) {
+
+            adultsCount--;
+
+            updateGuestDisplay();
+        }
+    });
+
+
+    // =========================
+    // NÚT TĂNG TRẺ EM
+    // =========================
+    document.getElementById('children-plus')
+        .addEventListener('click', (e) => {
+
+        e.preventDefault();
+
+        // Nếu vượt quá số trẻ em tối đa
+        if (childrenCount >= maxChildren) {
+
+            showLimitNotice(
+                `Không thể vượt quá ${maxChildren} trẻ em cho phòng này.`
+            );
+
+            return;
+        }
+
+        // Nếu vượt quá tổng khách
+        if (adultsCount + childrenCount >= maxGuests) {
+
+            showLimitNotice(
+                `Không thể vượt quá tổng ${maxGuests} khách cho phòng này.`
+            );
+
+            return;
+        }
+
+        // Nếu chưa vượt quá giới hạn
+        if (adultsCount + childrenCount < maxGuests) {
+
+            // Tăng trẻ em
+            childrenCount++;
+
+            // Cập nhật giao diện
+            updateGuestDisplay();
+        }
+    });
+
+
+    // =========================
+    // NÚT GIẢM TRẺ EM
+    // =========================
+    document.getElementById('children-minus')
+        .addEventListener('click', (e) => {
+
+        e.preventDefault();
+
+        // Không cho nhỏ hơn 0
+        if (childrenCount > 0) {
+
+            childrenCount--;
+
+            updateGuestDisplay();
+        }
+    });
+
+
+    // =========================
+    // KIỂM TRA PHÒNG TRỐNG
+    // =========================
+    async function checkAvailability() {
+
+        // Lấy ngày check-in
+        const cin = document.getElementById('check_in').value;
+
+        // Lấy ngày check-out
+        const cout = document.getElementById('check_out').value;
+
+        // Lấy id phòng từ Django
+        const roomId = "{{ room.id }}";
+
+        // Nút đặt phòng
+        const btn = document.getElementById('book-now-btn');
+
+        // Phần hiển thị trạng thái booking
+        const statusText = document.getElementById('booking-form-notice');
+
+        // Lấy ngày hôm nay
+        const today = new Date().toISOString().slice(0, 10);
+
+
+        // =========================
+        // KIỂM TRA CHỌN NGÀY
+        // =========================
+        if (!cin || !cout) {
+
+            // Disable nút đặt phòng
+            btn.disabled = true;
+
+            statusText.textContent =
+                'Chọn đủ ngày nhận và ngày trả để kiểm tra phòng trống.';
+
+            statusText.style.background =
+                'rgba(15, 127, 159, 0.12)';
+
+            statusText.style.color = '#0b627d';
+
+            return;
+        }
+
+
+        // =========================
+        // CHECK NGÀY NHẬN PHÒNG
+        // =========================
+        if (cin < today) {
+
+            btn.disabled = true;
+
+            statusText.textContent =
+                'Ngày nhận phòng không được nhỏ hơn hôm nay.';
+
+            statusText.style.background =
+                'rgba(230, 77, 94, 0.14)';
+
+            statusText.style.color = '#8e2131';
+
+            return;
+        }
+
+
+        // =========================
+        // CHECK NGÀY TRẢ PHÒNG
+        // =========================
+        if (cout <= cin) {
+
+            btn.disabled = true;
+
+            statusText.textContent =
+                'Ngày trả phòng phải sau ngày nhận phòng.';
+
+            statusText.style.background =
+                'rgba(230, 77, 94, 0.14)';
+
+            statusText.style.color = '#8e2131';
+
+            return;
+        }
+
+
+        // =========================
+        // GỌI API KIỂM TRA PHÒNG
+        // =========================
+        const response = await fetch(
+            `/api/check-room/?id=${roomId}&in=${cin}&out=${cout}`
+        );
+
+        // Chuyển dữ liệu JSON
+        const data = await response.json();
+
+
+        // =========================
+        // PHÒNG CÒN TRỐNG
+        // =========================
+        if (data.is_available) {
+
+            // Cho phép đặt phòng
+            btn.disabled = false;
+
+            statusText.textContent =
+                'Phòng còn trống cho ngày bạn chọn.';
+
+            statusText.style.background =
+                'rgba(29, 190, 107, 0.14)';
+
+            statusText.style.color = '#0f6b3d';
+        }
+
+        // =========================
+        // PHÒNG ĐÃ ĐƯỢC ĐẶT
+        // =========================
+        else {
+
+            btn.disabled = true;
+
+            statusText.textContent =
+                'Phòng đã có khách đặt trong khoảng ngày này.';
+
+            statusText.style.background =
+                'rgba(230, 77, 94, 0.14)';
+
+            statusText.style.color = '#8e2131';
+        }
+    }
+
+
+    // =========================
+    // XỬ LÝ INPUT CHECK-IN
+    // =========================
+    const checkInInput =
+        document.getElementById('check_in');
+
+    const checkOutInput =
+        document.getElementById('check_out');
+
+
+    // Khi đổi ngày check-in
+    checkInInput.addEventListener('change', () => {
+
+        // Set ngày tối thiểu cho check-out
+        checkOutInput.min =
+            checkInInput.value || checkInInput.min;
+
+        // Nếu ngày checkout nhỏ hơn ngày mới
+        if (
+            checkOutInput.value &&
+            checkOutInput.value < checkOutInput.min
+        ) {
+
+            // Reset ngày checkout
+            checkOutInput.value = '';
+        }
+
+        // Kiểm tra phòng
         checkAvailability();
-    </script>
+    });
+
+
+    // Khi đổi ngày checkout
+    document.getElementById('check_out')
+        .addEventListener('change', checkAvailability);
+
+
+    // =========================
+    // KHỞI TẠO BAN ĐẦU
+    // =========================
+
+    // Hiển thị khách mặc định
+    updateGuestDisplay();
+
+    // Kiểm tra trạng thái phòng ngay khi load
+    checkAvailability();
+
+</script>
 </body>
 </html>

@@ -62,6 +62,16 @@ class RoomFactory(factory.django.DjangoModelFactory):
     total_capacity = 4
     size = "D"
 
+    @classmethod
+    def _adjust_kwargs(cls, **kwargs):
+        if 'room_title' in kwargs and 'name' not in kwargs:
+            kwargs['name'] = kwargs.pop('room_title')
+        if 'max_adult' in kwargs and 'capacity_adults' not in kwargs:
+            kwargs['capacity_adults'] = kwargs.pop('max_adult')
+        if 'max_children' in kwargs and 'capacity_children' not in kwargs:
+            kwargs['capacity_children'] = kwargs.pop('max_children')
+        return super()._adjust_kwargs(**kwargs)
+
 
 class CouponFactory(factory.django.DjangoModelFactory):
     """Factory for creating test Coupon objects."""
@@ -74,6 +84,14 @@ class CouponFactory(factory.django.DjangoModelFactory):
     active = True
     valid_from = factory.LazyFunction(date.today)
     valid_to = factory.LazyFunction(lambda: date.today() + timedelta(days=365))
+
+    @classmethod
+    def _adjust_kwargs(cls, **kwargs):
+        if 'discount_price' in kwargs and 'discount_percentage' not in kwargs:
+            kwargs['discount_percentage'] = kwargs.pop('discount_price')
+        if 'is_active' in kwargs and 'active' not in kwargs:
+            kwargs['active'] = kwargs.pop('is_active')
+        return super()._adjust_kwargs(**kwargs)
 
 
 class ServiceFactory(factory.django.DjangoModelFactory):

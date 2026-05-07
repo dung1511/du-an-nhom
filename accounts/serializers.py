@@ -19,6 +19,7 @@ class ProfileSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=False, allow_blank=True)
     last_name = serializers.CharField(required=False, allow_blank=True)
     email = serializers.EmailField(required=False)
+    role = serializers.CharField(read_only=True)
     phone_number = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     profile_picture = serializers.ImageField(required=False, allow_null=True)
 
@@ -30,6 +31,7 @@ class ProfileSerializer(serializers.Serializer):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
+            'role': profile.get_role_display(),
             'phone_number': profile.phone_number,
             'profile_picture': profile.profile_picture.url if profile.profile_picture else None,
         }
@@ -68,6 +70,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class AdminUserSerializer(serializers.ModelSerializer):
     phone_number = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -79,6 +82,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
             'email',
             'is_active',
             'is_staff',
+            'role',
             'date_joined',
             'phone_number',
         ]
@@ -86,3 +90,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
     def get_phone_number(self, obj):
         profile = getattr(obj, 'profile', None)
         return profile.phone_number if profile else None
+
+    def get_role(self, obj):
+        profile = getattr(obj, 'profile', None)
+        return profile.get_role_display() if profile else 'Khách hàng'

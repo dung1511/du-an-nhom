@@ -3,7 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db import IntegrityError
 from .models import Profile
 from .forms import ProfileForm  
 
@@ -11,14 +10,10 @@ from .forms import ProfileForm
 def sign_up(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
-        username = (request.POST.get('username') or '').strip()
-        email = (request.POST.get('email') or '').strip()
+        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
-
-        if not username:
-            messages.error(request, 'Username is required', extra_tags='danger')
-            return redirect('accounts:sign_up')
 
         # Check if passwords match
         if password != confirm_password:
@@ -26,7 +21,7 @@ def sign_up(request):
             return redirect('accounts:sign_up')
 
         # Check if username or email already exists
-        if User.objects.filter(username__iexact=username).exists():
+        if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists', extra_tags='danger')
             return redirect('accounts:sign_up')
         if User.objects.filter(email=email).exists():
@@ -34,12 +29,8 @@ def sign_up(request):
             return redirect('accounts:sign_up')
 
         # Create the user
-        try:
-            user = User.objects.create_user(first_name=first_name, username=username, email=email, password=password)
-            user.save()
-        except IntegrityError:
-            messages.error(request, 'Username already exists', extra_tags='danger')
-            return redirect('accounts:sign_up')
+        user = User.objects.create_user(first_name=first_name, username=username, email=email, password=password)
+        user.save()
 
         messages.success(request, 'Account created successfully', extra_tags='success')
         return redirect('accounts:sign_up')  # Redirect to login after signup

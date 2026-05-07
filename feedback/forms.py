@@ -1,4 +1,6 @@
 from django import forms
+from rooms.models import Room
+
 from .models import Feedback
 
 class FeedbackForm(forms.ModelForm):
@@ -27,3 +29,20 @@ class FeedbackForm(forms.ModelForm):
             # For non-authenticated users, make all fields editable and required
             self.fields['name'].required = True
             self.fields['email'].required = True
+
+
+class FeedbackListForm(FeedbackForm):
+    room = forms.ModelChoiceField(
+        queryset=Room.objects.all().order_by('name'),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label='Chọn phòng để đánh giá',
+    )
+
+    class Meta:
+        model = Feedback
+        fields = ['room', 'name', 'email', 'country', 'rating', 'comment']
+        widgets = {
+            'country': forms.TextInput(attrs={'placeholder': 'Quê quán / quốc gia', 'class': 'form-control'}),
+            'rating': forms.RadioSelect(choices=[(i, f'⭐ {i}') for i in range(1, 6)]),
+            'comment': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Chia sẻ trải nghiệm của bạn...', 'class': 'form-control'}),
+        }

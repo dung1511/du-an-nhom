@@ -1,0 +1,957 @@
+............................F.F.F...FFF.FF..........F.F.......
+ERROR: Coverage failure: total of 55 is less than fail-under=70
+                                                                         [100%]
+================================== FAILURES ===================================
+___________________ TestRoomListAPIView.test_list_all_rooms ___________________
+
+self = <rooms.tests.test_views.TestRoomListAPIView object at 0x0000016D34602D50>
+api_client = <rest_framework.test.APIClient object at 0x0000016D3673E490>
+
+    def test_list_all_rooms(self, api_client):
+        """Test retrieving list of all rooms."""
+        # Create test data
+        RoomFactory.create_batch(5)
+    
+        # Make request
+        url = reverse('rooms:api_rooms_list')
+        response = api_client.get(url)
+    
+        # Assert
+        assert response.status_code == status.HTTP_200_OK
+>       assert len(response.data) >= 5
+E       assert 2 >= 5
+E        +  where 2 = len({'pagination': {'has_next': False, 'has_previous': False, 'limit': 10, 'page': 1, ...}, 'results': [{'id': 34, 'name':...autiful test room', 'price': '150.00', 'image': None, 'availability_status': 'Ph\xf2ng tr\u1ed1ng', 'is_available_now': True}]})
+E        +    where {'pagination': {'has_next': False, 'has_previous': False, 'limit': 10, 'page': 1, ...}, 'results': [{'id': 34, 'name':...autiful test room', 'price': '150.00', 'image': None, 'availability_status': 'Ph\xf2ng tr\u1ed1ng', 'is_available_now': True}]} = <Response status_code=200, "application/json">.data
+
+rooms\tests\test_views.py:44: AssertionError
+__________________ TestRoomListAPIView.test_room_detail_view __________________
+
+self = <rooms.tests.test_views.TestRoomListAPIView object at 0x0000016D34638D60>
+api_client = <rest_framework.test.APIClient object at 0x0000016D361CC3E0>
+
+    def test_room_detail_view(self, api_client):
+        """Test retrieving a single room."""
+>       room = RoomFactory(room_title="Ocean View")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+rooms\tests\test_views.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:43: in __call__
+    return cls.create(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:539: in create
+    return cls._generate(enums.CREATE_STRATEGY, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:122: in _generate
+    return super()._generate(strategy, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:468: in _generate
+    return step.build()
+           ^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\builder.py:274: in build
+    instance = self.factory_meta.instantiate(
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:320: in instantiate
+    return self.factory._create(model, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:175: in _create
+    return manager.create(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\query.py:667: in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Room: Room 51>, args = (), kwargs = {'room_title': 'Ocean View'}
+cls = <class 'rooms.models.Room'>, opts = <Options for Room>
+_setattr = <built-in function setattr>, _DEFERRED = <Deferred field>
+fields_iter = <tuple_iterator object at 0x0000016D364EB2E0>, val = None
+field = <django.db.models.fields.files.ImageField: image>
+is_related_object = False, rel_obj = <RoomCategory: Category 52>
+property_names = frozenset({'availability_status', 'pk'})
+
+    def __init__(self, *args, **kwargs):
+        # Alias some things as locals to avoid repeat global lookups
+        cls = self.__class__
+        opts = self._meta
+        _setattr = setattr
+        _DEFERRED = DEFERRED
+        if opts.abstract:
+            raise TypeError("Abstract models cannot be instantiated.")
+    
+        pre_init.send(sender=cls, args=args, kwargs=kwargs)
+    
+        # Set up the storage for instance state
+        self._state = ModelState()
+    
+        # There is a rather weird disparity here; if kwargs, it's set, then
+        # args overrides it. It should be one or the other; don't duplicate the
+        # work The reason for the kwargs check is that standard iterator passes
+        # in by args, and instantiation for iteration is 33% faster.
+        if len(args) > len(opts.concrete_fields):
+            # Daft, but matches old exception sans the err msg.
+            raise IndexError("Number of args exceeds number of fields")
+    
+        if not kwargs:
+            fields_iter = iter(opts.concrete_fields)
+            # The ordering of the zip calls matter - zip throws StopIteration
+            # when an iter throws it. So if the first iter throws it, the
+            # second is *not* consumed. We rely on this, so don't change the
+            # order without changing the logic.
+            for val, field in zip(args, fields_iter):
+                if val is _DEFERRED:
+                    continue
+                _setattr(self, field.attname, val)
+        else:
+            # Slower, kwargs-ready version.
+            fields_iter = iter(opts.fields)
+            for val, field in zip(args, fields_iter):
+                if val is _DEFERRED:
+                    continue
+                _setattr(self, field.attname, val)
+                if kwargs.pop(field.name, NOT_PROVIDED) is not NOT_PROVIDED:
+                    raise TypeError(
+                        f"{cls.__qualname__}() got both positional and "
+                        f"keyword arguments for field '{field.name}'."
+                    )
+    
+        # Now we're left with the unprocessed fields that *must* come from
+        # keywords, or default.
+    
+        for field in fields_iter:
+            is_related_object = False
+            # Virtual field
+            if field.column is None or field.generated:
+                continue
+            if kwargs:
+                if isinstance(field.remote_field, ForeignObjectRel):
+                    try:
+                        # Assume object instance was passed in.
+                        rel_obj = kwargs.pop(field.name)
+                        is_related_object = True
+                    except KeyError:
+                        try:
+                            # Object instance wasn't passed in -- must be an
+                            # ID.
+                            val = kwargs.pop(field.attname)
+                        except KeyError:
+                            val = field.get_default()
+                else:
+                    try:
+                        val = kwargs.pop(field.attname)
+                    except KeyError:
+                        # This is done with an exception rather than the
+                        # default argument on pop because we don't want
+                        # get_default() to be evaluated, and then not used.
+                        # Refs #12057.
+                        val = field.get_default()
+            else:
+                val = field.get_default()
+    
+            if is_related_object:
+                # If we are passed a related instance, set it using the
+                # field.name instead of field.attname (e.g. "user" instead of
+                # "user_id") so that the object gets properly cached (and type
+                # checked) by the RelatedObjectDescriptor.
+                if rel_obj is not _DEFERRED:
+                    _setattr(self, field.name, rel_obj)
+            else:
+                if val is not _DEFERRED:
+                    _setattr(self, field.attname, val)
+    
+        if kwargs:
+            property_names = opts._property_names
+            unexpected = ()
+            for prop, value in kwargs.items():
+                # Any remaining kwargs must correspond to properties or virtual
+                # fields.
+                if prop in property_names:
+                    if value is not _DEFERRED:
+                        _setattr(self, prop, value)
+                else:
+                    try:
+                        opts.get_field(prop)
+                    except FieldDoesNotExist:
+                        unexpected += (prop,)
+                    else:
+                        if value is not _DEFERRED:
+                            _setattr(self, prop, value)
+            if unexpected:
+                unexpected_names = ", ".join(repr(n) for n in unexpected)
+>               raise TypeError(
+                    f"{cls.__name__}() got unexpected keyword arguments: "
+                    f"{unexpected_names}"
+                )
+E               TypeError: Room() got unexpected keyword arguments: 'room_title'
+
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\base.py:590: TypeError
+___________ TestRoomSearchAPIView.test_search_rooms_valid_criteria ____________
+
+self = <rooms.tests.test_views.TestRoomSearchAPIView object at 0x0000016D34602FD0>
+api_client = <rest_framework.test.APIClient object at 0x0000016D34EBA570>
+
+    def test_search_rooms_valid_criteria(self, api_client):
+        """Test searching rooms with valid criteria."""
+        # Create available rooms
+        category = RoomCategoryFactory()
+>       room = RoomFactory(
+            category=category,
+            max_adult=2,
+            max_children=1,
+            price=Decimal("150.00")
+        )
+
+rooms\tests\test_views.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:43: in __call__
+    return cls.create(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:539: in create
+    return cls._generate(enums.CREATE_STRATEGY, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:122: in _generate
+    return super()._generate(strategy, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:468: in _generate
+    return step.build()
+           ^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\builder.py:274: in build
+    instance = self.factory_meta.instantiate(
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:320: in instantiate
+    return self.factory._create(model, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:175: in _create
+    return manager.create(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\query.py:667: in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Room: Room 52>, args = (), kwargs = {'max_adult': 2, 'max_children': 1}
+cls = <class 'rooms.models.Room'>, opts = <Options for Room>
+_setattr = <built-in function setattr>, _DEFERRED = <Deferred field>
+fields_iter = <tuple_iterator object at 0x0000016D364EAD70>, val = None
+field = <django.db.models.fields.files.ImageField: image>
+is_related_object = False, rel_obj = <RoomCategory: Category 53>
+property_names = frozenset({'availability_status', 'pk'})
+
+    def __init__(self, *args, **kwargs):
+        # Alias some things as locals to avoid repeat global lookups
+        cls = self.__class__
+        opts = self._meta
+        _setattr = setattr
+        _DEFERRED = DEFERRED
+        if opts.abstract:
+            raise TypeError("Abstract models cannot be instantiated.")
+    
+        pre_init.send(sender=cls, args=args, kwargs=kwargs)
+    
+        # Set up the storage for instance state
+        self._state = ModelState()
+    
+        # There is a rather weird disparity here; if kwargs, it's set, then
+        # args overrides it. It should be one or the other; don't duplicate the
+        # work The reason for the kwargs check is that standard iterator passes
+        # in by args, and instantiation for iteration is 33% faster.
+        if len(args) > len(opts.concrete_fields):
+            # Daft, but matches old exception sans the err msg.
+            raise IndexError("Number of args exceeds number of fields")
+    
+        if not kwargs:
+            fields_iter = iter(opts.concrete_fields)
+            # The ordering of the zip calls matter - zip throws StopIteration
+            # when an iter throws it. So if the first iter throws it, the
+            # second is *not* consumed. We rely on this, so don't change the
+            # order without changing the logic.
+            for val, field in zip(args, fields_iter):
+                if val is _DEFERRED:
+                    continue
+                _setattr(self, field.attname, val)
+        else:
+            # Slower, kwargs-ready version.
+            fields_iter = iter(opts.fields)
+            for val, field in zip(args, fields_iter):
+                if val is _DEFERRED:
+                    continue
+                _setattr(self, field.attname, val)
+                if kwargs.pop(field.name, NOT_PROVIDED) is not NOT_PROVIDED:
+                    raise TypeError(
+                        f"{cls.__qualname__}() got both positional and "
+                        f"keyword arguments for field '{field.name}'."
+                    )
+    
+        # Now we're left with the unprocessed fields that *must* come from
+        # keywords, or default.
+    
+        for field in fields_iter:
+            is_related_object = False
+            # Virtual field
+            if field.column is None or field.generated:
+                continue
+            if kwargs:
+                if isinstance(field.remote_field, ForeignObjectRel):
+                    try:
+                        # Assume object instance was passed in.
+                        rel_obj = kwargs.pop(field.name)
+                        is_related_object = True
+                    except KeyError:
+                        try:
+                            # Object instance wasn't passed in -- must be an
+                            # ID.
+                            val = kwargs.pop(field.attname)
+                        except KeyError:
+                            val = field.get_default()
+                else:
+                    try:
+                        val = kwargs.pop(field.attname)
+                    except KeyError:
+                        # This is done with an exception rather than the
+                        # default argument on pop because we don't want
+                        # get_default() to be evaluated, and then not used.
+                        # Refs #12057.
+                        val = field.get_default()
+            else:
+                val = field.get_default()
+    
+            if is_related_object:
+                # If we are passed a related instance, set it using the
+                # field.name instead of field.attname (e.g. "user" instead of
+                # "user_id") so that the object gets properly cached (and type
+                # checked) by the RelatedObjectDescriptor.
+                if rel_obj is not _DEFERRED:
+                    _setattr(self, field.name, rel_obj)
+            else:
+                if val is not _DEFERRED:
+                    _setattr(self, field.attname, val)
+    
+        if kwargs:
+            property_names = opts._property_names
+            unexpected = ()
+            for prop, value in kwargs.items():
+                # Any remaining kwargs must correspond to properties or virtual
+                # fields.
+                if prop in property_names:
+                    if value is not _DEFERRED:
+                        _setattr(self, prop, value)
+                else:
+                    try:
+                        opts.get_field(prop)
+                    except FieldDoesNotExist:
+                        unexpected += (prop,)
+                    else:
+                        if value is not _DEFERRED:
+                            _setattr(self, prop, value)
+            if unexpected:
+                unexpected_names = ", ".join(repr(n) for n in unexpected)
+>               raise TypeError(
+                    f"{cls.__name__}() got unexpected keyword arguments: "
+                    f"{unexpected_names}"
+                )
+E               TypeError: Room() got unexpected keyword arguments: 'max_adult', 'max_children'
+
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\base.py:590: TypeError
+__________ TestRoomSearchAPIView.test_search_rooms_capacity_not_met ___________
+
+self = <rooms.tests.test_views.TestRoomSearchAPIView object at 0x0000016D3462D010>
+api_client = <rest_framework.test.APIClient object at 0x0000016D34675150>
+
+    def test_search_rooms_capacity_not_met(self, api_client):
+        """Test search where no rooms match capacity."""
+        # Create room with low capacity
+>       RoomFactory(max_adult=1, max_children=0)
+
+rooms\tests\test_views.py:148: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:43: in __call__
+    return cls.create(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:539: in create
+    return cls._generate(enums.CREATE_STRATEGY, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:122: in _generate
+    return super()._generate(strategy, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:468: in _generate
+    return step.build()
+           ^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\builder.py:274: in build
+    instance = self.factory_meta.instantiate(
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:320: in instantiate
+    return self.factory._create(model, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:175: in _create
+    return manager.create(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\query.py:667: in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Room: Room 53>, args = (), kwargs = {'max_adult': 1, 'max_children': 0}
+cls = <class 'rooms.models.Room'>, opts = <Options for Room>
+_setattr = <built-in function setattr>, _DEFERRED = <Deferred field>
+fields_iter = <tuple_iterator object at 0x0000016D364E9AB0>, val = None
+field = <django.db.models.fields.files.ImageField: image>
+is_related_object = False, rel_obj = <RoomCategory: Category 54>
+property_names = frozenset({'availability_status', 'pk'})
+
+    def __init__(self, *args, **kwargs):
+        # Alias some things as locals to avoid repeat global lookups
+        cls = self.__class__
+        opts = self._meta
+        _setattr = setattr
+        _DEFERRED = DEFERRED
+        if opts.abstract:
+            raise TypeError("Abstract models cannot be instantiated.")
+    
+        pre_init.send(sender=cls, args=args, kwargs=kwargs)
+    
+        # Set up the storage for instance state
+        self._state = ModelState()
+    
+        # There is a rather weird disparity here; if kwargs, it's set, then
+        # args overrides it. It should be one or the other; don't duplicate the
+        # work The reason for the kwargs check is that standard iterator passes
+        # in by args, and instantiation for iteration is 33% faster.
+        if len(args) > len(opts.concrete_fields):
+            # Daft, but matches old exception sans the err msg.
+            raise IndexError("Number of args exceeds number of fields")
+    
+        if not kwargs:
+            fields_iter = iter(opts.concrete_fields)
+            # The ordering of the zip calls matter - zip throws StopIteration
+            # when an iter throws it. So if the first iter throws it, the
+            # second is *not* consumed. We rely on this, so don't change the
+            # order without changing the logic.
+            for val, field in zip(args, fields_iter):
+                if val is _DEFERRED:
+                    continue
+                _setattr(self, field.attname, val)
+        else:
+            # Slower, kwargs-ready version.
+            fields_iter = iter(opts.fields)
+            for val, field in zip(args, fields_iter):
+                if val is _DEFERRED:
+                    continue
+                _setattr(self, field.attname, val)
+                if kwargs.pop(field.name, NOT_PROVIDED) is not NOT_PROVIDED:
+                    raise TypeError(
+                        f"{cls.__qualname__}() got both positional and "
+                        f"keyword arguments for field '{field.name}'."
+                    )
+    
+        # Now we're left with the unprocessed fields that *must* come from
+        # keywords, or default.
+    
+        for field in fields_iter:
+            is_related_object = False
+            # Virtual field
+            if field.column is None or field.generated:
+                continue
+            if kwargs:
+                if isinstance(field.remote_field, ForeignObjectRel):
+                    try:
+                        # Assume object instance was passed in.
+                        rel_obj = kwargs.pop(field.name)
+                        is_related_object = True
+                    except KeyError:
+                        try:
+                            # Object instance wasn't passed in -- must be an
+                            # ID.
+                            val = kwargs.pop(field.attname)
+                        except KeyError:
+                            val = field.get_default()
+                else:
+                    try:
+                        val = kwargs.pop(field.attname)
+                    except KeyError:
+                        # This is done with an exception rather than the
+                        # default argument on pop because we don't want
+                        # get_default() to be evaluated, and then not used.
+                        # Refs #12057.
+                        val = field.get_default()
+            else:
+                val = field.get_default()
+    
+            if is_related_object:
+                # If we are passed a related instance, set it using the
+                # field.name instead of field.attname (e.g. "user" instead of
+                # "user_id") so that the object gets properly cached (and type
+                # checked) by the RelatedObjectDescriptor.
+                if rel_obj is not _DEFERRED:
+                    _setattr(self, field.name, rel_obj)
+            else:
+                if val is not _DEFERRED:
+                    _setattr(self, field.attname, val)
+    
+        if kwargs:
+            property_names = opts._property_names
+            unexpected = ()
+            for prop, value in kwargs.items():
+                # Any remaining kwargs must correspond to properties or virtual
+                # fields.
+                if prop in property_names:
+                    if value is not _DEFERRED:
+                        _setattr(self, prop, value)
+                else:
+                    try:
+                        opts.get_field(prop)
+                    except FieldDoesNotExist:
+                        unexpected += (prop,)
+                    else:
+                        if value is not _DEFERRED:
+                            _setattr(self, prop, value)
+            if unexpected:
+                unexpected_names = ", ".join(repr(n) for n in unexpected)
+>               raise TypeError(
+                    f"{cls.__name__}() got unexpected keyword arguments: "
+                    f"{unexpected_names}"
+                )
+E               TypeError: Room() got unexpected keyword arguments: 'max_adult', 'max_children'
+
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\base.py:590: TypeError
+___ TestReservationListCreateAPIView.test_create_reservation_authenticated ____
+
+self = <rooms.tests.test_views.TestReservationListCreateAPIView object at 0x0000016D34603390>
+authenticated_client = <rest_framework.test.APIClient object at 0x0000016D345A1B80>
+user = <User: testuser>
+
+    def test_create_reservation_authenticated(self, authenticated_client, user):
+        """Test creating reservation when authenticated."""
+        room = RoomFactory()
+    
+        url = reverse('rooms:api_booking_create')
+        data = {
+            'room': room.id,
+            'check_in_date': (date.today() + timedelta(days=1)).isoformat(),
+            'check_out_date': (date.today() + timedelta(days=3)).isoformat(),
+            'adults': 2,
+            'children': 0,
+            'first_name': 'Nguy\u1ec5n',
+            'last_name': 'V\u0103n A',
+            'email': user.email,
+            'phone': '0123456789',
+            'address': '123 \u0110\u01b0\u1eddng A',
+            'city': 'H\xe0 N\u1ed9i',
+            'state': 'H\xe0 N\u1ed9i',
+            'postcode': '100000'
+        }
+    
+        response = authenticated_client.post(url, data, format='json')
+    
+>       assert response.status_code == status.HTTP_201_CREATED
+E       assert 400 == 201
+E        +  where 400 = <Response status_code=400, "application/json">.status_code
+E        +  and   201 = status.HTTP_201_CREATED
+
+rooms\tests\test_views.py:191: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  django.request:log.py:249 Bad Request: /api/bookings/
+__ TestReservationListCreateAPIView.test_create_reservation_unauthenticated ___
+
+self = <rooms.tests.test_views.TestReservationListCreateAPIView object at 0x0000016D346034D0>
+api_client = <rest_framework.test.APIClient object at 0x0000016D36723020>
+
+    def test_create_reservation_unauthenticated(self, api_client):
+        """Test creating reservation without authentication."""
+        room = RoomFactory()
+    
+        url = reverse('rooms:api_reservations_list')
+        data = {
+            'room': room.id,
+            'adults': 2
+        }
+    
+        response = api_client.post(url, data, format='json')
+    
+        # Should require authentication
+>       assert response.status_code == status.HTTP_401_UNAUTHORIZED
+E       assert 403 == 401
+E        +  where 403 = <Response status_code=403, "application/json">.status_code
+E        +  and   401 = status.HTTP_401_UNAUTHORIZED
+
+rooms\tests\test_views.py:211: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  django.request:log.py:249 Forbidden: /api/reservations/
+_ TestReservationListCreateAPIView.test_list_user_reservations_unauthenticated _
+
+self = <rooms.tests.test_views.TestReservationListCreateAPIView object at 0x0000016D34639350>
+api_client = <rest_framework.test.APIClient object at 0x0000016D34F11FD0>
+
+    def test_list_user_reservations_unauthenticated(self, api_client):
+        """Test listing reservations without authentication."""
+        url = reverse('rooms:api_reservations_list')
+        response = api_client.get(url)
+    
+        # Should require authentication
+>       assert response.status_code == status.HTTP_401_UNAUTHORIZED
+E       assert 403 == 401
+E        +  where 403 = <Response status_code=403, "application/json">.status_code
+E        +  and   401 = status.HTTP_401_UNAUTHORIZED
+
+rooms\tests\test_views.py:231: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  django.request:log.py:249 Forbidden: /api/reservations/
+____ TestReservationListCreateAPIView.test_create_reservation_invalid_room ____
+
+self = <rooms.tests.test_views.TestReservationListCreateAPIView object at 0x0000016D3462D250>
+authenticated_client = <rest_framework.test.APIClient object at 0x0000016D34F071E0>
+
+    def test_create_reservation_invalid_room(self, authenticated_client):
+        """Test creating reservation with invalid room ID."""
+        url = reverse('rooms:api_reservations_list')
+        data = {
+            'room': 99999,  # Non-existent room
+            'check_in_date': (date.today() + timedelta(days=1)).isoformat(),
+            'check_out_date': (date.today() + timedelta(days=3)).isoformat(),
+            'adults': 2,
+            'children': 0,
+            'first_name': 'Test',
+            'last_name': 'User',
+            'email': 'test@example.com',
+            'phone': '0123456789',
+            'address': '123 Street',
+            'city': 'City',
+            'state': 'State',
+            'postcode': '00000'
+        }
+    
+        response = authenticated_client.post(url, data, format='json')
+    
+>       assert response.status_code == status.HTTP_400_BAD_REQUEST
+E       assert 405 == 400
+E        +  where 405 = <Response status_code=405, "application/json">.status_code
+E        +  and   400 = status.HTTP_400_BAD_REQUEST
+
+rooms\tests\test_views.py:254: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  django.request:log.py:249 Method Not Allowed: /api/reservations/
+_____________ test_frontdesk_print_slip_shows_updated_momo_amount _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000016D34B47E00>
+
+    @pytest.mark.django_db
+    def test_frontdesk_print_slip_shows_updated_momo_amount(monkeypatch):
+        """Test the front desk slip reflects updated damage totals for MoMo QR."""
+        admin_user = UserFactory(
+            username='frontdesk-admin',
+            email='frontdesk-admin@example.com',
+            password='adminpass123',
+        )
+        admin_user.is_staff = True
+        admin_user.is_superuser = True
+        admin_user.save(update_fields=['is_staff', 'is_superuser'])
+    
+        reservation = ReservationFactory(
+            payment_method='momo_qr',
+            subtotal=Decimal('1000.00'),
+            gst=Decimal('180.00'),
+            total=Decimal('1180.00'),
+            damage_reported=True,
+            damage_notes='Broken lamp',
+            is_checked_in=True,
+            checked_in_adults=2,
+            checked_in_children=0,
+            email='',
+        )
+        reservation.sync_financial_fields()
+        reservation.is_checked_out = True
+        reservation.checkout_at = datetime.now()
+        reservation.save(
+            update_fields=[
+                'damage_reported',
+                'damage_notes',
+                'damage_fee',
+                'final_total',
+                'deposit_amount',
+                'balance_due',
+                'is_checked_in',
+                'checked_in_adults',
+                'checked_in_children',
+                'is_checked_out',
+                'checkout_at',
+            ]
+        )
+    
+        url = reverse('rooms:frontdesk_print_slip', kwargs={'booking_code': reservation.booking_code})
+        request = RequestFactory().get(url)
+        request.user = admin_user
+    
+        from rooms import views as rooms_views
+    
+        monkeypatch.setattr(rooms_views.messages, 'success', lambda *args, **kwargs: None)
+        monkeypatch.setattr(rooms_views.messages, 'warning', lambda *args, **kwargs: None)
+        monkeypatch.setattr(rooms_views.messages, 'error', lambda *args, **kwargs: None)
+    
+        response = rooms_views.frontdesk_print_slip.__wrapped__(request, booking_code=reservation.booking_code)
+    
+        assert response.status_code == status.HTTP_200_OK
+>       assert 'QR MoMo' in response.content.decode('utf-8')
+E       assert 'QR MoMo' in '<!DOCTYPE html>\n<html lang="vi">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=devic... 05/05/2026 23:07</div>\n                </div>\n            </div>\n        </section>\n    </main>\n</body>\n</html>'
+E        +  where '<!DOCTYPE html>\n<html lang="vi">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=devic... 05/05/2026 23:07</div>\n                </div>\n            </div>\n        </section>\n    </main>\n</body>\n</html>' = <built-in method decode of bytes object at 0x0000016D32FCF030>('utf-8')
+E        +    where <built-in method decode of bytes object at 0x0000016D32FCF030> = b'<!DOCTYPE html>\n<html lang="vi">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=devi... 05/05/2026 23:07</div>\n                </div>\n            </div>\n        </section>\n    </main>\n</body>\n</html>'.decode
+E        +      where b'<!DOCTYPE html>\n<html lang="vi">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=devi... 05/05/2026 23:07</div>\n                </div>\n            </div>\n        </section>\n    </main>\n</body>\n</html>' = <HttpResponse status_code=200, "text/html; charset=utf-8">.content
+
+rooms\tests\test_views.py:467: AssertionError
+_______ TestReservationPaymentAPIView.test_process_payment_with_coupon ________
+
+self = <rooms.tests.test_views.TestReservationPaymentAPIView object at 0x0000016D34603D90>
+authenticated_client = <rest_framework.test.APIClient object at 0x0000016D34973120>
+user = <User: testuser>
+
+    def test_process_payment_with_coupon(self, authenticated_client, user):
+        """Test processing payment with coupon code."""
+>       coupon = CouponFactory(code="SAVE20", discount_price=Decimal("20.00"), is_active=True)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+rooms\tests\test_views.py:491: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:43: in __call__
+    return cls.create(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:539: in create
+    return cls._generate(enums.CREATE_STRATEGY, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:122: in _generate
+    return super()._generate(strategy, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:468: in _generate
+    return step.build()
+           ^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\builder.py:274: in build
+    instance = self.factory_meta.instantiate(
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\base.py:320: in instantiate
+    return self.factory._create(model, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:175: in _create
+    return manager.create(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\manager.py:87: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\query.py:667: in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Coupon: SAVE20>, args = ()
+kwargs = {'discount_price': Decimal('20.00'), 'is_active': True}
+cls = <class 'rooms.models.Coupon'>, opts = <Options for Coupon>
+_setattr = <built-in function setattr>, _DEFERRED = <Deferred field>
+fields_iter = <tuple_iterator object at 0x0000016D36363A60>
+val = datetime.date(2027, 5, 5)
+field = <django.db.models.fields.DateField: valid_to>, is_related_object = False
+property_names = frozenset({'pk'})
+
+    def __init__(self, *args, **kwargs):
+        # Alias some things as locals to avoid repeat global lookups
+        cls = self.__class__
+        opts = self._meta
+        _setattr = setattr
+        _DEFERRED = DEFERRED
+        if opts.abstract:
+            raise TypeError("Abstract models cannot be instantiated.")
+    
+        pre_init.send(sender=cls, args=args, kwargs=kwargs)
+    
+        # Set up the storage for instance state
+        self._state = ModelState()
+    
+        # There is a rather weird disparity here; if kwargs, it's set, then
+        # args overrides it. It should be one or the other; don't duplicate the
+        # work The reason for the kwargs check is that standard iterator passes
+        # in by args, and instantiation for iteration is 33% faster.
+        if len(args) > len(opts.concrete_fields):
+            # Daft, but matches old exception sans the err msg.
+            raise IndexError("Number of args exceeds number of fields")
+    
+        if not kwargs:
+            fields_iter = iter(opts.concrete_fields)
+            # The ordering of the zip calls matter - zip throws StopIteration
+            # when an iter throws it. So if the first iter throws it, the
+            # second is *not* consumed. We rely on this, so don't change the
+            # order without changing the logic.
+            for val, field in zip(args, fields_iter):
+                if val is _DEFERRED:
+                    continue
+                _setattr(self, field.attname, val)
+        else:
+            # Slower, kwargs-ready version.
+            fields_iter = iter(opts.fields)
+            for val, field in zip(args, fields_iter):
+                if val is _DEFERRED:
+                    continue
+                _setattr(self, field.attname, val)
+                if kwargs.pop(field.name, NOT_PROVIDED) is not NOT_PROVIDED:
+                    raise TypeError(
+                        f"{cls.__qualname__}() got both positional and "
+                        f"keyword arguments for field '{field.name}'."
+                    )
+    
+        # Now we're left with the unprocessed fields that *must* come from
+        # keywords, or default.
+    
+        for field in fields_iter:
+            is_related_object = False
+            # Virtual field
+            if field.column is None or field.generated:
+                continue
+            if kwargs:
+                if isinstance(field.remote_field, ForeignObjectRel):
+                    try:
+                        # Assume object instance was passed in.
+                        rel_obj = kwargs.pop(field.name)
+                        is_related_object = True
+                    except KeyError:
+                        try:
+                            # Object instance wasn't passed in -- must be an
+                            # ID.
+                            val = kwargs.pop(field.attname)
+                        except KeyError:
+                            val = field.get_default()
+                else:
+                    try:
+                        val = kwargs.pop(field.attname)
+                    except KeyError:
+                        # This is done with an exception rather than the
+                        # default argument on pop because we don't want
+                        # get_default() to be evaluated, and then not used.
+                        # Refs #12057.
+                        val = field.get_default()
+            else:
+                val = field.get_default()
+    
+            if is_related_object:
+                # If we are passed a related instance, set it using the
+                # field.name instead of field.attname (e.g. "user" instead of
+                # "user_id") so that the object gets properly cached (and type
+                # checked) by the RelatedObjectDescriptor.
+                if rel_obj is not _DEFERRED:
+                    _setattr(self, field.name, rel_obj)
+            else:
+                if val is not _DEFERRED:
+                    _setattr(self, field.attname, val)
+    
+        if kwargs:
+            property_names = opts._property_names
+            unexpected = ()
+            for prop, value in kwargs.items():
+                # Any remaining kwargs must correspond to properties or virtual
+                # fields.
+                if prop in property_names:
+                    if value is not _DEFERRED:
+                        _setattr(self, prop, value)
+                else:
+                    try:
+                        opts.get_field(prop)
+                    except FieldDoesNotExist:
+                        unexpected += (prop,)
+                    else:
+                        if value is not _DEFERRED:
+                            _setattr(self, prop, value)
+            if unexpected:
+                unexpected_names = ", ".join(repr(n) for n in unexpected)
+>               raise TypeError(
+                    f"{cls.__name__}() got unexpected keyword arguments: "
+                    f"{unexpected_names}"
+                )
+E               TypeError: Coupon() got unexpected keyword arguments: 'discount_price', 'is_active'
+
+..\..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\db\models\base.py:590: TypeError
+============================== warnings summary ===============================
+rooms/tests/test_deposit_receipt.py::test_upload_deposit_receipt_api_and_notify
+  C:\Users\ASUS\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\django\core\mail\__init__.py:201: RemovedInDjango70Warning: Using (name, address) pairs in the ADMINS setting is deprecated. Replace with a list of email address strings.
+    _send_server_message(
+
+rooms/tests/test_models.py: 14 warnings
+rooms/tests/test_views.py: 24 warnings
+  C:\Users\ASUS\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:182: DeprecationWarning: UserFactory._after_postgeneration will stop saving the instance after postgeneration hooks in the next major release.
+  If the save call is extraneous, set skip_postgeneration_save=True in the UserFactory.Meta.
+  To keep saving the instance, move the save call to your postgeneration hooks or override _after_postgeneration.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.3-final-0 _______________
+
+Name                                                                                    Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------------------------------------------------
+accounts\__init__.py                                                                        0      0   100%
+accounts\admin.py                                                                          21      4    81%   19-22
+accounts\apps.py                                                                            4      0   100%
+accounts\context_processors.py                                                             15     15     0%   1-23
+accounts\forms.py                                                                          27     14    48%   16-20, 23-31
+accounts\migrations\0001_initial.py                                                         7      0   100%
+accounts\migrations\0002_profile_role.py                                                    7      0   100%
+accounts\migrations\__init__.py                                                             0      0   100%
+accounts\models.py                                                                         35      7    80%   10-11, 30-31, 33-34, 43
+accounts\serializers.py                                                                    59     25    58%   14, 27-29, 40-51, 60-62, 65-68, 91-92, 95-96
+accounts\tests.py                                                                           1      1     0%   1
+accounts\urls.py                                                                            5      0   100%
+accounts\views.py                                                                         175    113    35%   29-30, 47-85, 90-107, 112-113, 119-128, 133-150, 158-165, 172-173, 176-177, 180, 183, 186-190, 201-225, 238-248, 255-256, 265
+rooms\__init__.py                                                                           0      0   100%
+rooms\admin.py                                                                             87     32    63%   9, 12, 15, 18, 21, 62-66, 71-73, 78-88, 109-120
+rooms\apps.py                                                                               4      0   100%
+rooms\context_processors.py                                                                 6      6     0%   1-8
+rooms\forms.py                                                                             28     17    39%   22-40, 43-44
+rooms\migrations\0001_initial.py                                                            7      0   100%
+rooms\migrations\0002_reservation_children_alter_reservation_adults.py                      4      0   100%
+rooms\migrations\0003_alter_reservation_check_in_date_and_more.py                           4      0   100%
+rooms\migrations\0004_room_capacity_adults_room_capacity_children_and_more.py               4      0   100%
+rooms\migrations\0005_alter_room_total_capacity.py                                          4      0   100%
+rooms\migrations\0006_reservation_is_checked_out.py                                         4      0   100%
+rooms\migrations\0007_reservation_payment_status.py                                         4      0   100%
+rooms\migrations\0008_service_reservation_services_and_totals.py                           13      2    85%   54-55
+rooms\migrations\0009_service_image.py                                                      4      0   100%
+rooms\migrations\0010_reservation_checkout_at.py                                            4      0   100%
+rooms\migrations\0011_reservation_deposit_and_damage_fields.py                             17      9    47%   12-20
+rooms\migrations\0012_reservation_checkin_fields.py                                         4      0   100%
+rooms\migrations\0013_reservation_invoice_notified_at.py                                    4      0   100%
+rooms\migrations\0014_alter_reservation_payment_method_alter_room_image_and_more.py         5      0   100%
+rooms\migrations\0015_reservation_actual_check_in_date_and_more.py                          5      0   100%
+rooms\migrations\0016_reservation_actual_check_out_date_and_more.py                         5      0   100%
+rooms\migrations\0017_alter_reservation_payment_method.py                                   4      0   100%
+rooms\migrations\0018_reservation_deposit_confirmed_and_more.py                             6      0   100%
+rooms\migrations\0019_reservation_canceled_at_reservation_canceled_reason_and_more.py       4      0   100%
+rooms\migrations\__init__.py                                                                0      0   100%
+rooms\models.py                                                                           274     77    72%   15-16, 20-21, 25-26, 31-37, 77, 83-137, 190-192, 223-226, 233, 259, 355-362, 381-388, 395-402, 414-422, 427, 433, 436, 443, 447, 452
+rooms\permissions.py                                                                        4      0   100%
+rooms\serializers.py                                                                      220     99    55%   88, 91, 94, 97, 100, 110-140, 143-167, 177-228, 378, 434-438, 448, 451-453, 456, 559-575
+rooms\templatetags\__init__.py                                                              0      0   100%
+rooms\templatetags\admin_dashboard_stats.py                                                91     72    21%   16, 24, 28-30, 34-35, 39, 43-61, 70, 77-99, 120-170
+rooms\tests.py                                                                              1      1     0%   1
+rooms\tests\__init__.py                                                                     0      0   100%
+rooms\tests\conftest.py                                                                    23      3    87%   62, 79, 92
+rooms\tests\factories.py                                                                   78      0   100%
+rooms\tests\test_capacity_limits.py                                                        19      0   100%
+rooms\tests\test_deposit_receipt.py                                                        46      1    98%   41
+rooms\tests\test_models.py                                                                164      0   100%
+rooms\tests\test_views.py                                                                 281     25    91%   60-64, 89-102, 150-161, 192-196, 468, 492-503
+rooms\upload_security.py                                                                   32     23    28%   23-50, 54-55
+rooms\urls.py                                                                               4      0   100%
+rooms\views.py                                                                           1180    800    32%   63, 78, 81-83, 111, 117, 122, 162-166, 217, 220-221, 226-233, 247-249, 259, 287-336, 363, 382-386, 393-430, 439, 455-683, 730, 751, 758, 761, 764-767, 770-773, 776-779, 809-866, 899, 945, 954-961, 970, 978-1008, 1019-1079, 1087-1170, 1174-1219, 1238, 1245-1248, 1259, 1272-1273, 1279, 1285, 1297, 1310-1311, 1336, 1377-1401, 1410-1414, 1423, 1427-1433, 1437-1448, 1458-1483, 1490-1497, 1509-1512, 1524-1525, 1529-1531, 1536-1564, 1582-1615, 1632-1670, 1689-1767, 1772-1865, 1891-1897, 1903-1904, 1912, 1921-1927, 1933, 1942-1943, 1987-1992, 2005, 2010-2091, 2112-2122, 2126-2200, 2206-2211, 2215-2216
+---------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                                    3004   1346    55%
+Coverage HTML written to dir htmlcov
+FAIL Required test coverage of 70% not reached. Total coverage: 55.19%
+=========================== short test summary info ===========================
+FAILED rooms/tests/test_views.py::TestRoomListAPIView::test_list_all_rooms - ...
+FAILED rooms/tests/test_views.py::TestRoomListAPIView::test_room_detail_view
+FAILED rooms/tests/test_views.py::TestRoomSearchAPIView::test_search_rooms_valid_criteria
+FAILED rooms/tests/test_views.py::TestRoomSearchAPIView::test_search_rooms_capacity_not_met
+FAILED rooms/tests/test_views.py::TestReservationListCreateAPIView::test_create_reservation_authenticated
+FAILED rooms/tests/test_views.py::TestReservationListCreateAPIView::test_create_reservation_unauthenticated
+FAILED rooms/tests/test_views.py::TestReservationListCreateAPIView::test_list_user_reservations_unauthenticated
+FAILED rooms/tests/test_views.py::TestReservationListCreateAPIView::test_create_reservation_invalid_room
+FAILED rooms/tests/test_views.py::test_frontdesk_print_slip_shows_updated_momo_amount
+FAILED rooms/tests/test_views.py::TestReservationPaymentAPIView::test_process_payment_with_coupon
+10 failed, 52 passed, 39 warnings in 102.07s (0:01:42)

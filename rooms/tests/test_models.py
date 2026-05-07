@@ -167,6 +167,21 @@ def test_reservation_payment_info():
 
 
 @pytest.mark.django_db
+def test_reservation_payment_method_choices():
+    """Test cash, MoMo QR, and card payment methods."""
+    cash_reservation = ReservationFactory(payment_method="cash")
+    momo_reservation = ReservationFactory(payment_method="momo_qr")
+    card_reservation = ReservationFactory(payment_method="cards")
+
+    assert cash_reservation.payment_method == "cash"
+    assert cash_reservation.get_payment_method_display() == "Tiền mặt"
+    assert momo_reservation.payment_method == "momo_qr"
+    assert momo_reservation.get_payment_method_display() == "Chuyển khoản MoMo"
+    assert card_reservation.payment_method == "cards"
+    assert card_reservation.get_payment_method_display() == "Quẹt thẻ"
+
+
+@pytest.mark.django_db
 def test_reservation_checkout():
     """Test reservation checkout status."""
     res = ReservationFactory(is_checked_out=False)
@@ -232,3 +247,32 @@ def test_reservation_string_repr():
     
     str_repr = str(res)
     assert "Suite 101" in str_repr
+
+
+@pytest.mark.django_db
+def test_reservation_booking_code():
+    """Test reservation booking code generation."""
+    res = ReservationFactory()
+
+    assert res.booking_code.startswith("BK")
+    assert len(res.booking_code) == 8
+
+
+@pytest.mark.django_db
+def test_reservation_deposit_and_balance():
+    """Test reservation deposit and remaining balance calculation."""
+    res = ReservationFactory(total=Decimal("1000.00"), deposit_percentage=Decimal("30.00"))
+    res.sync_financial_fields()
+
+    assert res.deposit_amount == Decimal("300.00")
+    assert res.balance_due == Decimal("700.00")
+
+
+@pytest.mark.django_db
+def test_reservation_damage_fee():
+    """Test reservation damage fee calculation."""
+    res = ReservationFactory(total=Decimal("1000.00"), damage_reported=True)
+    res.sync_financial_fields()
+
+    assert res.damage_fee == Decimal("100.00")
+    assert res.final_total == Decimal("1100.00")

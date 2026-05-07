@@ -33,7 +33,7 @@
             </a>
             <div class="room-details">
                 <div class="info">
-                    <span>Guests: {{ room.capacity }}</span>
+                    <span>Guests: {{ room.total_capacity }}</span>
                     <span>Size: {{ room.get_size_display }}</span>
                 </div>
                 <h3><a href="{% url 'rooms:room_detail' room.id %}">{{ room.name }}</a></h3>

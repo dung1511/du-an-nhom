@@ -1,0 +1,140 @@
+F
+ERROR: Coverage failure: total of 37 is less than fail-under=70
+                                                                         [100%]
+================================== FAILURES ===================================
+_____________ test_frontdesk_print_slip_shows_updated_momo_amount _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002418352C640>
+
+    @pytest.mark.django_db
+    def test_frontdesk_print_slip_shows_updated_momo_amount(monkeypatch):
+        """Test the front desk slip reflects updated damage totals for MoMo QR."""
+        admin_user = UserFactory(
+            username='frontdesk-admin',
+            email='frontdesk-admin@example.com',
+            password='adminpass123',
+        )
+        admin_user.is_staff = True
+        admin_user.is_superuser = True
+        admin_user.save(update_fields=['is_staff', 'is_superuser'])
+    
+        reservation = ReservationFactory(
+            payment_method='momo_qr',
+            subtotal=Decimal('1000.00'),
+            gst=Decimal('180.00'),
+            total=Decimal('1180.00'),
+            damage_reported=True,
+            damage_notes='Broken lamp',
+            is_checked_in=True,
+            checked_in_adults=2,
+            checked_in_children=0,
+            email='',
+        )
+        reservation.sync_financial_fields()
+        reservation.is_checked_out = True
+        reservation.checkout_at = datetime.now()
+        reservation.save(
+            update_fields=[
+                'damage_reported',
+                'damage_notes',
+                'damage_fee',
+                'final_total',
+                'deposit_amount',
+                'balance_due',
+                'is_checked_in',
+                'checked_in_adults',
+                'checked_in_children',
+                'is_checked_out',
+                'checkout_at',
+            ]
+        )
+    
+        url = reverse('rooms:frontdesk_print_slip', kwargs={'booking_code': reservation.booking_code})
+        request = RequestFactory().get(url)
+        request.user = admin_user
+    
+        from rooms import views as rooms_views
+    
+        monkeypatch.setattr(rooms_views.messages, 'success', lambda *args, **kwargs: None)
+        monkeypatch.setattr(rooms_views.messages, 'warning', lambda *args, **kwargs: None)
+        monkeypatch.setattr(rooms_views.messages, 'error', lambda *args, **kwargs: None)
+    
+        response = rooms_views.frontdesk_print_slip.__wrapped__(request, booking_code=reservation.booking_code)
+    
+        assert response.status_code == status.HTTP_200_OK
+        assert 'QR MoMo' in response.content.decode('utf-8')
+>       assert f'\u20b9{reservation.final_total}' in response.content.decode('utf-8')
+E       assert '\u20b91298.0000' in '<!DOCTYPE html>\\n<html lang="vi">\\n<head>\\n    <meta charset="UTF-8">\\n    <meta name="viewport" content="width=devic... 28/04/2026 21:44</div>\\n                </div>\\n            </div>\\n        </section>\\n    </main>\\n</body>\\n</html>'
+E        +  where '<!DOCTYPE html>\n<html lang="vi">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=devic... 28/04/2026 21:44</div>\n                </div>\n            </div>\n        </section>\n    </main>\n</body>\n</html>' = <built-in method decode of bytes object at 0x0000024182D75F40>('utf-8')
+E        +    where <built-in method decode of bytes object at 0x0000024182D75F40> = b'<!DOCTYPE html>\n<html lang="vi">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=devi... 28/04/2026 21:44</div>\n                </div>\n            </div>\n        </section>\n    </main>\n</body>\n</html>'.decode
+E        +      where b'<!DOCTYPE html>\n<html lang="vi">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=devi... 28/04/2026 21:44</div>\n                </div>\n            </div>\n        </section>\n    </main>\n</body>\n</html>' = <HttpResponse status_code=200, "text/html; charset=utf-8">.content
+
+rooms\tests\test_views.py:402: AssertionError
+============================== warnings summary ===============================
+rooms/tests/test_views.py::test_frontdesk_print_slip_shows_updated_momo_amount
+rooms/tests/test_views.py::test_frontdesk_print_slip_shows_updated_momo_amount
+  C:\Users\ASUS\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\factory\django.py:182: DeprecationWarning: UserFactory._after_postgeneration will stop saving the instance after postgeneration hooks in the next major release.
+  If the save call is extraneous, set skip_postgeneration_save=True in the UserFactory.Meta.
+  To keep saving the instance, move the save call to your postgeneration hooks or override _after_postgeneration.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.3-final-0 _______________
+
+Name                                                                            Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------------------------------------------------
+accounts\__init__.py                                                                0      0   100%
+accounts\admin.py                                                                  21      4    81%   19-22
+accounts\apps.py                                                                    4      0   100%
+accounts\context_processors.py                                                     15     15     0%   1-23
+accounts\forms.py                                                                  27     14    48%   16-20, 23-31
+accounts\migrations\0001_initial.py                                                 7      0   100%
+accounts\migrations\0002_profile_role.py                                            7      0   100%
+accounts\migrations\__init__.py                                                     0      0   100%
+accounts\models.py                                                                 35      7    80%   10-11, 30-31, 33-34, 43
+accounts\serializers.py                                                            59     25    58%   14, 27-29, 40-51, 60-62, 65-68, 91-92, 95-96
+accounts\tests.py                                                                   1      1     0%   1
+accounts\urls.py                                                                    5      0   100%
+accounts\views.py                                                                 175    113    35%   29-30, 47-85, 90-107, 112-113, 119-128, 133-150, 158-165, 172-173, 176-177, 180, 183, 186-190, 201-225, 238-248, 255-256, 265
+rooms\__init__.py                                                                   0      0   100%
+rooms\admin.py                                                                     58     13    78%   8, 11, 14, 17, 20, 70-81
+rooms\apps.py                                                                       4      0   100%
+rooms\context_processors.py                                                         6      6     0%   1-8
+rooms\forms.py                                                                     28     17    39%   22-40, 43-44
+rooms\migrations\0001_initial.py                                                    7      0   100%
+rooms\migrations\0002_reservation_children_alter_reservation_adults.py              4      0   100%
+rooms\migrations\0003_alter_reservation_check_in_date_and_more.py                   4      0   100%
+rooms\migrations\0004_room_capacity_adults_room_capacity_children_and_more.py       4      0   100%
+rooms\migrations\0005_alter_room_total_capacity.py                                  4      0   100%
+rooms\migrations\0006_reservation_is_checked_out.py                                 4      0   100%
+rooms\migrations\0007_reservation_payment_status.py                                 4      0   100%
+rooms\migrations\0008_service_reservation_services_and_totals.py                   13      2    85%   54-55
+rooms\migrations\0009_service_image.py                                              4      0   100%
+rooms\migrations\0010_reservation_checkout_at.py                                    4      0   100%
+rooms\migrations\0011_reservation_deposit_and_damage_fields.py                     17      9    47%   12-20
+rooms\migrations\0012_reservation_checkin_fields.py                                 4      0   100%
+rooms\migrations\0013_reservation_invoice_notified_at.py                            4      0   100%
+rooms\migrations\__init__.py                                                        0      0   100%
+rooms\models.py                                                                   221     86    61%   14-15, 19-20, 24-25, 30-36, 53-78, 82-136, 143, 168, 172-180, 189-191, 199-213, 218-225, 232, 243, 257-259, 262, 336-343, 346, 366, 372, 376, 381
+rooms\permissions.py                                                                4      1    75%   6
+rooms\serializers.py                                                              205    121    41%   81-140, 143-167, 176-210, 274-294, 353-355, 411-415, 425, 428-430, 433, 460, 463, 514-540
+rooms\templatetags\__init__.py                                                      0      0   100%
+rooms\templatetags\admin_dashboard_stats.py                                        91     72    21%   16, 24, 28-30, 34-35, 39, 43-61, 70, 77-99, 120-170
+rooms\tests.py                                                                      1      1     0%   1
+rooms\tests\__init__.py                                                             0      0   100%
+rooms\tests\conftest.py                                                            23      7    70%   19, 31, 47-48, 62, 79, 92
+rooms\tests\factories.py                                                           78      0   100%
+rooms\tests\test_capacity_limits.py                                                19     19     0%   1-39
+rooms\tests\test_models.py                                                        161    161     0%   4-275
+rooms\tests\test_views.py                                                         223    146    35%   35-43, 47-53, 57-63, 67-70, 80-101, 105-113, 117-128, 132-142, 147-160, 169-195, 199-210, 215-222, 226-230, 234-253, 257-265, 274-280, 284-291, 295-298, 307-319, 323-331, 335-342, 411-421, 425-437, 441-453, 463-472, 481-485, 489-498, 508-514
+rooms\upload_security.py                                                           32     23    28%   23-50, 54-55
+rooms\urls.py                                                                       4      0   100%
+rooms\views.py                                                                    971    760    22%   58-61, 75, 78-82, 90, 110, 116, 121, 160-164, 194-195, 215, 218-219, 222-231, 240, 243-248, 251-269, 285-307, 325-513, 545, 553, 561-564, 573-614, 623, 631, 638-699, 724, 727-735, 749-758, 778, 787-794, 803, 811-841, 852-903, 911-994, 1003-1007, 1016, 1020-1026, 1030-1041, 1051-1076, 1083-1090, 1102-1105, 1117-1118, 1122-1124, 1129-1157, 1175-1208, 1225-1263, 1282-1360, 1365-1458, 1484-1490, 1496-1497, 1505, 1514-1520, 1525-1573, 1577-1581, 1594, 1599-1680, 1701-1711, 1714-1781, 1786-1791, 1795-1796
+-------------------------------------------------------------------------------------------------------------
+TOTAL                                                                            2562   1623    37%
+Coverage HTML written to dir htmlcov
+FAIL Required test coverage of 70% not reached. Total coverage: 36.65%
+=========================== short test summary info ===========================
+FAILED rooms/tests/test_views.py::test_frontdesk_print_slip_shows_updated_momo_amount
+1 failed, 28 deselected, 2 warnings in 7.31s

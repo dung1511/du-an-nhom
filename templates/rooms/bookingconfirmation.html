@@ -28,7 +28,128 @@
         .table-custom { border-radius: 10px; overflow: hidden; }
         .table-custom thead { background-color: #f1f3f5; }
         .price-total { font-size: 1.5rem; color: #27ae60; font-weight: 700; }
-        .btn-hotel { padding: 12px 25px; border-radius: 10px; font-weight: 600; transition: all 0.3s; }
+        .summary-card {
+            background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 100%);
+            border: 1px solid #e9ecef;
+            border-radius: 18px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        }
+        .report-strip {
+            display: grid;
+            gap: 0.9rem;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            margin-bottom: 1.2rem;
+        }
+        .report-tile {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+        }
+        .report-title {
+            color: #6b7280;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 800;
+        }
+        .report-value {
+            margin-top: 0.35rem;
+            font-size: 1rem;
+            font-weight: 800;
+            color: #111827;
+        }
+        .report-caption {
+            margin-top: 0.2rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        .summary-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #17202a;
+            margin-bottom: 1.1rem;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: stretch;
+            gap: 1rem;
+        }
+        .summary-item {
+            min-height: 100px;
+        }
+        .summary-label {
+            color: #111827;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.55rem;
+        }
+        .summary-date {
+            color: #0f172a;
+            font-size: 1.15rem;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+        .summary-time {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-top: 0.35rem;
+        }
+        .summary-divider {
+            width: 1px;
+            background: #e5e7eb;
+            align-self: stretch;
+        }
+        .section-heading {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 1rem;
+        }
+        .status-timeline {
+            display: grid;
+            gap: 0.85rem;
+        }
+        .status-row {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 0.75rem;
+            align-items: start;
+            padding: 0.85rem 0.95rem;
+            border: 1px solid #e8edf0;
+            border-radius: 14px;
+            background: #fbfcfd;
+        }
+        .status-row strong {
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 0.26rem 0.7rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-top: 0.35rem;
+        }
+        .chip-waiting { background: #fff6db; color: #8b5e00; }
+        .chip-active { background: #e6f7ee; color: #0f7f6e; }
+        .chip-done { background: #eef2ff; color: #3949ab; }
+        .btn-hotel { 
+            padding: 12px 25px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
         .btn-hotel-primary { background-color: var(--hotel-primary); color: white; border: none; }
         .btn-hotel-outline { border: 2px solid #dee2e6; color: #495057; background: white; }
         .btn-hotel:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
@@ -82,13 +203,256 @@
                             <i class="fas fa-check-circle fa-4x mb-3 animate__animated animate__bounceIn"></i>
                         </div>
                         <h2 class="fw-bold mb-1">ĐẶT PHÒNG THÀNH CÔNG!</h2>
-                        <p class="mb-0 opacity-75">Mã xác nhận: <span class="fw-bold">#{{ reservation.id }}</span></p>
+                        <p class="mb-0 opacity-75">Mã xác nhận: <span class="fw-bold">#{{ booking_code|default:reservation.id }}</span></p>
+                        <p class="mb-0 opacity-75">Tiền cọc đã thanh toán/đặt giữ booking: <span class="fw-bold">₹{{ deposit_amount|default:reservation.deposit_amount }}</span></p>
+                        <p class="mb-0 opacity-75">Tiền còn lại thanh toán tại quầy check-in: <span class="fw-bold">₹{{ balance_due|default:reservation.balance_due }}</span></p>
                     </div>
 
                     <div class="card-body p-4 p-md-5">
                         <div class="text-center mb-5">
                             <h4 class="fw-bold">Cảm ơn {{ reservation.first_name }} đã lựa chọn Paradise!</h4>
                             <p class="text-muted small">Chúng tôi đã gửi thông tin chi tiết qua email: <strong>{{ reservation.email }}</strong></p>
+                        </div>
+
+                        <div class="report-strip">
+                            <div class="report-tile">
+                                <div class="report-title">Mã booking</div>
+                                <div class="report-value">{{ booking_code }}</div>
+                                <div class="report-caption">Sử dụng để tra cứu tại quầy</div>
+                            </div>
+                            <div class="report-tile">
+                                <div class="report-title">Phòng</div>
+                                <div class="report-value">{{ reservation.room.name }}</div>
+                                <div class="report-caption">{{ reservation.room.category.name }}</div>
+                            </div>
+                            <div class="report-tile">
+                                <div class="report-title">Tổng cuối cùng</div>
+                                <div class="report-value text-success">₹{{ final_total|default:reservation.final_total }}</div>
+                                <div class="report-caption">Bao gồm cọc, phí và phụ phí nếu có</div>
+                            </div>
+                            <div class="report-tile">
+                                <div class="report-title">Trạng thái</div>
+                                <div class="report-value">{% if reservation.is_checked_out %}Đã hoàn tất{% elif reservation.is_checked_in %}Đang lưu trú{% else %}Chờ nhận phòng{% endif %}</div>
+                                <div class="report-caption">Cập nhật theo thao tác lễ tân</div>
+                            </div>
+                        </div>
+
+                        <div class="summary-card mb-5">
+                            <div class="summary-title">Chi tiết đặt phòng của bạn</div>
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <div class="summary-label">Check-in mặc định</div>
+                                    <div class="summary-date">{{ check_in_display }}</div>
+                                    <div class="summary-time">{{ default_check_in_time }} (giờ chuẩn của khách sạn)</div>
+                                    <div class="summary-time">Thực tế: {{ check_in_time }}</div>
+                                </div>
+                                <div class="summary-divider d-none d-md-block"></div>
+                                <div class="summary-item text-md-start text-end">
+                                    <div class="summary-label">Check-out mặc định</div>
+                                    <div class="summary-date">{{ check_out_display }}</div>
+                                    <div class="summary-time">{{ default_check_out_time }} (giờ chuẩn của khách sạn)</div>
+                                    <div class="summary-time">Thực tế: {{ check_out_time }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <div class="alert alert-info border-0 rounded-4 p-4 mb-5">
+                            <div class="d-flex">
+                                <i class="fas fa-id-card fa-2x me-3"></i>
+                                <div>
+                                    <h6 class="fw-bold">Thông tin cho lễ tân tra cứu nhanh</h6>
+                                    <p class="mb-0 small">Mã booking của bạn là <strong>{{ booking_code }}</strong>. Khi đến khách sạn, vui lòng cung cấp mã này để lễ tân tìm hóa đơn, kiểm tra check-in mặc định lúc <strong>{{ default_check_in_time }}</strong> ngày nhận phòng và check-out mặc định lúc <strong>{{ default_check_out_time }}</strong> ngày trả phòng.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if reservation.deposit_paid_via_qr > 0 %}
+                        <div class="alert alert-success border-0 rounded-4 p-4 mb-5">
+                            <div class="d-flex">
+                                <i class="fas fa-bell fa-2x me-3"></i>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Đã ghi nhận thanh toán cọc thành công</h6>
+                                    <p class="mb-0 small">Hệ thống đã nhận được số tiền ₹{{ reservation.deposit_paid_via_qr }} qua QR Vietcombank cho booking <strong>{{ booking_code }}</strong>. Nếu còn số tiền phải thu, phần còn lại sẽ thanh toán tại check-in.</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="summary-card mb-5">
+                            <div class="summary-title">Thanh toán</div>
+                            
+                            <!-- Phương thức thanh toán -->
+                            <div class="mb-4">
+                                <p class="mb-3"><strong>Phương thức thanh toán đã chọn:</strong> 
+                                    {% if payment_method == 'momo_qr' %}
+                                        <span class="badge bg-success">Chuyển khoản Vietcombank</span>
+                                    {% elif payment_method == 'cash' or payment_method == 'pay_on_arrival' %}
+                                        <span class="badge bg-warning text-dark">Tiền mặt</span>
+                                    {% elif payment_method == 'cards' %}
+                                        <span class="badge bg-primary">Quẹt thẻ</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ payment_method }}</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <!-- Hybrid Payment Option -->
+                            <div class="alert alert-info mb-4">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Tùy chọn thanh toán:</strong> Bạn có thể thanh toán cọc ({{ deposit_amount }} VND) ngay qua QR Vietcombank dưới đây, hoặc thanh toán toàn bộ khi đến lễ tân bằng tiền mặt/quẹt thẻ.
+                            </div>
+
+                            <!-- QR Payment Option - Show for all payment methods -->
+                            <div class="row g-4 align-items-center mb-4 p-3 border-2 border-success rounded-4" style="background-color: #f0fdf4;">
+                                <div class="col-md-5 text-center">
+                                    <h6 class="fw-bold text-success mb-3">
+                                        <i class="fas fa-qrcode me-2"></i>Thanh toán qua QR Vietcombank
+                                    </h6>
+                                    {% if momo_qr_url %}
+                                        <img src="{{ momo_qr_url }}" alt="QR Vietcombank" class="img-fluid rounded-3 border shadow-sm" style="max-width: 260px;">
+                                        <div class="mt-2 small text-muted">
+                                            <p class="mb-1">Quét mã để chuyển khoản</p>
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning mb-0">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>Chưa cấu hình QR Vietcombank để tạo mã.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="mb-3">
+                                        <p class="mb-2 text-muted small">
+                                            <i class="fas fa-circle-check text-success me-2"></i><strong>Chuyển khoản qua Vietcombank</strong>
+                                        </p>
+                                        <ul class="list-unstyled small">
+                                            <li class="mb-2">
+                                                <strong>Ngân hàng:</strong> {{ bank_name|default:'Vietcombank' }}
+                                            </li>
+                                            <li class="mb-2">
+                                                <strong>Tên chủ tài khoản:</strong> {{ bank_account_name|default:'PHAM MONG KIEU' }}
+                                            </li>
+                                            <li class="mb-2">
+                                                <strong>Số tài khoản:</strong> {{ bank_account_number|default:'1031249010' }}
+                                            </li>
+                                            <li class="mb-2">
+                                                <strong>Số tiền gợi ý:</strong>
+                                                <div class="mt-1">
+                                                    <span class="badge bg-success fs-6">Deposit: ₹{{ deposit_amount }}</span>
+                                                    <br>
+                                                    <small class="text-muted">hoặc Full: ₹{{ final_total }}</small>
+                                                </div>
+                                            </li>
+                                            <li class="mb-2">
+                                                <strong>Nội dung chuyển khoản:</strong> <code>{{ booking_code }}</code>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="alert alert-sm alert-secondary mb-0 p-2" style="font-size: 0.9rem;">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Nếu chỉ chuyển khoản cọc, phần còn lại sẽ thanh toán tại check-in.
+                                    </div>
+                                    <div class="alert alert-sm alert-success mt-2 mb-0 p-2" style="font-size: 0.9rem;">
+                                        <i class="fas fa-bell me-1"></i>
+                                        Sau khi bạn quét mã và chuyển khoản xong, hệ thống sẽ tự động hiển thị trạng thái thanh toán cọc thành công khi ghi nhận giao dịch.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="deposit-success-banner" class="alert alert-success border-0 rounded-4 p-3 mb-4 d-none">
+                                <i class="fas fa-circle-check me-2"></i>
+                                Thanh toán cọc thành công. Nếu còn số tiền phải thu, phần còn lại sẽ thanh toán tại check-in.
+                            </div>
+
+                            <!-- Cash Payment Option -->
+                            <div class="row g-4 align-items-center p-3 border-2 border-warning rounded-4" style="background-color: #fffbeb;">
+                                <div class="col-md-5 text-center">
+                                    <h6 class="fw-bold text-warning mb-3">
+                                        <i class="fas fa-money-bill me-2"></i>Thanh toán bằng tiền mặt
+                                    </h6>
+                                    <div class="text-center">
+                                        <i class="fas fa-wallet fa-3x text-warning opacity-25"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <p class="mb-2 text-muted small">
+                                        <i class="fas fa-circle-check text-warning me-2"></i><strong>Thanh toán tại lễ tân</strong>
+                                    </p>
+                                    <ul class="list-unstyled small">
+                                        <li class="mb-2">
+                                            <strong>Cách 1:</strong> Thanh toán deposit (₹{{ deposit_amount }}) tại lễ tân, phần còn lại (₹{{ balance_due }}) thanh toán khi check-in
+                                        </li>
+                                        <li class="mb-2">
+                                            <strong>Cách 2:</strong> Thanh toán toàn bộ (₹{{ final_total }}) tại lễ tân
+                                        </li>
+                                    </ul>
+                                    <div class="alert alert-sm alert-warning mb-0 p-2" style="font-size: 0.9rem;">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Vui lòng mang theo mã booking <strong>{{ booking_code }}</strong> khi đến quầy lễ tân.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="summary-card mb-5">
+                            <div class="summary-title">Trạng thái xử lý tại lễ tân</div>
+                            <div class="status-timeline">
+                                <div class="status-row">
+                                    <div>
+                                        <strong>Check-in</strong>
+                                        {% if reservation.is_checked_in %}
+                                            <span class="status-chip chip-active">Đã check-in</span>
+                                        {% else %}
+                                            <span class="status-chip chip-waiting">Chưa check-in</span>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div>Thời gian thực tế: <strong>{{ check_in_time }}</strong></div>
+                                        <div>Số khách thực tế: <strong>{{ reservation.checked_in_adults }} người lớn{% if reservation.checked_in_children > 0 %}, {{ reservation.checked_in_children }} trẻ em{% endif %}</strong></div>
+                                        <div class="text-muted small">Lễ tân kiểm tra mã booking và xác nhận số khách trước khi nhận phòng.</div>
+                                    </div>
+                                </div>
+
+                                <div class="status-row">
+                                    <div>
+                                        <strong>Check-out</strong>
+                                        {% if reservation.is_checked_out %}
+                                            <span class="status-chip chip-done">Đã check-out</span>
+                                        {% elif reservation.is_checked_in %}
+                                            <span class="status-chip chip-waiting">Sẵn sàng check-out</span>
+                                        {% else %}
+                                            <span class="status-chip chip-waiting">Không thể check-out</span>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div>Thời gian thực tế: <strong>{{ check_out_time }}</strong></div>
+                                        {% if reservation.is_checked_in %}
+                                            <div class="text-muted small">Khách có thể check-out sớm; hóa đơn vẫn theo booking ban đầu.</div>
+                                        {% else %}
+                                            <div class="text-muted small">Khách phải check-in trước, sau đó mới có thể check-out.</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="status-row">
+                                    <div>
+                                        <strong>Hư hỏng phòng</strong>
+                                        {% if has_damage %}
+                                            <span class="status-chip chip-done">Có phát sinh</span>
+                                        {% else %}
+                                            <span class="status-chip chip-waiting">Không ghi nhận</span>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        {% if has_damage %}
+                                            <div>Phụ phí: <strong>₹{{ damage_fee|default:reservation.damage_fee }}</strong></div>
+                                            {% if damage_notes %}<div>Ghi chú lễ tân: <strong>{{ damage_notes }}</strong></div>{% endif %}
+                                            <div class="text-muted small">Hệ thống cộng thêm 10% bill vào hóa đơn cuối.</div>
+                                        {% else %}
+                                            <div class="text-muted small">Không có ghi nhận hư hỏng từ lễ tân.</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row g-4 mb-5">
@@ -106,7 +470,7 @@
                                         </div>
                                         <div class="text-end">
                                             <div class="info-label small">Check-out</div>
-                                            <div class="info-value">{{ reservation.check_out_date|date:"m/d/Y" }}</div>
+                                            <div class="info-value">{{ reservation.check_out_date|date:"d/m/Y" }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -131,7 +495,7 @@
                         </div>
 
                         <div class="mb-5">
-                            <h5 class="fw-bold mb-4 text-dark"><i class="fas fa-receipt me-2 text-success"></i>Chi tiết thanh toán</h5>
+                            <div class="section-heading"><i class="fas fa-receipt me-2 text-success"></i>Tóm tắt giá</div>
                             <div class="table-responsive">
                                 <table class="table table-borderless table-custom align-middle">
                                     <thead class="table-light">
@@ -152,7 +516,7 @@
                                         </tr>
                                         <tr>
                                             <td class="p-3 text-muted">Thuế phí (GST 18%)</td>
-                                            <td class="p-3 text-end fw-bold">₹{{ reservation.gst }}</td>
+                                            <td class="p-3 text-end fw-bold">{{ reservation.gst }}</td>
                                         </tr>
                                         {% if reservation.service_total > 0 %}
                                         <tr>
@@ -161,7 +525,7 @@
                                                 <br><small class="text-secondary">{% for service in reservation.selected_services.all %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</small>
                                                 {% endif %}
                                             </td>
-                                            <td class="p-3 text-end fw-bold">₹{{ reservation.service_total }}</td>
+                                            <td class="p-3 text-end fw-bold">{{ reservation.service_total }}</td>
                                         </tr>
                                         {% endif %}
                                         {% if reservation.discount_applied > 0 %}
@@ -170,11 +534,34 @@
                                             <td class="p-3 text-end fw-bold">-₹{{ reservation.discount_applied }}</td>
                                         </tr>
                                         {% endif %}
+                                        <tr>
+                                            <td class="p-3 text-muted">
+                                                <strong>Tiền cọc</strong><br>
+                                                <small class="text-secondary">Khách thanh toán trước để giữ phòng</small>
+                                            </td>
+                                            <td class="p-3 text-end fw-bold">{{ deposit_amount|default:reservation.deposit_amount }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 text-muted">
+                                                <strong>Tiền còn lại tại quầy check-in</strong>
+                                            </td>
+                                            <td class="p-3 text-end fw-bold">{{ balance_due|default:reservation.balance_due }}</td>
+                                        </tr>
+                                        {% if has_damage %}
+                                        <tr class="text-danger">
+                                            <td class="p-3 text-muted">
+                                                <strong>Phụ phí hư hỏng</strong><br>
+                                                <small class="text-secondary">Nhân viên lễ tân ghi nhận khi kiểm tra phòng lúc check-out</small>
+                                                {% if damage_notes %}<br><small class="text-secondary">{{ damage_notes }}</small>{% endif %}
+                                            </td>
+                                            <td class="p-3 text-end fw-bold">{{ damage_fee|default:reservation.damage_fee }}</td>
+                                        </tr>
+                                        {% endif %}
                                     </tbody>
                                     <tfoot class="bg-light">
                                         <tr>
-                                            <td class="p-3 fw-bold fs-5 text-dark">Tổng cộng thanh toán</td>
-                                            <td class="p-3 text-end price-total">₹{{ reservation.total }}</td>
+                                            <td class="p-3 fw-bold fs-5 text-dark">Tổng cuối cùng</td>
+                                            <td class="p-3 text-end price-total">{{ final_total|default:reservation.final_total }}</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -186,16 +573,21 @@
                                 <i class="fas fa-info-circle fa-2x me-3"></i>
                                 <div>
                                     <h6 class="fw-bold">Lưu ý quan trọng:</h6>
-                                    <p class="mb-0 small">Vui lòng chuẩn bị sẵn <strong>₹{{ reservation.total }}</strong> tiền mặt để thanh toán tại quầy lễ tân khi đến nhận phòng.</p>
+                                    <p class="mb-0 small">Khách thanh toán <strong>tiền cọc {{ deposit_amount|default:reservation.deposit_amount }}</strong> để giữ booking. Số tiền còn lại <strong>₹{{ balance_due|default:reservation.balance_due }}</strong> được thu tại quầy lễ tân khi check-in. Khi check-out, lễ tân kiểm tra phòng; nếu có hư hỏng thì cộng thêm 10% bill vào hóa đơn cuối.</p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="d-flex flex-wrap gap-3 justify-content-center">
-                            {% if not reservation.is_checked_out %}
+                            {% if reservation.is_checked_in and not reservation.is_checked_out %}
                             <button type="button" class="btn btn-danger btn-hotel shadow-sm" id="showCheckoutFormBtn">
                                 <i class="fas fa-sign-out-alt me-2"></i> Trả phòng (Check-out)
                             </button>
+                            {% endif %}
+                            {% if can_print_frontdesk_slip %}
+                            <a href="{% url 'rooms:frontdesk_print_slip' reservation.booking_code %}" target="_blank" rel="noopener" class="btn btn-hotel btn-hotel-outline shadow-sm">
+                                <i class="fas fa-file-invoice me-2"></i> Phiếu lễ tân
+                            </a>
                             {% endif %}
                             <a href="{% url 'rooms:room_list' %}" class="btn btn-hotel btn-hotel-primary shadow-sm">
                                 <i class="fas fa-plus me-2 text-white"></i> Đặt thêm phòng khác
@@ -205,15 +597,27 @@
                             </button>
                         </div>
 
-                        {% if not reservation.is_checked_out %}
+                        {% if reservation.is_checked_in and not reservation.is_checked_out %}
                         <div class="checkout-form-panel" id="checkoutFormPanel">
                             <h6 class="fw-bold text-danger mb-2">Xác nhận trả phòng</h6>
-                            <p class="mb-3 small text-muted">Vui lòng kiểm tra lại thông tin trước khi xác nhận trả phòng. Sau khi gửi, đặt phòng sẽ được chuyển sang trạng thái đã trả.</p>
+                            <p class="mb-3 small text-muted">Vui lòng kiểm tra lại thông tin trước khi xác nhận trả phòng. Nếu khách trả sớm, hóa đơn không đổi theo booking ban đầu; nếu có hư hỏng, lễ tân ghi nhận để cộng thêm 10% bill.</p>
 
                             <form action="{% url 'rooms:checkout_reservation' reservation.id %}" method="POST" class="m-0">
                                 {% csrf_token %}
-                                <label for="checkout_note" class="form-label fw-semibold">Ghi chú trả phòng (không bắt buộc)</label>
-                                <textarea id="checkout_note" name="checkout_note" class="checkout-note" placeholder="Ví dụ: Trả phòng sớm lúc 10:30..."></textarea>
+
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" value="1" id="damage_reported" name="damage_reported">
+                                    <label class="form-check-label fw-semibold" for="damage_reported">
+                                        Có hư hỏng đồ đạc/phòng
+                                    </label>
+                                        <div class="small text-muted">Lễ tân sẽ ghi nhận tình trạng phòng và cộng thêm 10% bill nếu có hư hỏng.</div>
+                                </div>
+
+                                <label for="damage_notes" class="form-label fw-semibold">Mô tả hư hỏng (nếu có)</label>
+                                <textarea id="damage_notes" name="damage_notes" class="checkout-note mb-3" placeholder="Ví dụ: vỡ ly, hỏng khăn, trầy nội thất..."></textarea>
+
+                                <label for="checkout_note" class="form-label fw-semibold">Ghi chú check-out (không bắt buộc)</label>
+                                <textarea id="checkout_note" name="checkout_note" class="checkout-note" placeholder="Ví dụ: Khách trả phòng sớm, hoàn tất kiểm tra minibar..."></textarea>
 
                                 <div class="d-flex gap-2 flex-wrap mt-3">
                                     <button type="submit" class="btn btn-danger btn-hotel shadow-sm">
@@ -259,6 +663,49 @@
                     openBtn.style.display = 'inline-flex';
                 });
             }
+        })();
+
+        (function () {
+            const successBanner = document.getElementById('deposit-success-banner');
+            if (!successBanner) {
+                return;
+            }
+
+            const statusUrl = "{% url 'rooms:api_payment_status_by_booking_code' booking_code=booking_code %}";
+
+            function updateBanner(data) {
+                if (!data || !data.is_deposit_confirmed) {
+                    return;
+                }
+                successBanner.classList.remove('d-none');
+                if (data.is_fully_paid) {
+                    successBanner.innerHTML = '<i class="fas fa-circle-check me-2"></i>Thanh toán thành công toàn bộ booking.';
+                }
+            }
+
+            function pollStatus() {
+                fetch(statusUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(function (response) {
+                        if (!response.ok) {
+                            return null;
+                        }
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        updateBanner(data);
+                    })
+                    .catch(function () {
+                        return null;
+                    });
+            }
+
+            pollStatus();
+            setInterval(pollStatus, 10000);
         })();
     </script>
 

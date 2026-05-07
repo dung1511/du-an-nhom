@@ -92,6 +92,71 @@
           </div>
     </div>
 
+        <section style="max-width: 980px; margin: 30px auto 0; background: white; border-radius: 18px; padding: 28px; box-shadow: 0 10px 30px rgba(18, 35, 65, 0.08); text-align: left;">
+            <h3 style="margin-bottom: 18px; color: #13233f;">Gửi feedback của bạn</h3>
+
+            {% if messages %}
+                <div style="margin-bottom: 18px;">
+                    {% for message in messages %}
+                        <div style="padding: 12px 16px; border-radius: 12px; margin-bottom: 10px; background: {% if message.tags == 'success' %}#e7f8ef{% else %}#fff0f0{% endif %}; border: 1px solid rgba(0,0,0,0.05);">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" style="display: grid; gap: 16px;">
+                {% csrf_token %}
+                <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+                    <div>
+                        <label style="display:block; font-weight:700; margin-bottom:8px;">Phòng</label>
+                        {{ form.room }}
+                        {% if form.room.errors %}<small style="color:#d9534f;">{{ form.room.errors|striptags }}</small>{% endif %}
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:700; margin-bottom:8px;">Tên</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}<small style="color:#d9534f;">{{ form.name.errors|striptags }}</small>{% endif %}
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:700; margin-bottom:8px;">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}<small style="color:#d9534f;">{{ form.email.errors|striptags }}</small>{% endif %}
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:700; margin-bottom:8px;">Quê quán / quốc gia</label>
+                        {{ form.country }}
+                        {% if form.country.errors %}<small style="color:#d9534f;">{{ form.country.errors|striptags }}</small>{% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label style="display:block; font-weight:700; margin-bottom:8px;">Đánh giá</label>
+                    <div style="display:flex; flex-wrap:wrap; gap: 10px;">
+                        {% for value, label in form.rating.field.choices %}
+                            <label style="display:flex; align-items:center; gap:6px; padding: 10px 14px; border:1px solid #d9e6f5; border-radius: 999px; cursor:pointer; background:#f8fbff;">
+                                <input type="radio" name="rating" value="{{ value }}" {% if form.rating.value|stringformat:'s' == value|stringformat:'s' %}checked{% endif %} required>
+                                <span>{{ label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.rating.errors %}<small style="color:#d9534f;">{{ form.rating.errors|striptags }}</small>{% endif %}
+                </div>
+
+                <div>
+                    <label style="display:block; font-weight:700; margin-bottom:8px;">Nhận xét</label>
+                    {{ form.comment }}
+                    {% if form.comment.errors %}<small style="color:#d9534f;">{{ form.comment.errors|striptags }}</small>{% endif %}
+                </div>
+
+                <div style="text-align:right;">
+                    <button type="submit" class="knsl-btn knsl-btn-md" style="border:none; cursor:pointer;">
+                        <span>Gửi feedback</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
     <div class="feedback-container">
         {% for feedback in feedbacks %}
         <div class="feedback-card">

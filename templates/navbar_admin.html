@@ -1,0 +1,36 @@
+{% load static %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Navbar for Admin -->
+<nav style="position: fixed; top: 0px; left: 10px; display: flex; justify-content: space-between; align-items: center; padding: 0px 30px; background: linear-gradient(135deg, #1a237e 0%, #283593 100%); z-index: 99; width: 100%; height: 80px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); border-radius: 30px 30px 30px 30px;">
+    <a href="/admin/" style="text-decoration: none; font-size: 24px; font-weight: bold; color: #ffeb3b;">Paradise <span style="font-size: 14px; color: white;">(Admin)</span></a>
+    
+    <button style="display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: white;" class="hamburger" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="menu" style="display: flex; gap: 35px;">
+        <a href="/admin/" style="text-decoration: none; color: #ffeb3b; font-size: 16px; font-weight: 800; transition: color 0.3s ease;">Admin Panel</a>
+        <a href="{% url 'home' %}" style="text-decoration: none; color: white; font-size: 16px; font-weight: 600; transition: color 0.3s ease;">Home</a>
+        <a href="{% url 'rooms:room_list' %}" style="text-decoration: none; color: white; font-size: 16px; font-weight: 600; transition: color 0.3s ease;">Rooms</a>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 15px; margin-right: 50px;">
+        <a href="{% url 'accounts:profile' %}" title="Profile">
+            <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'images/profile_placeholder.jpg' %}{% endif %}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 3px solid #ffeb3b;">
+        </a>
+        <a href="{% url 'accounts:logout_user' %}" style="text-decoration: none; color: white; font-weight: 600;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</nav>
+
+<style>
+    nav a:hover { color: #ffeb3b; opacity: 0.9; }
+    nav img:hover { transform: scale(1.1); }
+    @media (max-width: 768px) {
+        .hamburger { display: block !important; }
+        .menu { display: none; flex-direction: column; position: absolute; top: 70px; left: 0; width: 100%; background: linear-gradient(135deg, #1a237e 0%, #283593 100%); padding: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); }
+        .menu.active { display: flex; }
+    }
+</style>
