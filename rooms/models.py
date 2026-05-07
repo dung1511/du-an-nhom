@@ -1367,3 +1367,18 @@ class Reservation(models.Model):
             errors['check_in_date'] = 'Ngày check-in không được trong quá khứ'
         
         return errors
+
+    def room_is_available_during_stay(self):
+        """Kiểm tra phòng có trống suốt thời gian ở lại không"""
+        if not self.room:
+            return False
+        
+        # Kiểm tra xem có booking khác xung đột không
+        conflicting = Reservation.objects.filter(
+            room=self.room,
+            status__in=['confirmed', 'checked_in'],
+            check_in_date__lt=self.check_out_date,
+            check_out_date__gt=self.check_in_date
+        ).exclude(id=self.id)
+        
+        return not conflicting.exists()
