@@ -1354,3 +1354,16 @@ class Reservation(models.Model):
     def is_completed(self):
         """Kiểm tra xem booking đã hoàn thành chưa"""
         return self.status == 'checked_out' and self.is_checked_in
+
+    def validate_booking_dates(self):
+        """Validate ngày check-in và check-out"""
+        errors = {}
+        
+        if self.check_in_date >= self.check_out_date:
+            errors['check_out_date'] = 'Ngày checkout phải sau ngày check-in'
+        
+        today = timezone.now().date()
+        if self.check_in_date < today:
+            errors['check_in_date'] = 'Ngày check-in không được trong quá khứ'
+        
+        return errors
