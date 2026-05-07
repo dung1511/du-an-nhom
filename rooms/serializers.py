@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from .models import Coupon, Reservation, Room, RoomCategory, Service
 
@@ -439,6 +440,49 @@ class ReservationCreateSerializer(serializers.ModelSerializer):
 
         # Trả booking
         return reservation
+
+
+# ===== SERIALIZER CHECK-IN =====
+class ReservationCheckInSerializer(serializers.Serializer):
+
+    # Mã booking để tìm reservation
+    booking_code = serializers.CharField(required=True, write_only=True)
+    
+    # Số lượng khách lớn check-in
+    checked_in_adults = serializers.IntegerField(required=True, write_only=True)
+    
+    # Số lượng trẻ em check-in (tuỳ chọn)
+    checked_in_children = serializers.IntegerField(required=False, write_only=True, default=0)
+    
+    # Ngày check-in thực tế (tuỳ chọn, cho check-in sớm)
+    actual_check_in_date = serializers.DateField(required=False, write_only=True, allow_null=True)
+
+    def validate(self, data):
+        # Lấy booking code
+        booking_code = data.get('booking_code')
+        
+        # Tìm reservation theo booking code
+        try:
+            reservation = Reservation.objects.get(booking_code=booking_code)
+        except Reservation.DoesNotExist:
+            raise DRFValidationError('Booking code không tồn tại.')
+        
+        # Kiểm tra đã check-in hay chưa
+        if reservation.is_checked_in:
+            raise DRFValidationError('Booking này đã check-in rồi.')
+        
+        # Kiểm tra số lượng khách
+        checked_in_adults = data.get('checked_in_adults', 1)
+        if checked_in_adults < 1:
+            raise DRFValidationError('Số lượng khách lớn phải >= 1.')
+        
+        if checked_in_adults > reservation.adults:
+            raise DRFValidationError(f'Số khách check-in vượt quá dự đoán ({reservation.adults}).')
+        
+        # Lưu reservation vào validated_data
+        data['reservation'] = reservation
+        
+        return data
 
 
 # ===== SERIALIZER CHECKOUT =====
