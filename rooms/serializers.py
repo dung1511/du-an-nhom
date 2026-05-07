@@ -467,9 +467,10 @@ class ReservationCheckInSerializer(serializers.Serializer):
         except Reservation.DoesNotExist:
             raise DRFValidationError('Booking code không tồn tại.')
         
-        # Kiểm tra đã check-in hay chưa
-        if reservation.is_checked_in:
-            raise DRFValidationError('Booking này đã check-in rồi.')
+        # Sử dụng method can_check_in() để kiểm tra
+        can_check_in, message = reservation.can_check_in()
+        if not can_check_in:
+            raise DRFValidationError(message)
         
         # Kiểm tra số lượng khách
         checked_in_adults = data.get('checked_in_adults', 1)
